@@ -8,9 +8,17 @@
 #define __QTI_CPU_H__
 
 /* KRYO-3xx Gold MIDR */
-#define QTI_KRYO3_GOLD_MIDR 0x517F802D
+#define QTI_KRYO3_GOLD_MIDR	0x517F802D
+#define QTI_KRYO3_GOLD_IMPL_PN	0x51008020
 
 /* KRYO-3xx Silver MIDR */
-#define QTI_KRYO3_SILVER_MIDR 0x517F803D
+#define QTI_KRYO3_SILVER_MIDR	0x517F803D
+
+#ifndef __ASSEMBLER__
+/* API to execute CPU specific cache maintenance
+ * operation before power collapse.
+ */
+void qti_cpu_cm_at_pc(void);
+#endif /* __ASSEMBLER__ */
 
 #endif /* __QTI_CPU_H__ */

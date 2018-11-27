@@ -12,6 +12,7 @@
 #include <bl31.h>
 #include <console.h>
 #include <coreboot.h>
+#include <spinlock.h>
 #include <plat_qti.h>
 #include <qti_plat_params.h>
 #include <qti_interrupt_svc.h>
@@ -56,6 +57,17 @@ static entry_point_info_t bl33_image_ep_info;
  */
 static uint64_t g_qti_cpu_cntfrq;
 
+/*
+ * Lock variable to serialize cpuss reset execution.
+ */
+spinlock_t g_qti_cpuss_boot_lock __attribute__((section("tzfw_coherent_mem"), aligned(CACHE_WRITEBACK_GRANULE))) = {0x0};
+
+/*
+ * Variable to hold bl31 clod boot status. Default value 0x0 means yet to boot.
+ * Any other value means cold booted.
+ */
+uint32_t g_qti_bl31_cold_booted __attribute__((section("tzfw_coherent_mem"))) = 0x0;
+
 static void params_early_setup(void *plat_param_from_bl2)
 {
 	struct bl31_plat_param *bl2_param;
@@ -87,7 +99,7 @@ static void params_early_setup(void *plat_param_from_bl2)
  * while creating page tables. BL2 has flushed this information to memory, so
  * we are guaranteed to pick up good data.
  ******************************************************************************/
-void bl31_early_platform_setup(bl31_params_t * from_bl2,
+void bl31_early_platform_setup(qti_bl31_params_t * from_bl2,
 			       void *plat_params_from_bl2)
 {
 	/*
@@ -109,7 +121,6 @@ void bl31_early_platform_setup(bl31_params_t * from_bl2,
 	}
 #endif
 
-	qtiseclib_bl31_early_platform_setup();
 }
 
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
@@ -144,6 +155,9 @@ void bl31_platform_setup(void)
 	plat_qti_gic_init();
 	qti_interrupt_svc_init();
 	qtiseclib_bl31_platform_setup();
+
+	/* set boot state to cold boot complete. */
+	g_qti_bl31_cold_booted = 0x1;
 }
 
 /*******************************************************************************

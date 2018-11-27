@@ -6,6 +6,7 @@
  */
 
 #include <platform.h>
+#include "qti_cpu.h"
 #include "psci.h"
 #include <qtiseclib_interface.h>
 #include "debug.h"
@@ -63,6 +64,9 @@ static void qti_node_suspend_finish(const psci_power_state_t * target_state)
 
 __dead2 void qti_domain_power_down_wfi(const psci_power_state_t * target_state)
 {
+	/* CPU specific cache maintenance before collapse. */
+	qti_cpu_cm_at_pc();
+
 	/* For now just do WFI - add any target specific handling if needed */
 
 	__asm volatile ("dsb sy \n"

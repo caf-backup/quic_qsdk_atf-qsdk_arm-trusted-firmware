@@ -12,8 +12,6 @@
 #include <platform_def.h>
 #include <console.h>
 
-#define PER_CPU_COHERENT_STACK_SIZE  0x100
-
 	.globl	plat_my_core_pos
 	.globl	plat_qti_core_pos_by_mpidr
 	.globl	plat_reset_handler
@@ -70,41 +68,19 @@ func plat_my_core_pos
 endfunc plat_my_core_pos
 
 func plat_reset_handler
-	mov	x18, x30	// save the lr
-	bl	plat_my_core_pos
-	add	x1, x0, #1	// x1 now contains logical-core-id + 1: Helps to calculate top of stack
+	mov	x18, x30						/* save the lr */
+
+	/* Serialize CPUSS boot setup. Multi core enter simultaneously. */
+	ldr	x0, =g_qti_cpuss_boot_lock
+	bl	spin_lock
+
+	/* Execuete CPUSS boot set up on every core. */
+	ldr	w0, g_qti_bl31_cold_booted		/* pass cold boot status. */
+	bl	qtiseclib_cpuss_reset_asm
+
+	ldr	x0, =g_qti_cpuss_boot_lock
+	bl	spin_unlock
+
 	mov	x30, x18
-
-	ldr	x0, =per_cpu_coherent_boot_stacks
-	mov	x2, PER_CPU_COHERENT_STACK_SIZE
-	mul	x1, x1, x2
-	add	x0, x0, x1	// each core gets PER_CPU_COHERENT_STACK_SIZE of stack area
-	mov	sp, x0
-
-	stp	x29, x30, [sp,#-16]!
-	stp	x27, x28, [sp,#-16]!
-	stp	x25, x26, [sp,#-16]!
-	stp	x23, x24, [sp,#-16]!
-	stp	x21, x22, [sp,#-16]!
-	stp	x19, x20, [sp,#-16]!
-	bl	qtiseclib_cpuss_boot_setup
-	ldp	x19, x20, [sp],#16
-	ldp	x21, x22, [sp],#16
-	ldp	x23, x24, [sp],#16
-	ldp	x25, x26, [sp],#16
-	ldp	x27, x28, [sp],#16
-	ldp	x29, x30, [sp],#16
 	ret
 endfunc plat_reset_handler
-
-
-	.p2align 3
-cold_boot_done:
-	.quad 0x0
-
-	/* ----------------------------------------------------
-	 * Per cpu boot stack in coherent memory.
-	 * ----------------------------------------------------
-	 */
-declare_stack per_cpu_coherent_boot_stacks, tzfw_coherent_mem, \
-		PER_CPU_COHERENT_STACK_SIZE, PLATFORM_CORE_COUNT, CACHE_WRITEBACK_GRANULE

@@ -94,7 +94,7 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 uintptr_t base_va, size_t size,
 					 qtiseclib_mmap_attr_t attr)
 {
-	mmap_attr_t l_attr = 0;
+	unsigned int l_attr = 0;
 	uintptr_t dyn_map_pa_start = qti_page_align(base_pa, DOWN);
 	uintptr_t dyn_map_va_start = qti_page_align(base_va, DOWN);
 	size_t dyn_map_size =

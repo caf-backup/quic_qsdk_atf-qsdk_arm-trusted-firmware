@@ -57,4 +57,13 @@ struct bl31_u64_param {
 	uint64_t value;
 };
 
+typedef struct qti_bl31_params {
+	param_header_t h;
+	image_info_t *bl31_image_info;
+	entry_point_info_t *bl32_ep_info;
+	image_info_t *bl32_image_info;
+	entry_point_info_t *bl33_ep_info;
+	image_info_t *bl33_image_info;
+}qti_bl31_params_t;
+
 #endif /* __QTI_PLAT_PARAMS_H__ */

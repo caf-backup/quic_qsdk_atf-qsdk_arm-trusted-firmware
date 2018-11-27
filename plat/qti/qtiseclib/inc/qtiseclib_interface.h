@@ -10,12 +10,43 @@
 #include <stdint.h>
 #include <qtiseclib_defs.h>
 
-/* qtiseclib published api's. */
-void qtiseclib_cpuss_boot_setup(void);
+/*----------------------------------------------------------------------------
+ * QTISECLIB Published API's.
+ * -------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------
+ * Assembly API's
+ * -------------------------------------------------------------------------*/
+
+/*
+ * CPUSS common reset handler for all CPU wake up (both cold & warm boot).
+ * Executes on all core. This API assume serialization across CPU
+ * already taken care before invoking.
+ *
+ * Clobbers: x0 - x17, x30
+ */
+void qtiseclib_cpuss_reset_asm(uint32_t bl31_cold_boot_state);
+
+/*
+ * Execute CPU (Kryo3 gold) specific reset handler / system initialization.
+ * This takes care of executing required CPU errata's.
+ *
+ * Clobbers: x0 - x16
+ */
+void qtiseclib_kryo3_gold_reset_asm(void);
+
+/*
+ * Execute CPU (Kryo3 silver) specific reset handler / system initialization.
+ * This takes care of executing required CPU errata's.
+ *
+ * Clobbers: x0 - x16
+ */
+void qtiseclib_kryo3_silver_reset_asm(void);
+
+/*----------------------------------------------------------------------------
+ * C Api's
+ * -------------------------------------------------------------------------*/
 void qtiseclib_bl31_platform_setup(void);
-void qtiseclib_bl31_early_platform_setup(void);
-void qtiseclib_kryo3_gold_reset_func(void);
-void qtiseclib_kryo3_silver_reset_func(void);
 void qtiseclib_invoke_isr(uint32_t irq, void *handle);
 void qtiseclib_sip_syscall(qtiseclib_smc_param_t * p_smcparams,
 			   qtiseclib_smc_rsp_t * p_smcrsps);
