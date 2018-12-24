@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,6 +8,7 @@
 #define __QTISECLIB_INTERFACE_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <qtiseclib_defs.h>
 
 /*----------------------------------------------------------------------------
@@ -48,9 +49,16 @@ void qtiseclib_kryo3_silver_reset_asm(void);
  * -------------------------------------------------------------------------*/
 void qtiseclib_bl31_platform_setup(void);
 void qtiseclib_invoke_isr(uint32_t irq, void *handle);
-void qtiseclib_sip_syscall(qtiseclib_smc_param_t * p_smcparams,
-			   qtiseclib_smc_rsp_t * p_smcrsps);
 void qtiseclib_panic(void);
+int qtiseclib_prng_get_data(uint8_t *out, uint32_t out_len);
+
+int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
+						  u_register_t	IPAinfolistsize,
+						  u_register_t	sourceVMlist_hyp,
+						  u_register_t	srcVMlistsize,
+						  u_register_t	destVMlist_hyp,
+						  u_register_t	dstVMlistsize,
+						  u_register_t	spare);
 
 int qtiseclib_psci_init(void);
 int qtiseclib_psci_node_power_on(u_register_t mpidr);

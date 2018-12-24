@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -18,6 +18,7 @@
 #include <gicv3.h>
 #include <context_mgmt.h>
 #include <context.h>
+#include <arch.h>
 #include <arch_helpers.h>
 
 /*Adding it till 64 bit address support will be merged to arm tf*/
@@ -95,10 +96,6 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 qtiseclib_mmap_attr_t attr)
 {
 	unsigned int l_attr = 0;
-	uintptr_t dyn_map_pa_start = qti_page_align(base_pa, DOWN);
-	uintptr_t dyn_map_va_start = qti_page_align(base_va, DOWN);
-	size_t dyn_map_size =
-	    qti_page_align((dyn_map_va_start + size), UP) - dyn_map_va_start;
 
 	if (QTISECLIB_MAP_NS_RO_XN_DATA == attr) {
 		l_attr = MT_NS | MT_RO | MT_EXECUTE_NEVER;
@@ -107,8 +104,8 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
 		l_attr = MT_RW | MT_EXECUTE_NEVER;
 	}
-	return mmap_add_dynamic_region(dyn_map_pa_start, dyn_map_va_start,
-				       dyn_map_size, l_attr);
+	return qti_mmap_add_dynamic_region(base_pa, base_va,
+				       size, l_attr);
 }
 
 void qtiseclib_cb_inv_dcache_range(uintptr_t addr, size_t size)
@@ -127,6 +124,11 @@ void qtiseclib_cb_flush_dcache_range(uintptr_t addr, size_t size)
 	flush_dcache_range(addr_align, size_aign);
 }
 
+void qtiseclib_cb_flush_dcache_all(void)
+{
+	dcsw_op_all(DCCISW);
+}
+
 void qtiseclib_cb_tlbialle3(void)
 {
 	tlbialle3();
@@ -134,10 +136,7 @@ void qtiseclib_cb_tlbialle3(void)
 
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
 {
-	uintptr_t dyn_map_va_start = qti_page_align(base_va, DOWN);
-	size_t dyn_map_size =
-	    qti_page_align((dyn_map_va_start + size), UP) - dyn_map_va_start;
-	return mmap_remove_dynamic_region(dyn_map_va_start, dyn_map_size);
+	return qti_mmap_remove_dynamic_region(base_va, size);
 }
 
 /* GIC platform functions */

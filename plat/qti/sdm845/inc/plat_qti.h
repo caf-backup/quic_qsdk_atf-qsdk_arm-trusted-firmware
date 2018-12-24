@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,6 +13,13 @@
 #include <cpu_data.h>
 #include <stdint.h>
 #include <xlat_tables_v2.h>
+
+/*
+ * Utility functions common to QTI platforms
+ */
+int qti_mmap_add_dynamic_region(unsigned long long base_pa, uintptr_t base_va,
+			    size_t size, unsigned int attr);
+int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
 
 /*
  * Utility functions common to ARM standard platforms

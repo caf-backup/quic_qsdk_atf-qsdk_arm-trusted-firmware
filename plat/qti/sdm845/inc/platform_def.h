@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -149,9 +149,6 @@
 /*----------------------------------------------------------------------------*/
 #define QTI_DEVICE_BASE				0x1000
 #define QTI_DEVICE_SIZE				(0x19000000 - QTI_DEVICE_BASE)
-
-#define QTI_SHARED_IMEM_BASE			0x146BF000
-#define QTI_SHARED_IMEM_TF_STACK_CANARY_ADDR	(QTI_SHARED_IMEM_BASE + 0x7F0)
 
 /*******************************************************************************
  * BL31 specific defines.

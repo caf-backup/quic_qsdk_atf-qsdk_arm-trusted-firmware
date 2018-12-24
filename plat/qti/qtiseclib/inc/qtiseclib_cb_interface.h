@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -42,6 +42,7 @@ void qtiseclib_cb_inv_dcache_range(uintptr_t addr, size_t size);
 void qtiseclib_cb_tlbialle3(void);
 
 void qtiseclib_cb_flush_dcache_range(uintptr_t addr, size_t size);
+void qtiseclib_cb_flush_dcache_all(void);
 
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
 

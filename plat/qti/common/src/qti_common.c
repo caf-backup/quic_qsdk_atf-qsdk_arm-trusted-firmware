@@ -1,12 +1,13 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include <stdbool.h>
 #include <debug.h>
 #include <assert.h>
+#include <errno.h>
 #include <xlat_tables_v2.h>
 #include <plat_qti.h>
 #include <platform_def.h>
@@ -25,6 +26,31 @@ const mmap_region_t plat_qti_mmap[] = {
 };
 
 CASSERT(ARRAY_SIZE(plat_qti_mmap) <= MAX_MMAP_REGIONS, assert_max_mmap_regions);
+
+/* Adding it till 64 bit address support will be merged to arm tf.
+   PAGE_SIZE defined as U instead of ULL. */
+static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
+{
+	/* Round up the limit to the next page boundary */
+	if (value & (PAGE_SIZE - 1)) {
+		value &= ~((uintptr_t)PAGE_SIZE - 1);
+		if (dir == UP)
+			value += PAGE_SIZE;
+	}
+
+	return value;
+}
+
+bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size)
+{
+	if ( (addr < (addr + size)) &&
+		( ((addr + size) < BL31_BASE) ||
+		(addr >= (BL31_BASE + BL31_LIMIT)) ) )
+	{
+		return false;
+	}
+	return true;
+}
 
 /*----------------------------------------------------------------------------
  *  unsigned int plat_qti_my_cluster_pos(void)
@@ -59,12 +85,12 @@ unsigned int plat_qti_my_cluster_pos(void)
  * - Coherent memory region, if applicable.
  */
 void qti_setup_page_tables(uintptr_t total_base,
-			   size_t total_size,
-			   uintptr_t code_start,
-			   uintptr_t code_limit,
-			   uintptr_t rodata_start,
-			   uintptr_t rodata_limit,
-			   uintptr_t coh_start, uintptr_t coh_limit)
+						   size_t total_size,
+						   uintptr_t code_start,
+						   uintptr_t code_limit,
+						   uintptr_t rodata_start,
+						   uintptr_t rodata_limit,
+						   uintptr_t coh_start, uintptr_t coh_limit)
 {
 	/*
 	 * Map the Trusted SRAM with appropriate memory attributes.
@@ -106,4 +132,27 @@ void qti_setup_page_tables(uintptr_t total_base,
 
 	/* Create the page tables to reflect the above mappings */
 	init_xlat_tables();
+}
+
+int qti_mmap_add_dynamic_region(unsigned long long base_pa, uintptr_t base_va,
+								size_t size, unsigned int attr)
+{
+	base_pa = qti_page_align(base_pa, DOWN);
+	base_va = qti_page_align(base_va, DOWN);
+	size = qti_page_align(size, UP);
+
+	if(qti_is_overlap_atf_rg(base_pa, size))
+	{
+		/* Memory shouldn't overlap with ATF range.*/
+		return -EPERM;
+	}
+
+	return mmap_add_dynamic_region(base_pa, base_va, size, attr);
+}
+
+int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
+{
+	base_va = qti_page_align(base_va, DOWN);
+	size = qti_page_align(size, UP);
+	return mmap_remove_dynamic_region(base_va, size);
 }

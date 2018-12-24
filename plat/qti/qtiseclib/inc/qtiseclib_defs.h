@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -24,12 +24,6 @@ typedef uintptr_t u_register_t;
 #define QTISECLIB_LOG_LEVEL_WARNING	30
 #define QTISECLIB_LOG_LEVEL_INFO	40
 #define QTISECLIB_LOG_LEVEL_VERBOSE	50
-
-/* Syscall Defs. */
-
-#define	QTISECLIB_SIP_SVC_CALL_COUNT		(0x3)
-#define QTISECLIB_SIP_SVC_VERSION_MAJOR		(0x0)
-#define	QTISECLIB_SIP_SVC_VERSION_MINOR		(0x0)
 
 #define QTI_GICV3_IRM_PE		0
 #define QTI_GICV3_IRM_ANY		1
@@ -113,27 +107,6 @@ typedef struct
 	uint64_t __reserved7;
 	uint64_t __reserved8;
 }qtiseclib_dbg_a64_ctxt_regs_type;
-
-typedef struct qtiseclib_smc_param_s {
-	u_register_t reg[9];
-} qtiseclib_smc_param_t;
-
-#define QTISECLIB_SMC_PARAM(p, x) (p->reg[x])
-
-typedef struct qtiseclib_smc_rsp_s {
-	u_register_t rsp[4];
-} qtiseclib_smc_rsp_t;
-
-#define QTISECLIB_SMC_RSPS(p, x0, x1, x2, x3)	\
-	p->rsp[0]=x0;	\
-	p->rsp[1]=x1;	\
-	p->rsp[2]=x2;	\
-	p->rsp[3]=x3;
-
-#define QTISECLIB_SMC_RSP1(p, x0)		QTISECLIB_SMC_RSPS(p, x0, 0x0, 0x0, 0x0)
-#define QTISECLIB_SMC_RSP2(p, x0, x1)		QTISECLIB_SMC_RSPS(p, x0, x1,  0x0, 0x0)
-#define QTISECLIB_SMC_RSP3(p, x0, x1, x2)	QTISECLIB_SMC_RSPS(p, x0, x1,  x2,  0x0)
-#define QTISECLIB_SMC_RSP4(p, x0, x1, x2, x3)	QTISECLIB_SMC_RSPS(p, x0, x1,  x2,  x3)
 
 typedef struct qtiseclib_cb_spinlock {
 	volatile uint32_t lock;
