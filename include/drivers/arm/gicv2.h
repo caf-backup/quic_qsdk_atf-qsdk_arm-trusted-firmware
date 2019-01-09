@@ -30,7 +30,7 @@
 #define GICD_SGIR		U(0xF00)
 #define GICD_CPENDSGIR		U(0xF10)
 #define GICD_SPENDSGIR		U(0xF20)
-#define GICD_PIDR2_GICV2	U(0xFE8)
+#define GICD_PIDR2_GICV2	U(0xFD8)
 
 #define ITARGETSR_SHIFT		2
 #define GIC_TARGET_CPU_MASK	U(0xff)
