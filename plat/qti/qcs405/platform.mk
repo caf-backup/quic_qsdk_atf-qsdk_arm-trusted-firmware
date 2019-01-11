@@ -29,6 +29,7 @@ PROGRAMMABLE_RESET_ADDRESS	:=	1
 RESET_TO_BL31			:=	0
 
 MULTI_CONSOLE_API		:=	1
+GICV2_G0_FOR_EL3               := 1
 
 # Enable stack protector.
 ENABLE_STACK_PROTECTOR := strong
@@ -38,9 +39,11 @@ QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
 				-I${QTI_PLAT_PATH}/common/inc				\
 				-I${QTI_PLAT_PATH}/common/inc/$(ARCH)			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc			\
+				-I${QTI_PLAT_PATH}/qtiseclib/inc/${CHIPSET}			\
 
 QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/a53.S	\
+				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_cpu.S \
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_uart_console.S	\
 				$(QTI_PLAT_PATH)/common/src/qti_stack_protector.c	\
 				$(QTI_PLAT_PATH)/common/src/qti_common.c		\

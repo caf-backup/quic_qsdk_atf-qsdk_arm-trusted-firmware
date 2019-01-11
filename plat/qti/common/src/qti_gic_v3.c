@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -99,7 +99,10 @@ void plat_qti_gic_init(void)
 		}
 	}
 }
-
+void gic_set_spi_routing(unsigned int id, unsigned int irm, u_register_t target)
+{
+	gicv3_set_spi_routing(id, irm, target);
+}
 /******************************************************************************
  * ARM common helper to enable the GIC CPU interface
  *****************************************************************************/

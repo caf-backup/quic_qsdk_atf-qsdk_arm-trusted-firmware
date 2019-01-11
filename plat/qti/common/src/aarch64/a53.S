@@ -78,6 +78,10 @@ func qti_a53_cluster_pwr_dwn
 	ret
 endfunc qti_a53_cluster_pwr_dwn
 
+func qti_a53_errata_report
+	ret
+endfunc qti_a53_errata_report
+
 /* ---------------------------------------------
  * This function provides kryo3_gold specific
  * register information for crash reporting.

@@ -210,7 +210,7 @@ void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm, u_register_
 {
 	assert(QTI_GICV3_IRM_PE == GICV3_IRM_PE);
 	assert(QTI_GICV3_IRM_ANY == GICV3_IRM_ANY);
-	gicv3_set_spi_routing(id, irm, target);
+	gic_set_spi_routing(id, irm, target);
 }
 
 /* Crash reporting api's wrappers */

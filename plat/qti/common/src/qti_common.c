@@ -43,13 +43,9 @@ static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
 
 bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size)
 {
-	if ( (addr < (addr + size)) &&
-		( ((addr + size) < BL31_BASE) ||
-		(addr >= (BL31_BASE + BL31_LIMIT)) ) )
-	{
-		return false;
-	}
-	return true;
+	if (addr > addr + size || (BL31_BASE < addr + size && BL31_LIMIT > addr))
+		return true;
+	return false;
 }
 
 /*----------------------------------------------------------------------------

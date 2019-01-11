@@ -18,7 +18,11 @@
 
 
 #define PLAT_QTI_G1S_IRQ_PROPS(grp) \
-	INTR_PROP_DESC(8, GIC_HIGHEST_SEC_PRIORITY, \
+	INTR_PROP_DESC(QTISECLIB_INT_ID_CPU_WAKEUP_SGI, GIC_HIGHEST_SEC_PRIORITY, \
+			grp, GIC_INTR_CFG_LEVEL),           \
+	INTR_PROP_DESC(QTISECLIB_INT_ID_SEC_WDOG_BARK, GIC_HIGHEST_SEC_PRIORITY, \
+			grp, GIC_INTR_CFG_EDGE),            \
+	INTR_PROP_DESC(QTISECLIB_INT_ID_NON_SEC_WDOG_BITE, GIC_HIGHEST_SEC_PRIORITY, \
 			grp, GIC_INTR_CFG_LEVEL)
 /* Array of o be configured by the gic driver */
 static const interrupt_prop_t qti_interrupt_props[] = {
@@ -34,6 +38,11 @@ const gicv2_driver_data_t qti_gic_data = {
 	.target_masks = target_mask_array,
 	.target_masks_num = ARRAY_SIZE(target_mask_array),
 };
+
+void gic_set_spi_routing(unsigned int id, unsigned int irm, u_register_t target)
+{
+	return;
+}
 
 void plat_qti_gic_driver_init(void)
 {

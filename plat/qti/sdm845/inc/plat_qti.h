@@ -47,4 +47,7 @@ void plat_qti_gic_pcpu_init(void);
 unsigned int plat_qti_core_pos_by_mpidr(u_register_t mpidr);
 unsigned int plat_qti_my_cluster_pos(void);
 
+void gic_set_spi_routing(unsigned int id, unsigned int irm,
+               u_register_t mpidr);
+
 #endif /* __PLAT_QTI_H__ */

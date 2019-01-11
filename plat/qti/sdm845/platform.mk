@@ -38,6 +38,7 @@ QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
 				-I${QTI_PLAT_PATH}/common/inc				\
 				-I${QTI_PLAT_PATH}/common/inc/$(ARCH)			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc			\
+				-I${QTI_PLAT_PATH}/qtiseclib/inc/${CHIPSET}			\
 
 QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_cpu.S		\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\

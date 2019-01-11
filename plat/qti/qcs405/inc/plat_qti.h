@@ -15,6 +15,13 @@
 #include <xlat_tables_v2.h>
 
 /*
+ * Utility functions common to QTI platforms
+ */
+int qti_mmap_add_dynamic_region(unsigned long long base_pa, uintptr_t base_va,
+			    size_t size, unsigned int attr);
+int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
+
+/*
  * Utility functions common to ARM standard platforms
  */
 void qti_setup_page_tables(uintptr_t total_base,
@@ -39,5 +46,8 @@ void plat_qti_gic_pcpu_init(void);
  */
 unsigned int plat_qti_core_pos_by_mpidr(u_register_t mpidr);
 unsigned int plat_qti_my_cluster_pos(void);
+
+void gic_set_spi_routing(unsigned int id, unsigned int irm,
+               u_register_t mpidr);
 
 #endif /* __PLAT_QTI_H__ */
