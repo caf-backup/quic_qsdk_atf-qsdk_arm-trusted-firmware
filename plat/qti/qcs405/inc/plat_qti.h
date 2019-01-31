@@ -8,7 +8,7 @@
 #ifndef __PLAT_QTI_H__
 #define __PLAT_QTI_H__
 
-#include <bl_common.h>
+#include <common/bl_common.h>
 #include <cassert.h>
 #include <cpu_data.h>
 #include <stdint.h>

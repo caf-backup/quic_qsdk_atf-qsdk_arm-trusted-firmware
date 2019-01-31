@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include <stdbool.h>
-#include <debug.h>
+#include <common/debug.h>
 #include <assert.h>
 #include <errno.h>
 #include <xlat_tables_v2.h>

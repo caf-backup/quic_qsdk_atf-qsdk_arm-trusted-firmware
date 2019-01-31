@@ -6,9 +6,9 @@
  */
 
 #include <assert.h>
-#include <debug.h>
+#include <common/debug.h>
 #include <platform.h>
-#include <ep_info.h>
+#include <common/ep_info.h>
 #include <bl31.h>
 #include <console.h>
 #include <coreboot.h>

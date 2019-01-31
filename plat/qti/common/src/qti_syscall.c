@@ -9,10 +9,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
-#include <debug.h>
+#include <common/debug.h>
 #include <context.h>
 #include <xlat_tables_v2.h>
-#include <runtime_svc.h>
+#include <common/runtime_svc.h>
 #include <uuid.h>
 #include <smccc_helpers.h>
 #include <utils_def.h>

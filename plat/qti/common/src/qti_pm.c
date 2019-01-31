@@ -9,7 +9,7 @@
 #include "qti_cpu.h"
 #include "psci.h"
 #include <qtiseclib_interface.h>
-#include "debug.h"
+#include <common/debug.h>
 #include "assert.h"
 
 /*******************************************************************************
