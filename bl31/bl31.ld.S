@@ -5,7 +5,8 @@
  */
 
 #include <platform_def.h>
-#include <xlat_tables_defs.h>
+
+#include <lib/xlat_tables/xlat_tables_defs.h>
 
 OUTPUT_FORMAT(PLATFORM_LINKER_FORMAT)
 OUTPUT_ARCH(PLATFORM_LINKER_ARCH)
@@ -66,18 +67,18 @@ SECTIONS
         __CPU_OPS_END__ = .;
 
         /*
-         * Keep the .got section in the RO section as the it is patched
+         * Keep the .got section in the RO section as it is patched
          * prior to enabling the MMU and having the .got in RO is better for
-         * security.
+         * security. GOT is a table of addresses so ensure 8-byte alignment.
          */
-        . = ALIGN(16);
+        . = ALIGN(8);
         __GOT_START__ = .;
         *(.got)
         __GOT_END__ = .;
 
         /* Place pubsub sections for events */
         . = ALIGN(8);
-#include <pubsub_events.h>
+#include <lib/el3_runtime/pubsub_events.h>
 
         . = ALIGN(PAGE_SIZE);
         __RODATA_END__ = .;
@@ -112,9 +113,19 @@ SECTIONS
         KEEP(*(cpu_ops))
         __CPU_OPS_END__ = .;
 
+        /*
+         * Keep the .got section in the RO section as it is patched
+         * prior to enabling the MMU and having the .got in RO is better for
+         * security. GOT is a table of addresses so ensure 8-byte alignment.
+         */
+        . = ALIGN(8);
+        __GOT_START__ = .;
+        *(.got)
+        __GOT_END__ = .;
+
         /* Place pubsub sections for events */
         . = ALIGN(8);
-#include <pubsub_events.h>
+#include <lib/el3_runtime/pubsub_events.h>
 
         *(.vectors)
         __RO_END_UNALIGNED__ = .;
@@ -165,11 +176,12 @@ SECTIONS
         __DATA_END__ = .;
     } >RAM
 
-    . = ALIGN(16);
     /*
      * .rela.dyn needs to come after .data for the read-elf utility to parse
-     * this section correctly.
+     * this section correctly. Ensure 8-byte alignment so that the fields of
+     * RELA data structure are aligned.
      */
+    . = ALIGN(8);
     __RELA_START__ = .;
     .rela.dyn . : {
     } >RAM

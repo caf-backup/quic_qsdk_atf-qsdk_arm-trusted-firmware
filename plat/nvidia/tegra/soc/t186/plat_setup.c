@@ -1,26 +1,31 @@
 /*
- * Copyright (c) 2015-2016, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <arch_helpers.h>
 #include <assert.h>
-#include <bl31.h>
-#include <bl_common.h>
-#include <console.h>
+
+#include <arch_helpers.h>
+#include <bl31/bl31.h>
+#include <bl31/interrupt_mgmt.h>
+#include <common/bl_common.h>
+#include <common/debug.h>
+#include <common/interrupt_props.h>
 #include <context.h>
-#include <context_mgmt.h>
 #include <cortex_a57.h>
-#include <debug.h>
 #include <denver.h>
-#include <interrupt_mgmt.h>
+#include <drivers/arm/gic_common.h>
+#include <drivers/arm/gicv2.h>
+#include <drivers/console.h>
+#include <lib/el3_runtime/context_mgmt.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
+#include <plat/common/platform.h>
+
 #include <mce.h>
-#include <platform.h>
 #include <tegra_def.h>
 #include <tegra_platform.h>
 #include <tegra_private.h>
-#include <xlat_tables_v2.h>
 
 DEFINE_RENAME_SYSREG_RW_FUNCS(l2ctlr_el1, CORTEX_A57_L2CTLR_EL1)
 extern uint64_t tegra_enable_l2_ecc_parity_prot;
@@ -185,17 +190,11 @@ void plat_early_platform_setup(void)
 }
 
 /* Secure IRQs for Tegra186 */
-static const irq_sec_cfg_t tegra186_sec_irqs[] = {
-	{
-		TEGRA186_TOP_WDT_IRQ,
-		TEGRA186_SEC_IRQ_TARGET_MASK,
-		INTR_TYPE_EL3,
-	},
-	{
-		TEGRA186_AON_WDT_IRQ,
-		TEGRA186_SEC_IRQ_TARGET_MASK,
-		INTR_TYPE_EL3,
-	},
+static const interrupt_prop_t tegra186_interrupt_props[] = {
+	INTR_PROP_DESC(TEGRA186_TOP_WDT_IRQ, GIC_HIGHEST_SEC_PRIORITY,
+			GICV2_INTR_GROUP0, GIC_INTR_CFG_EDGE),
+	INTR_PROP_DESC(TEGRA186_AON_WDT_IRQ, GIC_HIGHEST_SEC_PRIORITY,
+			GICV2_INTR_GROUP0, GIC_INTR_CFG_EDGE)
 };
 
 /*******************************************************************************
@@ -203,14 +202,13 @@ static const irq_sec_cfg_t tegra186_sec_irqs[] = {
  ******************************************************************************/
 void plat_gic_setup(void)
 {
-	tegra_gic_setup(tegra186_sec_irqs,
-		sizeof(tegra186_sec_irqs) / sizeof(tegra186_sec_irqs[0]));
+	tegra_gic_setup(tegra186_interrupt_props, ARRAY_SIZE(tegra186_interrupt_props));
 
 	/*
 	 * Initialize the FIQ handler only if the platform supports any
 	 * FIQ interrupt sources.
 	 */
-	if (sizeof(tegra186_sec_irqs) > 0)
+	if (sizeof(tegra186_interrupt_props) > 0)
 		tegra_fiq_handler_setup();
 }
 

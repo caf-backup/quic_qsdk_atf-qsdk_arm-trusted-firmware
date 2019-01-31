@@ -7,10 +7,12 @@
 #ifndef SCMI_H
 #define SCMI_H
 
-#include <bakery_lock.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <spinlock.h>
+
+#include <lib/bakery_lock.h>
+#include <lib/psci/psci.h>
+#include <lib/spinlock.h>
 
 /* Supported SCMI Protocol Versions */
 #define SCMI_AP_CORE_PROTO_VER			MAKE_SCMI_VERSION(1, 0)
@@ -161,5 +163,8 @@ int scmi_ap_core_get_reset_addr(void *p, uint64_t *reset_addr, uint32_t *attr);
 
 /* API to get the platform specific SCMI channel information. */
 scmi_channel_plat_info_t *plat_css_get_scmi_info();
+
+/* API to override default PSCI callbacks for platforms that support SCMI. */
+const plat_psci_ops_t *css_scmi_override_pm_ops(plat_psci_ops_t *ops);
 
 #endif /* SCMI_H */

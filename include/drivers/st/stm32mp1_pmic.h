@@ -9,6 +9,8 @@
 
 #include <stdbool.h>
 
+#include <platform_def.h>
+
 bool dt_check_pmic(void);
 int dt_pmic_enable_boot_on_regulators(void);
 void initialize_pmic_i2c(void);

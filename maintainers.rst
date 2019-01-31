@@ -48,6 +48,23 @@ Arm System Guidance for Infrastructure / Mobile FVP platforms
 :F: plat/arm/board/sgi575/
 :F: plat/arm/board/sgm775/
 
+Console API framework
+---------------------
+:M: Julius Werner <jwerner@chromium.org>
+:G: `jwerner-chromium`_
+:F: drivers/console/
+:F: include/drivers/console.h
+:F: plat/common/aarch64/crash_console_helpers.S
+
+coreboot support libraries
+--------------------------
+:M: Julius Werner <jwerner@chromium.org>
+:G: `jwerner-chromium`_
+:F: drivers/coreboot/
+:F: include/drivers/coreboot/
+:F: include/lib/coreboot.h
+:F: lib/coreboot/
+
 eMMC/UFS drivers
 ----------------
 :M: Haojian Zhuang <haojian.zhuang@linaro.org>
@@ -86,7 +103,7 @@ Marvell platform ports and SoC drivers
 --------------------------------------
 :M: Konstantin Porotchkin <kostap@marvell.com>
 :G: `kostapr`_
-:F: docs/plat/marvell/
+:F: docs/marvell/
 :F: plat/marvell/
 :F: drivers/marvell/
 :F: tools/marvell/
@@ -126,6 +143,13 @@ NXP i.MX 8 platform port
 :G: `Anson-Huang`_
 :F: docs/plat/imx8.rst
 :F: plat/imx/
+
+NXP i.MX8M platform port
+------------------------
+:M: Jacky Bai <ping.bai@nxp.com>
+:G: `JackyBai`_
+:F: doc/plat/imx8m.rst
+:F: plat/imx/imx8m/
 
 OP-TEE dispatcher
 -----------------
@@ -224,6 +248,7 @@ Xilinx platform port
 .. _etienne-lms: https://github.com/etienne-lms
 .. _glneo: https://github.com/glneo
 .. _hzhuang1: https://github.com/hzhuang1
+.. _JackyBai: https://github.com/JackyBai
 .. _jenswi-linaro: https://github.com/jenswi-linaro
 .. _ldts: https://github.com/ldts
 .. _niej: https://github.com/niej

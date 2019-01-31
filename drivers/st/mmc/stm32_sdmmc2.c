@@ -4,25 +4,28 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include <assert.h>
+#include <errno.h>
+#include <string.h>
+
+#include <libfdt.h>
+
+#include <platform_def.h>
+
 #include <arch.h>
 #include <arch_helpers.h>
-#include <assert.h>
-#include <debug.h>
-#include <delay_timer.h>
+#include <common/debug.h>
+#include <drivers/delay_timer.h>
+#include <drivers/mmc.h>
+#include <drivers/st/stm32_sdmmc2.h>
+#include <drivers/st/stm32mp1_clk.h>
+#include <drivers/st/stm32mp1_rcc.h>
+#include <drivers/st/stm32mp1_reset.h>
 #include <dt-bindings/clock/stm32mp1-clks.h>
 #include <dt-bindings/reset/stm32mp1-resets.h>
-#include <errno.h>
-#include <libfdt.h>
-#include <mmc.h>
-#include <mmio.h>
-#include <platform.h>
-#include <stm32_sdmmc2.h>
-#include <stm32mp1_clk.h>
-#include <stm32mp1_dt.h>
-#include <stm32mp1_rcc.h>
-#include <stm32mp1_reset.h>
-#include <string.h>
-#include <utils.h>
+#include <lib/mmio.h>
+#include <lib/utils.h>
+#include <plat/common/platform.h>
 
 /* Registers offsets */
 #define SDMMC_POWER			0x00U
@@ -97,7 +100,7 @@
 #define SDMMC_STAR_CMDSENT		BIT(7)
 #define SDMMC_STAR_DATAEND		BIT(8)
 #define SDMMC_STAR_DBCKEND		BIT(10)
-#define SDMMC_STAR_DPSMACT		BIT(11)
+#define SDMMC_STAR_DPSMACT		BIT(12)
 #define SDMMC_STAR_RXFIFOHF		BIT(15)
 #define SDMMC_STAR_RXFIFOE		BIT(19)
 #define SDMMC_STAR_IDMATE		BIT(27)
@@ -266,21 +269,22 @@ static int stm32_sdmmc2_send_cmd_req(struct mmc_cmd *cmd)
 
 	mmio_write_32(base + SDMMC_CMDR, cmd_reg);
 
+	status = mmio_read_32(base + SDMMC_STAR);
+
 	start = get_timer(0);
 
-	do {
-		status = mmio_read_32(base + SDMMC_STAR);
-
+	while ((status & flags_cmd) == 0U) {
 		if (get_timer(start) > TIMEOUT_10_MS) {
 			err = -ETIMEDOUT;
 			ERROR("%s: timeout 10ms (cmd = %d,status = %x)\n",
 			      __func__, cmd->cmd_idx, status);
-			break;
+			goto err_exit;
 		}
-	} while ((status & flags_cmd) == 0U);
 
-	if (((status & (SDMMC_STAR_CTIMEOUT | SDMMC_STAR_CCRCFAIL)) != 0U) &&
-	    (err == 0)) {
+		status = mmio_read_32(base + SDMMC_STAR);
+	}
+
+	if ((status & (SDMMC_STAR_CTIMEOUT | SDMMC_STAR_CCRCFAIL)) != 0U) {
 		if ((status & SDMMC_STAR_CTIMEOUT) != 0U) {
 			err = -ETIMEDOUT;
 			/*
@@ -300,9 +304,11 @@ static int stm32_sdmmc2_send_cmd_req(struct mmc_cmd *cmd)
 			ERROR("%s: CRCFAIL (cmd = %d,status = %x)\n",
 			      __func__, cmd->cmd_idx, status);
 		}
+
+		goto err_exit;
 	}
 
-	if (((cmd_reg & SDMMC_CMDR_WAITRESP) != 0U) && (err == 0)) {
+	if ((cmd_reg & SDMMC_CMDR_WAITRESP) != 0U) {
 		if ((cmd->cmd_idx == MMC_CMD(9)) &&
 		    ((cmd_reg & SDMMC_CMDR_WAITRESP) == SDMMC_CMDR_WAITRESP)) {
 			/* Need to invert response to match CSD structure */
@@ -324,32 +330,26 @@ static int stm32_sdmmc2_send_cmd_req(struct mmc_cmd *cmd)
 		}
 	}
 
-	if ((flags_data == 0U) || (err != 0)) {
-		if (flags_data != 0U) {
-			mmio_clrbits_32(base + SDMMC_CMDR, SDMMC_CMDR_CMDTRANS);
-		}
-
+	if (flags_data == 0U) {
 		mmio_write_32(base + SDMMC_ICR, SDMMC_STATIC_FLAGS);
 
-		if ((err != 0) && (flags_data != 0U)) {
-			return stm32_sdmmc2_stop_transfer();
-		}
-
-		return err;
+		return 0;
 	}
+
+	status = mmio_read_32(base + SDMMC_STAR);
 
 	start = get_timer(0);
 
-	do {
-		status = mmio_read_32(base + SDMMC_STAR);
-
+	while ((status & flags_data) == 0U) {
 		if (get_timer(start) > TIMEOUT_10_MS) {
 			ERROR("%s: timeout 10ms (cmd = %d,status = %x)\n",
 			      __func__, cmd->cmd_idx, status);
 			err = -ETIMEDOUT;
-			break;
+			goto err_exit;
 		}
-	} while ((status & flags_data) == 0U);
+
+		status = mmio_read_32(base + SDMMC_STAR);
+	};
 
 	if ((status & (SDMMC_STAR_DTIMEOUT | SDMMC_STAR_DCRCFAIL |
 		       SDMMC_STAR_TXUNDERR | SDMMC_STAR_RXOVERR |
@@ -359,11 +359,16 @@ static int stm32_sdmmc2_send_cmd_req(struct mmc_cmd *cmd)
 		err = -EIO;
 	}
 
+err_exit:
 	mmio_write_32(base + SDMMC_ICR, SDMMC_STATIC_FLAGS);
 	mmio_clrbits_32(base + SDMMC_CMDR, SDMMC_CMDR_CMDTRANS);
 
 	if (err != 0) {
-		return stm32_sdmmc2_stop_transfer();
+		int ret_stop = stm32_sdmmc2_stop_transfer();
+
+		if (ret_stop != 0) {
+			return ret_stop;
+		}
 	}
 
 	return err;

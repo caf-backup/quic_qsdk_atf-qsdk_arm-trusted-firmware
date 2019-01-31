@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <arch_helpers.h>
 #include <assert.h>
-#include <bl_common.h>
-#include <cassert.h>
-#include <debug.h>
-#include <ehf.h>
-#include <interrupt_mgmt.h>
-#include <runtime_svc.h>
-#include <sdei.h>
 #include <string.h>
+
+#include <arch_helpers.h>
+#include <bl31/ehf.h>
+#include <bl31/interrupt_mgmt.h>
+#include <common/bl_common.h>
+#include <common/debug.h>
+#include <common/runtime_svc.h>
+#include <lib/cassert.h>
+#include <services/sdei.h>
+
 #include "sdei_private.h"
 
 /* x0-x17 GPREGS context */
@@ -485,15 +487,14 @@ int sdei_intr_handler(uint32_t intr_raw, uint32_t flags, void *handle,
 	/*
 	 * We reach here when client completes the event.
 	 *
-	 * If the cause of dispatch originally interrupted the Secure world, and
-	 * if Non-secure world wasn't allowed to preempt Secure execution,
+	 * If the cause of dispatch originally interrupted the Secure world,
 	 * resume Secure.
 	 *
 	 * No need to save the Non-secure context ahead of a world switch: the
 	 * Non-secure context was fully saved before dispatch, and has been
 	 * returned to its pre-dispatch state.
 	 */
-	if ((sec_state == SECURE) && (ehf_is_ns_preemption_allowed() == 0U))
+	if (sec_state == SECURE)
 		restore_and_resume_secure_context();
 
 	/*

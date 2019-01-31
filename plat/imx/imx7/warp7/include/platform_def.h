@@ -8,8 +8,8 @@
 #define PLATFORM_DEF_H
 
 #include <arch.h>
-#include <common_def.h>
-#include <tbbr_img_def.h>
+#include <common/tbbr/tbbr_img_def.h>
+#include <plat/common/common_def.h>
 
 #define PLATFORM_STACK_SIZE		0x1000
 
@@ -169,7 +169,7 @@
 #define MAX_XLAT_TABLES			6
 #define MAX_IO_DEVICES			2
 #define MAX_IO_HANDLES			3
-#define MAX_IO_BLOCK_DEVICES		1
+#define MAX_IO_BLOCK_DEVICES		1U
 
 /* UART defines */
 #if PLAT_WARP7_UART == 1

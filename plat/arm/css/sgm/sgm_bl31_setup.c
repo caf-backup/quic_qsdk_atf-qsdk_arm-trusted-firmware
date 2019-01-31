@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <bl_common.h>
-#include <debug.h>
+#include <common/bl_common.h>
+#include <common/debug.h>
+
 #include <plat_arm.h>
 #include <sgm_plat_config.h>
+
 #include "../../css/drivers/scmi/scmi.h"
 #include "../../css/drivers/mhu/css_mhu_doorbell.h"
 
@@ -46,4 +48,9 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 	}
 
 	arm_bl31_early_platform_setup((void *)arg0, arg1, arg2, (void *)arg3);
+}
+
+const plat_psci_ops_t *plat_arm_psci_override_pm_ops(plat_psci_ops_t *ops)
+{
+	return css_scmi_override_pm_ops(ops);
 }

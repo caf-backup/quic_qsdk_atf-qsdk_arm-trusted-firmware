@@ -6,15 +6,15 @@
 #ifndef ARM_DEF_H
 #define ARM_DEF_H
 
-#include <arch.h>
-#include <common_def.h>
-#include <gic_common.h>
-#include <interrupt_props.h>
 #include <platform_def.h>
-#include <tbbr_img_def.h>
-#include <utils_def.h>
-#include <xlat_tables_defs.h>
 
+#include <arch.h>
+#include <common/interrupt_props.h>
+#include <common/tbbr/tbbr_img_def.h>
+#include <drivers/arm/gic_common.h>
+#include <lib/utils_def.h>
+#include <lib/xlat_tables/xlat_tables_defs.h>
+#include <plat/common/common_def.h>
 
 /******************************************************************************
  * Definitions common to all ARM standard platforms
@@ -34,6 +34,7 @@
 #define ARM_PWR_LVL0		MPIDR_AFFLVL0
 #define ARM_PWR_LVL1		MPIDR_AFFLVL1
 #define ARM_PWR_LVL2		MPIDR_AFFLVL2
+#define ARM_PWR_LVL3		MPIDR_AFFLVL3
 
 /*
  *  Macros for local power states in ARM platforms encoded by State-ID field
@@ -206,13 +207,11 @@
 						ARM_DRAM2_BASE,		\
 						ARM_DRAM2_SIZE,		\
 						MT_MEMORY | MT_RW | MT_NS)
-#ifdef SPD_tspd
 
 #define ARM_MAP_TSP_SEC_MEM		MAP_REGION_FLAT(		\
 						TSP_SEC_MEM_BASE,	\
 						TSP_SEC_MEM_SIZE,	\
 						MT_MEMORY | MT_RW | MT_SECURE)
-#endif
 
 #if ARM_BL31_IN_DRAM
 #define ARM_MAP_BL31_SEC_DRAM		MAP_REGION_FLAT(		\
@@ -406,12 +405,21 @@
 #define BL31_LIMIT			(ARM_AP_TZC_DRAM1_BASE +	\
 						PLAT_ARM_MAX_BL31_SIZE)
 #elif (RESET_TO_BL31)
+
+# if ENABLE_PIE
 /*
- * Put BL31_BASE in the middle of the Trusted SRAM.
+ * Since this is PIE, we can define BL31_BASE to 0x0 since this macro is solely
+ * used for building BL31 and not used for loading BL31.
  */
-#define BL31_BASE			(ARM_TRUSTED_SRAM_BASE + \
-						(PLAT_ARM_TRUSTED_SRAM_SIZE >> 1))
-#define BL31_LIMIT			(ARM_BL_RAM_BASE + ARM_BL_RAM_SIZE)
+#  define BL31_BASE			0x0
+#  define BL31_LIMIT			PLAT_ARM_MAX_BL31_SIZE
+# else
+/* Put BL31_BASE in the middle of the Trusted SRAM.*/
+#  define BL31_BASE			(ARM_TRUSTED_SRAM_BASE + \
+					(PLAT_ARM_TRUSTED_SRAM_SIZE >> 1))
+#  define BL31_LIMIT			(ARM_BL_RAM_BASE + ARM_BL_RAM_SIZE)
+# endif /* ENABLE_PIE */
+
 #else
 /* Put BL31 below BL2 in the Trusted SRAM.*/
 #define BL31_BASE			((ARM_BL_RAM_BASE + ARM_BL_RAM_SIZE)\

@@ -27,6 +27,7 @@ endif
 CSS_USE_SCMI_SDS_DRIVER		:=	1
 
 PLAT_INCLUDES		:=	-Iplat/arm/board/juno/include		\
+				-Iplat/arm/css/drivers/scmi		\
 				-Iplat/arm/css/drivers/sds
 
 PLAT_BL_COMMON_SOURCES	:=	plat/arm/board/juno/${ARCH}/juno_helpers.S \
@@ -79,6 +80,7 @@ BL31_SOURCES		+=	drivers/cfi/v2m/v2m_flash.c		\
 				lib/cpus/aarch64/cortex_a57.S		\
 				lib/cpus/aarch64/cortex_a72.S		\
 				lib/utils/mem_region.c			\
+				plat/arm/board/juno/juno_pm.c		\
 				plat/arm/board/juno/juno_topology.c	\
 				plat/arm/common/arm_nor_psci_mem_protect.c \
 				${JUNO_GIC_SOURCES}			\
@@ -92,9 +94,17 @@ endif
 endif
 
 ifneq (${RESET_TO_BL31},0)
-  $(error "Using BL31 as the reset vector is not supported on ${PLATFORM} platform. \
+  $(error "Using BL31 as the reset vector is not supported on ${PLAT} platform. \
   Please set RESET_TO_BL31 to 0.")
 endif
+
+ifeq ($(USE_ROMLIB),1)
+all : bl1_romlib.bin
+endif
+
+bl1_romlib.bin : $(BUILD_PLAT)/bl1.bin $(BUILD_PLAT)/romlib/romlib.bin
+	@echo "Building combined BL1 and ROMLIB binary for Juno $@"
+	./lib/romlib/gen_combined_bl1_romlib.sh -o bl1_romlib.bin $(BUILD_PLAT)
 
 # Errata workarounds for Cortex-A53:
 ERRATA_A53_826319		:=	1

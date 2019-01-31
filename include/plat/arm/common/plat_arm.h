@@ -6,14 +6,15 @@
 #ifndef PLAT_ARM_H
 #define PLAT_ARM_H
 
-#include <bakery_lock.h>
-#include <cassert.h>
-#include <cpu_data.h>
 #include <stdint.h>
-#include <spinlock.h>
-#include <tzc_common.h>
-#include <utils_def.h>
-#include <xlat_tables_compat.h>
+
+#include <drivers/arm/tzc_common.h>
+#include <lib/bakery_lock.h>
+#include <lib/cassert.h>
+#include <lib/el3_runtime/cpu_data.h>
+#include <lib/spinlock.h>
+#include <lib/utils_def.h>
+#include <lib/xlat_tables/xlat_tables_compat.h>
 
 /*******************************************************************************
  * Forward declarations
@@ -37,7 +38,7 @@ typedef struct arm_tzc_regions_info {
  *   - Region 1 with secure access only;
  *   - the remaining DRAM regions access from the given Non-Secure masters.
  ******************************************************************************/
-#if ENABLE_SPM
+#if ENABLE_SPM && SPM_DEPRECATED
 #define ARM_TZC_REGIONS_DEF						\
 	{ARM_AP_TZC_DRAM1_BASE, ARM_EL3_TZC_DRAM1_END,			\
 		TZC_REGION_S_RDWR, 0},					\

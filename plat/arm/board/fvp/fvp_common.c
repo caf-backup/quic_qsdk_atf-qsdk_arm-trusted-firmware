@@ -4,20 +4,22 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include <assert.h>
+
+#include <common/debug.h>
+#include <drivers/arm/cci.h>
+#include <drivers/arm/ccn.h>
+#include <drivers/arm/gicv2.h>
+#include <lib/mmio.h>
+#include <lib/xlat_tables/xlat_tables_compat.h>
+#include <plat/common/platform.h>
+#include <services/secure_partition.h>
+
 #include <arm_config.h>
 #include <arm_def.h>
 #include <arm_spm_def.h>
-#include <assert.h>
-#include <cci.h>
-#include <ccn.h>
-#include <debug.h>
-#include <gicv2.h>
-#include <mmio.h>
 #include <plat_arm.h>
-#include <platform.h>
-#include <secure_partition.h>
 #include <v2m_def.h>
-#include <xlat_tables_compat.h>
 
 #include "../fvp_def.h"
 #include "fvp_private.h"
@@ -96,8 +98,11 @@ const mmap_region_t plat_arm_mmap[] = {
 	ARM_MAP_BL1_RW,
 #endif
 #endif /* TRUSTED_BOARD_BOOT */
-#if ENABLE_SPM
+#if ENABLE_SPM && SPM_DEPRECATED
 	ARM_SP_IMAGE_MMAP,
+#endif
+#if ENABLE_SPM && !SPM_DEPRECATED
+	PLAT_MAP_SP_PACKAGE_MEM_RW,
 #endif
 #if ARM_BL31_IN_DRAM
 	ARM_MAP_BL31_SEC_DRAM,
@@ -124,13 +129,16 @@ const mmap_region_t plat_arm_mmap[] = {
 	MAP_DEVICE0,
 	MAP_DEVICE1,
 	ARM_V2M_MAP_MEM_PROTECT,
-#if ENABLE_SPM
+#if ENABLE_SPM && SPM_DEPRECATED
 	ARM_SPM_BUF_EL3_MMAP,
+#endif
+#if ENABLE_SPM && !SPM_DEPRECATED
+	PLAT_MAP_SP_PACKAGE_MEM_RO,
 #endif
 	{0}
 };
 
-#if ENABLE_SPM && defined(IMAGE_BL31)
+#if ENABLE_SPM && defined(IMAGE_BL31) && SPM_DEPRECATED
 const mmap_region_t plat_arm_secure_partition_mmap[] = {
 	V2M_MAP_IOFPGA_EL0, /* for the UART */
 	MAP_REGION_FLAT(DEVICE0_BASE,				\
@@ -184,7 +192,7 @@ static unsigned int get_interconnect_master(void)
 }
 #endif
 
-#if ENABLE_SPM && defined(IMAGE_BL31)
+#if ENABLE_SPM && defined(IMAGE_BL31) && SPM_DEPRECATED
 /*
  * Boot information passed to a secure partition during initialisation. Linear
  * indices in MP information will be filled at runtime.
@@ -232,7 +240,6 @@ const struct secure_partition_boot_info *plat_get_secure_partition_boot_info(
 {
 	return &plat_arm_secure_partition_boot_info;
 }
-
 #endif
 
 /*******************************************************************************

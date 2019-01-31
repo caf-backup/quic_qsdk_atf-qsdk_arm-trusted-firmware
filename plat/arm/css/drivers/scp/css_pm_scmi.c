@@ -4,14 +4,17 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <arch_helpers.h>
 #include <assert.h>
+#include <string.h>
+
+#include <arch_helpers.h>
+#include <common/debug.h>
+#include <plat/common/platform.h>
+
 #include <css_def.h>
 #include <css_pm.h>
-#include <debug.h>
 #include <plat_arm.h>
-#include <platform.h>
-#include <string.h>
+
 #include "../scmi/scmi.h"
 #include "css_scp.h"
 
@@ -339,7 +342,7 @@ void __init plat_arm_pwrc_setup(void)
  * the SCMI driver, query capability via SCMI and modify the PSCI capability
  * based on that.
  *****************************************************************************/
-const plat_psci_ops_t *plat_arm_psci_override_pm_ops(plat_psci_ops_t *ops)
+const plat_psci_ops_t *css_scmi_override_pm_ops(plat_psci_ops_t *ops)
 {
 	uint32_t msg_attr;
 	int ret;

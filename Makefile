@@ -26,10 +26,6 @@ include ${MAKE_HELPERS_DIRECTORY}build_env.mk
 # Default values for build configurations, and their dependencies
 ################################################################################
 
-ifdef ASM_ASSERTION
-        $(warning ASM_ASSERTION is removed, use ENABLE_ASSERTIONS instead.)
-endif
-
 include ${MAKE_HELPERS_DIRECTORY}defaults.mk
 
 # Assertions enabled for DEBUG builds by default
@@ -154,7 +150,7 @@ target32-directive	= 	-target armv8a-none-eabi
 march32-directive	= 	-march=armv8-a
 endif
 
-ifeq ($(notdir $(CC)),armclang)
+ifneq ($(findstring armclang,$(notdir $(CC))),)
 TF_CFLAGS_aarch32	=	-target arm-arm-none-eabi $(march32-directive)
 TF_CFLAGS_aarch64	=	-target aarch64-arm-none-eabi -march=armv8-a
 LD			=	$(LINKER)
@@ -162,7 +158,7 @@ AS			=	$(CC) -c -x assembler-with-cpp $(TF_CFLAGS_$(ARCH))
 CPP			=	$(CC) -E $(TF_CFLAGS_$(ARCH))
 PP			=	$(CC) -E $(TF_CFLAGS_$(ARCH))
 else ifneq ($(findstring clang,$(notdir $(CC))),)
-TF_CFLAGS_aarch32	=	$(target32-directive)
+TF_CFLAGS_aarch32	=	$(target32-directive) $(march32-directive)
 TF_CFLAGS_aarch64	=	-target aarch64-elf
 LD			=	$(LINKER)
 AS			=	$(CC) -c -x assembler-with-cpp $(TF_CFLAGS_$(ARCH))
@@ -188,8 +184,50 @@ TF_CFLAGS_aarch64	+=	-mgeneral-regs-only -mstrict-align
 ASFLAGS_aarch32		=	$(march32-directive)
 ASFLAGS_aarch64		=	-march=armv8-a
 
+WARNING1 := -Wextra
+WARNING1 += -Wunused -Wno-unused-parameter
+WARNING1 += -Wmissing-declarations
+WARNING1 += -Wmissing-format-attribute
+WARNING1 += -Wmissing-prototypes
+WARNING1 += -Wold-style-definition
+WARNING1 += -Wunused-but-set-variable
+WARNING1 += -Wunused-const-variable
+
+WARNING2 := -Waggregate-return
+WARNING2 += -Wcast-align
+WARNING2 += -Wdisabled-optimization
+WARNING2 += -Wnested-externs
+WARNING2 += -Wshadow
+WARNING2 += -Wlogical-op
+WARNING2 += -Wmissing-field-initializers
+WARNING2 += -Wsign-compare
+WARNING2 += -Wmaybe-uninitialized
+
+WARNING3 := -Wbad-function-cast
+WARNING3 += -Wcast-qual
+WARNING3 += -Wconversion
+WARNING3 += -Wpacked
+WARNING3 += -Wpadded
+WARNING3 += -Wpointer-arith
+WARNING3 += -Wredundant-decls
+WARNING3 += -Wswitch-default
+WARNING3 += -Wpacked-bitfield-compat
+WARNING3 += -Wvla
+
+ifeq (${W},1)
+WARNINGS := $(WARNING1)
+else ifeq (${W},2)
+WARNINGS := $(WARNING1) $(WARNING2)
+else ifeq (${W},3)
+WARNINGS := $(WARNING1) $(WARNING2) $(WARNING3)
+endif
+
+ifneq (${E},0)
+ERRORS := -Werror
+endif
+
 CPPFLAGS		=	${DEFINES} ${INCLUDES} ${MBEDTLS_INC} -nostdinc		\
-				-Wmissing-include-dirs -Werror
+				-Wmissing-include-dirs $(ERRORS) $(WARNINGS)
 ASFLAGS			+=	$(CPPFLAGS) $(ASFLAGS_$(ARCH))			\
 				-D__ASSEMBLY__ -ffreestanding 			\
 				-Wa,--fatal-warnings
@@ -214,6 +252,7 @@ include lib/libc/libc.mk
 BL_COMMON_SOURCES	+=	common/bl_common.c			\
 				common/tf_log.c				\
 				common/${ARCH}/debug.S			\
+				drivers/console/multi_console.c		\
 				lib/${ARCH}/cache_helpers.S		\
 				lib/${ARCH}/misc_helpers.S		\
 				plat/common/plat_bl_common.c		\
@@ -227,32 +266,33 @@ BL_COMMON_SOURCES	+=	lib/${ARCH}/armclang_printf.S
 endif
 
 INCLUDES		+=	-Iinclude				\
-				-Iinclude/bl1				\
+				-Iinclude/arch/${ARCH}			\
+				-Iinclude/lib/cpus/${ARCH}		\
+				-Iinclude/lib/el3_runtime/${ARCH}	\
+				${PLAT_INCLUDES}			\
+				${SPD_INCLUDES}
+
+ifeq (${ERROR_DEPRECATED},0)
+INCLUDES		+=	-Iinclude/bl1				\
 				-Iinclude/bl2				\
 				-Iinclude/bl2u				\
 				-Iinclude/bl31				\
-				-Iinclude/common			\
-				-Iinclude/common/${ARCH}		\
 				-Iinclude/drivers			\
 				-Iinclude/drivers/arm			\
 				-Iinclude/drivers/auth			\
 				-Iinclude/drivers/io			\
 				-Iinclude/drivers/ti/uart		\
 				-Iinclude/lib				\
-				-Iinclude/lib/${ARCH}			\
 				-Iinclude/lib/cpus			\
-				-Iinclude/lib/cpus/${ARCH}		\
 				-Iinclude/lib/el3_runtime		\
-				-Iinclude/lib/el3_runtime/${ARCH}	\
 				-Iinclude/lib/extensions		\
 				-Iinclude/lib/pmf			\
 				-Iinclude/lib/psci			\
 				-Iinclude/lib/xlat_tables		\
 				-Iinclude/plat/common			\
 				-Iinclude/services			\
-				${PLAT_INCLUDES}			\
-				${SPD_INCLUDES}				\
 				-Iinclude/tools_share
+endif
 
 include common/backtrace/backtrace.mk
 
@@ -500,6 +540,10 @@ CRTTOOL			?=	${CRTTOOLPATH}/cert_create${BIN_EXT}
 FIPTOOLPATH		?=	tools/fiptool
 FIPTOOL			?=	${FIPTOOLPATH}/fiptool${BIN_EXT}
 
+# Variables for use with sptool
+SPTOOLPATH		?=	tools/sptool
+SPTOOL			?=	${SPTOOLPATH}/sptool${BIN_EXT}
+
 # Variables for use with ROMLIB
 ROMLIBPATH		?=	lib/romlib
 
@@ -569,6 +613,7 @@ $(eval $(call assert_boolean,RESET_TO_BL31))
 $(eval $(call assert_boolean,SAVE_KEYS))
 $(eval $(call assert_boolean,SEPARATE_CODE_AND_RODATA))
 $(eval $(call assert_boolean,SPIN_ON_BL1_EXIT))
+$(eval $(call assert_boolean,SPM_DEPRECATED))
 $(eval $(call assert_boolean,TRUSTED_BOARD_BOOT))
 $(eval $(call assert_boolean,USE_COHERENT_MEM))
 $(eval $(call assert_boolean,USE_ROMLIB))
@@ -622,6 +667,7 @@ $(eval $(call add_define,RECLAIM_INIT_CODE))
 $(eval $(call add_define,SMCCC_MAJOR_VERSION))
 $(eval $(call add_define,SPD_${SPD}))
 $(eval $(call add_define,SPIN_ON_BL1_EXIT))
+$(eval $(call add_define,SPM_DEPRECATED))
 $(eval $(call add_define,TRUSTED_BOARD_BOOT))
 $(eval $(call add_define,USE_COHERENT_MEM))
 $(eval $(call add_define,USE_ROMLIB))
@@ -656,7 +702,7 @@ endif
 # Build targets
 ################################################################################
 
-.PHONY:	all msg_start clean realclean distclean cscope locate-checkpatch checkcodebase checkpatch fiptool fip fwu_fip certtool dtbs
+.PHONY:	all msg_start clean realclean distclean cscope locate-checkpatch checkcodebase checkpatch fiptool sptool fip fwu_fip certtool dtbs
 .SUFFIXES:
 
 all: msg_start
@@ -743,6 +789,7 @@ realclean distclean:
 	$(call SHELL_REMOVE_DIR,${BUILD_BASE})
 	$(call SHELL_DELETE_ALL, ${CURDIR}/cscope.*)
 	${Q}${MAKE} --no-print-directory -C ${FIPTOOLPATH} clean
+	${Q}${MAKE} --no-print-directory -C ${SPTOOLPATH} clean
 	${Q}${MAKE} PLAT=${PLAT} --no-print-directory -C ${CRTTOOLPATH} clean
 	${Q}${MAKE} --no-print-directory -C ${ROMLIBPATH} clean
 
@@ -823,9 +870,14 @@ fwu_fip: ${BUILD_PLAT}/${FWU_FIP_NAME}
 ${FIPTOOL}:
 	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" --no-print-directory -C ${FIPTOOLPATH}
 
+sptool: ${SPTOOL}
+.PHONY: ${SPTOOL}
+${SPTOOL}:
+	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" --no-print-directory -C ${SPTOOLPATH}
+
 .PHONY: libraries
 romlib.bin: libraries
-	${Q}${MAKE} BUILD_PLAT=${BUILD_PLAT} INCLUDES='${INCLUDES}' DEFINES='${DEFINES}' --no-print-directory -C ${ROMLIBPATH} all
+	${Q}${MAKE} PLAT_DIR=${PLAT_DIR} BUILD_PLAT=${BUILD_PLAT} INCLUDES='${INCLUDES}' DEFINES='${DEFINES}' --no-print-directory -C ${ROMLIBPATH} all
 
 cscope:
 	@echo "  CSCOPE"
@@ -862,6 +914,7 @@ help:
 	@echo "  distclean      Remove all build artifacts for all platforms"
 	@echo "  certtool       Build the Certificate generation tool"
 	@echo "  fiptool        Build the Firmware Image Package (FIP) creation tool"
+	@echo "  sptool         Build the Secure Partition Package creation tool"
 	@echo "  dtbs           Build the Device Tree Blobs (if required for the platform)"
 	@echo ""
 	@echo "Note: most build targets require PLAT to be set to a specific platform."

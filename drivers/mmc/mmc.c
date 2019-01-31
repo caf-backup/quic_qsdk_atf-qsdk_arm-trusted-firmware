@@ -6,15 +6,16 @@
 
 /* Define a simple and generic interface to access eMMC and SD-card devices. */
 
-#include <arch_helpers.h>
 #include <assert.h>
-#include <debug.h>
-#include <delay_timer.h>
 #include <errno.h>
-#include <mmc.h>
 #include <stdbool.h>
 #include <string.h>
-#include <utils.h>
+
+#include <arch_helpers.h>
+#include <common/debug.h>
+#include <drivers/delay_timer.h>
+#include <drivers/mmc.h>
+#include <lib/utils.h>
 
 #define MMC_DEFAULT_MAX_RETRIES		5
 #define SEND_OP_COND_MAX_RETRIES	100
@@ -246,6 +247,13 @@ static int mmc_fill_device_info(void)
 			return ret;
 		}
 
+		do {
+			ret = mmc_device_state();
+			if (ret < 0) {
+				return ret;
+			}
+		} while (ret != MMC_STATE_TRAN);
+
 		nb_blocks = (mmc_ext_csd[CMD_EXTCSD_SEC_CNT] << 0) |
 			    (mmc_ext_csd[CMD_EXTCSD_SEC_CNT + 1] << 8) |
 			    (mmc_ext_csd[CMD_EXTCSD_SEC_CNT + 2] << 16) |
@@ -379,7 +387,10 @@ static int mmc_send_op_cond(void)
 	int ret, n;
 	unsigned int resp_data[4];
 
-	mmc_reset_to_idle();
+	ret = mmc_reset_to_idle();
+	if (ret != 0) {
+		return ret;
+	};
 
 	for (n = 0; n < SEND_OP_COND_MAX_RETRIES; n++) {
 		ret = mmc_send_cmd(MMC_CMD(1), OCR_SECTOR_MODE |
@@ -394,7 +405,7 @@ static int mmc_send_op_cond(void)
 			return 0;
 		}
 
-		mdelay(1);
+		mdelay(10);
 	}
 
 	ERROR("CMD1 failed after %d retries\n", SEND_OP_COND_MAX_RETRIES);
@@ -409,7 +420,10 @@ static int mmc_enumerate(unsigned int clk, unsigned int bus_width)
 
 	ops->init();
 
-	mmc_reset_to_idle();
+	ret = mmc_reset_to_idle();
+	if (ret != 0) {
+		return ret;
+	};
 
 	if (mmc_dev_info->mmc_dev_type == MMC_IS_EMMC) {
 		ret = mmc_send_op_cond();

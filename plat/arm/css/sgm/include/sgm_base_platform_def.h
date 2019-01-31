@@ -7,13 +7,14 @@
 #ifndef SGM_BASE_PLATFORM_DEF_H
 #define SGM_BASE_PLATFORM_DEF_H
 
+#include <drivers/arm/tzc400.h>
+#include <drivers/arm/tzc_common.h>
+#include <plat/common/common_def.h>
+
 #include <arm_def.h>
 #include <board_css_def.h>
-#include <common_def.h>
 #include <css_def.h>
 #include <soc_css_def.h>
-#include <tzc400.h>
-#include <tzc_common.h>
 #include <v2m_def.h>
 
 /* CPU topology */
@@ -239,4 +240,8 @@
  */
 #define PLAT_ARM_MEM_PROT_ADDR		(V2M_FLASH0_BASE + \
 					 V2M_FLASH0_SIZE - V2M_FLASH_BLOCK_SIZE)
+
+/* System power domain level */
+#define CSS_SYSTEM_PWR_DMN_LVL		ARM_PWR_LVL2
+
 #endif /* SGM_BASE_PLATFORM_DEF_H */

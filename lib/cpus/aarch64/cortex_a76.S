@@ -5,13 +5,13 @@
  */
 
 #include <arch.h>
-#include <arm_arch_svc.h>
 #include <asm_macros.S>
-#include <bl_common.h>
+#include <common/bl_common.h>
 #include <context.h>
 #include <cortex_a76.h>
 #include <cpu_macros.S>
 #include <plat_macros.S>
+#include <services/arm_arch_svc.h>
 
 #if !DYNAMIC_WORKAROUND_CVE_2018_3639
 #error Cortex A76 requires DYNAMIC_WORKAROUND_CVE_2018_3639=1
@@ -208,14 +208,20 @@ endfunc cortex_a76_disable_wa_cve_2018_3639
 
 func cortex_a76_reset_func
 	mov	x19, x30
+
 #if WORKAROUND_CVE_2018_3639
+	/* If the PE implements SSBS, we don't need the dynamic workaround */
+	mrs	x0, id_aa64pfr1_el1
+	lsr	x0, x0, #ID_AA64PFR1_EL1_SSBS_SHIFT
+	and     x0, x0, #ID_AA64PFR1_EL1_SSBS_MASK
+	cbnz	x0, 1f
+
 	mrs	x0, CORTEX_A76_CPUACTLR2_EL1
 	orr	x0, x0, #CORTEX_A76_CPUACTLR2_EL1_DISABLE_LOAD_PASS_STORE
 	msr	CORTEX_A76_CPUACTLR2_EL1, x0
 	isb
-#endif
 
-#if IMAGE_BL31 && WORKAROUND_CVE_2018_3639
+#ifdef IMAGE_BL31
 	/*
 	 * The Cortex-A76 generic vectors are overwritten to use the vectors
 	 * defined above.  This is required in order to apply mitigation
@@ -224,6 +230,9 @@ func cortex_a76_reset_func
 	adr	x0, cortex_a76_wa_cve_2018_3639_a76_vbar
 	msr	vbar_el3, x0
 	isb
+#endif
+
+1:
 #endif
 
 #if ERRATA_DSU_936184
