@@ -72,7 +72,8 @@ void plat_qti_gic_init(void)
  *****************************************************************************/
 void plat_qti_gic_cpuif_enable(void)
 {
-	gicv2_cpuif_enable();
+    gicv2_cpuif_enable();
+    gicv2_set_pe_target_mask(plat_my_core_pos());
 }
 
 /******************************************************************************
