@@ -35,9 +35,9 @@
         INTR_PROP_DESC(QTISECLIB_INT_ID_VMIDMT_ERR_CFG_NONSEC, GIC_HIGHEST_SEC_PRIORITY, grp, \
                         GIC_INTR_CFG_EDGE), \
         INTR_PROP_DESC(QTISECLIB_INT_ID_XPU_SEC , GIC_HIGHEST_SEC_PRIORITY, grp, \
-                        GIC_INTR_CFG_LEVEL), \
+                        GIC_INTR_CFG_EDGE), \
 	INTR_PROP_DESC(QTISECLIB_INT_ID_XPU_NON_SEC, GIC_HIGHEST_SEC_PRIORITY, grp, \
-			GIC_INTR_CFG_LEVEL), \
+			GIC_INTR_CFG_EDGE), \
 
 /* Array of o be configured by the gic driver */
 static const interrupt_prop_t qti_interrupt_props[] = {

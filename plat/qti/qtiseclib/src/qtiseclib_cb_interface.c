@@ -76,6 +76,11 @@ int qtiseclib_cb_plat_core_pos_by_mpidr(u_register_t mpidr)
 	return plat_core_pos_by_mpidr(mpidr);
 }
 
+void qtiseclib_cb_set_interrupt_pending(unsigned int irq)
+{
+	plat_ic_set_interrupt_pending(irq);
+}
+
 unsigned int qtiseclib_cb_plat_my_cluster_pos(void)
 {
 	return plat_qti_my_cluster_pos();

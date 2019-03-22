@@ -118,4 +118,12 @@ typedef enum qtiseclib_mmap_attr_s {
 	QTISECLIB_MAP_RW_XN_DATA = 3,
 } qtiseclib_mmap_attr_t;
 
+typedef struct qtiseclib_oem_cmd_buf{
+	int magic;
+	int cmd;
+	int rsrvd1;
+	int rsrvd2;
+	int status;
+} qtiseclib_oem_cmd_buf_t;
+
 #endif /* __QTISECLIB_DEFS_H__ */

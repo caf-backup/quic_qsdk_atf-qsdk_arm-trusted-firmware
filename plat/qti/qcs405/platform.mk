@@ -84,11 +84,18 @@ CONSOLE_SOURCES		:=	drivers/console/aarch64/console.S			\
 # Prohibit using deprecated interfaces. We rely on this for this platform.
 #ERROR_DEPRECATED		:=	1
 
+#OEM Sources
+OEM_SOURCES		:= $(QTI_PLAT_PATH)/oem/oem_svc.c
 
-BL31_SOURCES		+=	${QTI_BL31_SOURCES}					\
+OEM_INCLUDES	:= -I${QTI_PLAT_PATH}/oem
+
+PLAT_INCLUDES	+= ${OEM_INCLUDES}
+
+BL31_SOURCES	+=	${QTI_BL31_SOURCES}					\
 				${PSCI_SOURCES}						\
 				${GIC_SOURCES}						\
 				${CONSOLE_SOURCES}					\
+				${OEM_SOURCES}					\
 
 
 LIB_QTI_PATH	:=	${QTI_PLAT_PATH}/qtiseclib/lib/${CHIPSET}
