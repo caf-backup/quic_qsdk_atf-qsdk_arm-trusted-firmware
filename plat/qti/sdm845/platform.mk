@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
-# Copyright (c) 2018, The Linux Foundation. All rights reserved.
+# Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -40,7 +40,7 @@ QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc/${CHIPSET}			\
 
-QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_cpu.S		\
+QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo.S		\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo3_silver.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo3_gold.S	\
