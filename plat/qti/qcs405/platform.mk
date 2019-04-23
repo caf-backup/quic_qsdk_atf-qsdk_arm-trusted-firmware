@@ -31,6 +31,9 @@ RESET_TO_BL31			:=	0
 MULTI_CONSOLE_API		:=	1
 GICV2_G0_FOR_EL3               := 1
 
+#cluster level sleep
+ENABLE_CLUSTER_COHERENCY	:=      1
+
 # Enable stack protector.
 ENABLE_STACK_PROTECTOR := strong
 

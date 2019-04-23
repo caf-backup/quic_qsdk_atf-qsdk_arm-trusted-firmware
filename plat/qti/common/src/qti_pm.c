@@ -11,7 +11,7 @@
 #include <qtiseclib_interface.h>
 #include <common/debug.h>
 #include "assert.h"
-
+//#include <platform_def.h>
 /*******************************************************************************
  * PLATFORM FUNCTIONS
  ******************************************************************************/
@@ -65,10 +65,12 @@ static void qti_node_suspend_finish(const psci_power_state_t * target_state)
 __dead2 void qti_domain_power_down_wfi(const psci_power_state_t * target_state)
 {
 	/* CPU specific cache maintenance before collapse. */
-	qti_cpu_cm_at_pc();
+	qti_cpu_cm_at_pc(target_state->pwr_domain_state[1]);
 
 	/* For now just do WFI - add any target specific handling if needed */
-
+#ifdef ENABLE_CLUSTER_COHERENCY
+	qtiseclib_disable_cluster_coherency(target_state->pwr_domain_state[1]);
+#endif
 	__asm volatile ("dsb sy \n"
 			"wfi");
 
