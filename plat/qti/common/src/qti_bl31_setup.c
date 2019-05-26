@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -106,12 +106,15 @@ void bl31_early_platform_setup(qti_bl31_params_t * from_bl2,
 	 * Tell BL31 where the non-trusted software image
 	 * is located and the entry state information
 	 */
+	uint64_t vboot_base_addr = 0;
 	bl33_image_ep_info = *from_bl2->bl33_ep_info;
 	SET_SECURITY_STATE(bl33_image_ep_info.h.attr, NON_SECURE);
 
 	g_qti_cpu_cntfrq = read_cntfrq_el0();
 
 	params_early_setup(plat_params_from_bl2);
+	coreboot_get_dev_data_addr(&vboot_base_addr);
+	qtiseclib_save_dev_data_addr((void *)vboot_base_addr);
 
 #if COREBOOT
 	if (coreboot_serial.baseaddr) {

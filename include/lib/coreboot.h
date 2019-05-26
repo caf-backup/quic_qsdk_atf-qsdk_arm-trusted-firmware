@@ -20,5 +20,5 @@ typedef struct {
 extern coreboot_serial_t coreboot_serial;
 
 void coreboot_table_setup(void *base);
-
+void coreboot_get_dev_data_addr(uint64_t *addr);
 #endif /* COREBOOT_H */

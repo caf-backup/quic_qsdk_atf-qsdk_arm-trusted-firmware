@@ -47,7 +47,7 @@ QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
 QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/a53.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_a53.S \
-				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_uart_console.S	\
+				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_uart2_console.S	\
 				$(QTI_PLAT_PATH)/common/src/qti_stack_protector.c	\
 				$(QTI_PLAT_PATH)/common/src/qti_common.c		\
 				$(QTI_PLAT_PATH)/common/src/qti_bl31_setup.c		\

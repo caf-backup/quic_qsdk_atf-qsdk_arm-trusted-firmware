@@ -20,6 +20,12 @@
  */
 
 typedef struct {
+	/* tag and size are already in cb_entry_t, so omit them here */
+	uint64_t range_start;
+	uint32_t range_size;
+} lb_range_t;
+
+typedef struct {
 	char signature[4];
 	uint32_t header_bytes;
 	uint32_t header_checksum;
@@ -31,18 +37,21 @@ typedef struct {
 typedef enum {
 	CB_TAG_SERIAL = 0xf,
 	CB_TAG_CBMEM_CONSOLE = 0x17,
+	CB_TAG_VBOOT_HANDOFF = 0x20,
 } cb_tag_t;
 
-typedef struct {
+coreboot_serial_t coreboot_serial;
+static uint64_t vboot_handoff_base_addr;
+
+typedef struct __attribute__((__packed__)){
 	uint32_t tag;
 	uint32_t size;
 	union {
 		coreboot_serial_t serial;
 		uint64_t uint64;
+		lb_range_t range;
 	};
-} cb_entry_t;
-
-coreboot_serial_t coreboot_serial;
+}cb_entry_t;
 
 /*
  * The coreboot table is parsed before the MMU is enabled (i.e. with strongly
@@ -59,6 +68,7 @@ static uint32_t read_le32(uint32_t *p)
 	       mmio_read_8(addr + 2) << 16	|
 	       mmio_read_8(addr + 3) << 24;
 }
+
 static uint64_t read_le64(uint64_t *p)
 {
 	return read_le32((void *)p) | (uint64_t)read_le32((void *)p + 4) << 32;
@@ -84,6 +94,18 @@ static void setup_cbmem_console(uintptr_t baseaddr)
 	console_set_scope(&console.console, CONSOLE_FLAG_BOOT |
 					    CONSOLE_FLAG_RUNTIME |
 					    CONSOLE_FLAG_CRASH);
+}
+
+static void setup_vboot_handoff_info(uint64_t addr)
+{
+	vboot_handoff_base_addr = addr;
+}
+
+void coreboot_get_dev_data_addr(uint64_t *addr)
+{
+	if ( addr != NULL ) {
+		*addr = vboot_handoff_base_addr;
+	}
 }
 
 void coreboot_table_setup(void *base)
@@ -113,6 +135,11 @@ void coreboot_table_setup(void *base)
 			break;
 		case CB_TAG_CBMEM_CONSOLE:
 			setup_cbmem_console(read_le64(&entry->uint64));
+			break;
+		case CB_TAG_VBOOT_HANDOFF: ;
+			expand_and_mmap((uintptr_t)entry, sizeof(sizeof(cb_entry_t)));
+			expand_and_mmap((uintptr_t)entry->range.range_start, sizeof(sizeof(cb_entry_t)));
+			setup_vboot_handoff_info(entry->range.range_start);
 			break;
 		default:
 			/* There are many tags TF doesn't need to care about. */
