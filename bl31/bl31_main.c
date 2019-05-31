@@ -138,14 +138,14 @@ void bl31_main(void)
 	 * corresponding to the desired security state after the next ERET.
 	 */
 	bl31_prepare_next_image_entry();
-
+#if !QTI_6018_PLATFORM
 	console_flush();
-
 	/*
 	 * Perform any platform specific runtime setup prior to cold boot exit
 	 * from BL31
 	 */
 	bl31_plat_runtime_setup();
+#endif
 }
 
 /*******************************************************************************

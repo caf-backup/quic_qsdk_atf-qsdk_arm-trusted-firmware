@@ -272,7 +272,8 @@ void psci_arch_setup(void)
 {
 #if (ARM_ARCH_MAJOR > 7) || defined(ARMV7_SUPPORTS_GENERIC_TIMER)
 	/* Program the counter frequency */
-	write_cntfrq_el0(plat_get_syscnt_freq2());
+	if (plat_get_syscnt_freq2())
+		write_cntfrq_el0(plat_get_syscnt_freq2());
 #endif
 
 	/* Initialize the cpu_ops pointer. */

@@ -67,7 +67,7 @@
  *   - SCP TZC DRAM: If present, DRAM reserved for SCP use
  *   - AP TZC DRAM: The remaining TZC secured DRAM reserved for AP use
  */
-#define ARM_TZC_DRAM1_SIZE		UL(0x01000000)
+#define ARM_DRAM1_BASE			ULL(0x40000000)
 
 #define ARM_SCP_TZC_DRAM1_BASE		(ARM_DRAM1_BASE +		\
 					 ARM_DRAM1_SIZE -		\
