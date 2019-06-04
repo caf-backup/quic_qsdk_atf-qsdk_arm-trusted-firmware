@@ -48,6 +48,7 @@ void qtiseclib_kryo3_silver_reset_asm(void);
  * C Api's
  * -------------------------------------------------------------------------*/
 void qtiseclib_bl31_platform_setup(void);
+void qtiseclib_get_entrypoint_param(uint64_t, entry_point_info_t *);
 void qtiseclib_invoke_isr(uint32_t irq, void *handle);
 void qtiseclib_panic(void);
 int qtiseclib_prng_get_data(uint8_t *out, uint32_t out_len);
