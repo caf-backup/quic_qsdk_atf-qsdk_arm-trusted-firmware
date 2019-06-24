@@ -71,10 +71,45 @@ for it to specify which errata workarounds should be enabled or not.
 The value of the build flags is 0 by default, that is, disabled. A value of 1
 will enable it.
 
+For Cortex-A9, the following errata build flags are defined :
+
+-  ``ERRATA_A9_794073``: This applies errata 794073 workaround to Cortex-A9
+   CPU. This needs to be enabled for all revisions of the CPU.
+
+For Cortex-A15, the following errata build flags are defined :
+
+-  ``ERRATA_A15_816470``: This applies errata 816470 workaround to Cortex-A15
+   CPU. This needs to be enabled only for revision >= r3p0 of the CPU.
+
+-  ``ERRATA_A15_827671``: This applies errata 827671 workaround to Cortex-A15
+   CPU. This needs to be enabled only for revision >= r3p0 of the CPU.
+
+For Cortex-A17, the following errata build flags are defined :
+
+-  ``ERRATA_A17_852421``: This applies errata 852421 workaround to Cortex-A17
+   CPU. This needs to be enabled only for revision <= r1p2 of the CPU.
+
+-  ``ERRATA_A17_852423``: This applies errata 852423 workaround to Cortex-A17
+   CPU. This needs to be enabled only for revision <= r1p2 of the CPU.
+
+For Cortex-A35, the following errata build flags are defined :
+
+-  ``ERRATA_A35_855472``: This applies errata 855472 workaround to Cortex-A35
+   CPUs. This needs to be enabled only for revision r0p0 of Cortex-A35.
+
 For Cortex-A53, the following errata build flags are defined :
+
+-  ``ERRATA_A53_819472``: This applies errata 819472 workaround to all
+   CPUs. This needs to be enabled only for revision <= r0p1 of Cortex-A53.
+
+-  ``ERRATA_A53_824069``: This applies errata 824069 workaround to all
+   CPUs. This needs to be enabled only for revision <= r0p2 of Cortex-A53.
 
 -  ``ERRATA_A53_826319``: This applies errata 826319 workaround to Cortex-A53
    CPU. This needs to be enabled only for revision <= r0p2 of the CPU.
+
+-  ``ERRATA_A53_827319``: This applies errata 827319 workaround to all
+   CPUs. This needs to be enabled only for revision <= r0p2 of Cortex-A53.
 
 -  ``ERRATA_A53_835769``: This applies erratum 835769 workaround at compile and
    link time to Cortex-A53 CPU. This needs to be enabled for some variants of
@@ -93,9 +128,26 @@ For Cortex-A53, the following errata build flags are defined :
 -  ``ERRATA_A53_855873``: This applies errata 855873 workaround to Cortex-A53
    CPUs. Though the erratum is present in every revision of the CPU,
    this workaround is only applied to CPUs from r0p3 onwards, which feature
-   a chicken bit in CPUACTLR\_EL1 to enable a hardware workaround.
+   a chicken bit in CPUACTLR_EL1 to enable a hardware workaround.
    Earlier revisions of the CPU have other errata which require the same
    workaround in software, so they should be covered anyway.
+
+For Cortex-A55, the following errata build flags are defined :
+
+-  ``ERRATA_A55_768277``: This applies errata 768277 workaround to Cortex-A55
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A55_778703``: This applies errata 778703 workaround to Cortex-A55
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A55_798797``: This applies errata 798797 workaround to Cortex-A55
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A55_846532``: This applies errata 846532 workaround to Cortex-A55
+   CPU. This needs to be enabled only for revision <= r0p1 of the CPU.
+
+-  ``ERRATA_A55_903758``: This applies errata 903758 workaround to Cortex-A55
+   CPU. This needs to be enabled only for revision <= r0p1 of the CPU.
 
 For Cortex-A57, the following errata build flags are defined :
 
@@ -107,6 +159,12 @@ For Cortex-A57, the following errata build flags are defined :
 
 -  ``ERRATA_A57_813420``: This applies errata 813420 workaround to Cortex-A57
    CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A57_814670``: This applies errata 814670 workaround to Cortex-A57
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A57_817169``: This applies errata 817169 workaround to Cortex-A57
+   CPU. This needs to be enabled only for revision <= r0p1 of the CPU.
 
 -  ``ERRATA_A57_826974``: This applies errata 826974 workaround to Cortex-A57
    CPU. This needs to be enabled only for revision <= r1p1 of the CPU.
@@ -132,6 +190,45 @@ For Cortex-A72, the following errata build flags are defined :
 -  ``ERRATA_A72_859971``: This applies errata 859971 workaround to Cortex-A72
    CPU. This needs to be enabled only for revision <= r0p3 of the CPU.
 
+For Cortex-A73, the following errata build flags are defined :
+
+-  ``ERRATA_A73_852427``: This applies errata 852427 workaround to Cortex-A73
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A73_855423``: This applies errata 855423 workaround to Cortex-A73
+   CPU. This needs to be enabled only for revision <= r0p1 of the CPU.
+
+For Cortex-A75, the following errata build flags are defined :
+
+-  ``ERRATA_A75_764081``: This applies errata 764081 workaround to Cortex-A75
+   CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+-  ``ERRATA_A75_790748``: This applies errata 790748 workaround to Cortex-A75
+    CPU. This needs to be enabled only for revision r0p0 of the CPU.
+
+For Cortex-A76, the following errata build flags are defined :
+
+-  ``ERRATA_A76_1073348``: This applies errata 1073348 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r1p0 of the CPU.
+
+-  ``ERRATA_A76_1130799``: This applies errata 1130799 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r2p0 of the CPU.
+
+-  ``ERRATA_A76_1220197``: This applies errata 1220197 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r2p0 of the CPU.
+
+-  ``ERRATA_A76_1257314``: This applies errata 1257314 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r3p0 of the CPU.
+
+-  ``ERRATA_A76_1262606``: This applies errata 1262606 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r3p0 of the CPU.
+
+-  ``ERRATA_A76_1262888``: This applies errata 1262888 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r3p0 of the CPU.
+
+-  ``ERRATA_A76_1275112``: This applies errata 1275112 workaround to Cortex-A76
+   CPU. This needs to be enabled only for revision <= r3p0 of the CPU.
+
 DSU Errata Workarounds
 ----------------------
 
@@ -147,6 +244,11 @@ have the format ``ERRATA_DSU_<ID>``. The implementation and application logic
 of DSU errata workarounds are similar to `CPU errata workarounds`_.
 
 For DSU errata, the following build flags are defined:
+
+-  ``ERRATA_DSU_798953``: This applies errata 798953 workaround for the
+   affected DSU configurations. This errata applies only for those DSUs that
+   revision is r0p0 (on r0p1 it is fixed). However, please note that this
+   workaround results in increased DSU power consumption on idle.
 
 -  ``ERRATA_DSU_936184``: This applies errata 936184 workaround for the
    affected DSU configurations. This errata applies only for those DSUs that
@@ -185,12 +287,12 @@ architecture that can be enabled by the platform as desired.
 
 --------------
 
-*Copyright (c) 2014-2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2014-2019, Arm Limited and Contributors. All rights reserved.*
 
 .. _CVE-2017-5715: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5715
 .. _CVE-2018-3639: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-3639
-.. _Cortex-A53 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm048406/Cortex_A53_MPCore_Software_Developers_Errata_Notice.pdf
-.. _Cortex-A57 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm049219/cortex_a57_mpcore_software_developers_errata_notice.pdf
+.. _Cortex-A53 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm048406/index.html
+.. _Cortex-A57 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm049219/index.html
 .. _Cortex-A72 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm012079/index.html
 .. _Firmware Design guide: firmware-design.rst
 .. _Cortex-A57 Software Optimization Guide: http://infocenter.arm.com/help/topic/com.arm.doc.uan0015b/Cortex_A57_Software_Optimization_Guide_external.pdf

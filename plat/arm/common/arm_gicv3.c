@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,10 +9,8 @@
 #include <common/interrupt_props.h>
 #include <drivers/arm/gicv3.h>
 #include <lib/utils.h>
+#include <plat/arm/common/plat_arm.h>
 #include <plat/common/platform.h>
-
-#include <arm_def.h>
-#include <plat_arm.h>
 
 /******************************************************************************
  * The following functions are defined as weak to allow a platform to override
@@ -152,7 +150,7 @@ void plat_arm_gic_save(void)
 	 * If an ITS is available, save its context before
 	 * the Redistributor using:
 	 * gicv3_its_save_disable(gits_base, &its_ctx[i])
-	 * Additionnaly, an implementation-defined sequence may
+	 * Additionally, an implementation-defined sequence may
 	 * be required to save the whole ITS state.
 	 */
 

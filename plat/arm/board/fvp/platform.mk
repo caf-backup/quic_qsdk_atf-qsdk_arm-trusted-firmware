@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
+# Copyright (c) 2013-2019, ARM Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -95,21 +95,32 @@ PLAT_BL_COMMON_SOURCES	:=	plat/arm/board/fvp/fvp_common.c
 FVP_CPU_LIBS		:=	lib/cpus/${ARCH}/aem_generic.S
 
 ifeq (${ARCH}, aarch64)
-FVP_CPU_LIBS		+=	lib/cpus/aarch64/cortex_a35.S			\
+
+# select a different set of CPU files, depending on whether we compile with
+# hardware assisted coherency configurations or not
+ifeq (${HW_ASSISTED_COHERENCY}, 0)
+	FVP_CPU_LIBS	+=	lib/cpus/aarch64/cortex_a35.S			\
 				lib/cpus/aarch64/cortex_a53.S			\
-				lib/cpus/aarch64/cortex_a55.S			\
 				lib/cpus/aarch64/cortex_a57.S			\
 				lib/cpus/aarch64/cortex_a72.S			\
-				lib/cpus/aarch64/cortex_a73.S			\
+				lib/cpus/aarch64/cortex_a73.S
+else
+	FVP_CPU_LIBS	+=	lib/cpus/aarch64/cortex_a55.S			\
 				lib/cpus/aarch64/cortex_a75.S			\
 				lib/cpus/aarch64/cortex_a76.S			\
-				lib/cpus/aarch64/cortex_ares.S			\
-				lib/cpus/aarch64/cortex_deimos.S
+				lib/cpus/aarch64/cortex_a76ae.S			\
+				lib/cpus/aarch64/neoverse_n1.S			\
+				lib/cpus/aarch64/neoverse_e1.S			\
+				lib/cpus/aarch64/cortex_deimos.S		\
+				lib/cpus/aarch64/neoverse_zeus.S
+endif
+
 else
 FVP_CPU_LIBS		+=	lib/cpus/aarch32/cortex_a32.S
 endif
 
-BL1_SOURCES		+=	drivers/io/io_semihosting.c			\
+BL1_SOURCES		+=	drivers/arm/sp805/sp805.c			\
+				drivers/io/io_semihosting.c			\
 				lib/semihosting/semihosting.c			\
 				lib/semihosting/${ARCH}/semihosting_call.S	\
 				plat/arm/board/fvp/${ARCH}/fvp_helpers.S	\
@@ -146,14 +157,14 @@ endif
 BL2U_SOURCES		+=	plat/arm/board/fvp/fvp_bl2u_setup.c		\
 				${FVP_SECURITY_SOURCES}
 
-BL31_SOURCES		+=	drivers/arm/smmu/smmu_v3.c			\
+BL31_SOURCES		+=	drivers/arm/fvp/fvp_pwrc.c			\
+				drivers/arm/smmu/smmu_v3.c			\
 				drivers/cfi/v2m/v2m_flash.c			\
 				lib/utils/mem_region.c				\
 				plat/arm/board/fvp/fvp_bl31_setup.c		\
 				plat/arm/board/fvp/fvp_pm.c			\
 				plat/arm/board/fvp/fvp_topology.c		\
 				plat/arm/board/fvp/aarch64/fvp_helpers.S	\
-				plat/arm/board/fvp/drivers/pwrc/fvp_pwrc.c	\
 				plat/arm/common/arm_nor_psci_mem_protect.c	\
 				${FVP_CPU_LIBS}					\
 				${FVP_GIC_SOURCES}				\
@@ -213,10 +224,13 @@ ENABLE_PIE		:=	1
 endif
 
 ifeq (${ENABLE_AMU},1)
-BL31_SOURCES		+=	lib/cpus/aarch64/cortex_a75_pubsub.c	\
-				lib/cpus/aarch64/cortex_ares_pubsub.c	\
-				lib/cpus/aarch64/cpuamu.c		\
+BL31_SOURCES		+=	lib/cpus/aarch64/cpuamu.c		\
 				lib/cpus/aarch64/cpuamu_helpers.S
+
+ifeq (${HW_ASSISTED_COHERENCY}, 1)
+BL31_SOURCES		+=	lib/cpus/aarch64/cortex_a75_pubsub.c	\
+				lib/cpus/aarch64/neoverse_n1_pubsub.c
+endif
 endif
 
 ifeq (${RAS_EXTENSION},1)
@@ -229,6 +243,25 @@ endif
 
 ifeq (${ARCH},aarch32)
     NEED_BL32 := yes
+endif
+
+# Enable the dynamic translation tables library.
+ifeq (${ARCH},aarch32)
+    ifeq (${RESET_TO_SP_MIN},1)
+        BL32_CFLAGS	+=	-DPLAT_XLAT_TABLES_DYNAMIC=1
+    endif
+else # if AArch64
+    ifeq (${RESET_TO_BL31},1)
+        BL31_CFLAGS	+=	-DPLAT_XLAT_TABLES_DYNAMIC=1
+    endif
+    ifeq (${ENABLE_SPM},1)
+        ifeq (${SPM_MM},0)
+            BL31_CFLAGS	+=	-DPLAT_XLAT_TABLES_DYNAMIC=1
+        endif
+    endif
+    ifeq (${SPD},trusty)
+        BL31_CFLAGS	+=	-DPLAT_XLAT_TABLES_DYNAMIC=1
+    endif
 endif
 
 # Add support for platform supplied linker script for BL31 build

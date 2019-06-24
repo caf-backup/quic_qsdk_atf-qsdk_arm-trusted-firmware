@@ -22,6 +22,9 @@ ERRATA_A53_836870	:=	1
 ERRATA_A53_843419	:=	1
 ERRATA_A53_855873	:=	1
 
+# Split out RO data into a non-executable section
+SEPARATE_CODE_AND_RODATA :=    1
+
 # Leave the caches enabled on core powerdown path
 TI_AM65X_WORKAROUND	:=	1
 $(eval $(call add_define,TI_AM65X_WORKAROUND))
@@ -29,6 +32,10 @@ $(eval $(call add_define,TI_AM65X_WORKAROUND))
 MULTI_CONSOLE_API	:=	1
 TI_16550_MDR_QUIRK	:=	1
 $(eval $(call add_define,TI_16550_MDR_QUIRK))
+
+# Allow customizing the UART baud rate
+K3_USART_BAUD		:=	115200
+$(eval $(call add_define,K3_USART_BAUD))
 
 # Libraries
 include lib/xlat_tables_v2/xlat_tables.mk

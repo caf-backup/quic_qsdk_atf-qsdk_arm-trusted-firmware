@@ -11,11 +11,11 @@
 #include <string.h>
 #include <common/debug.h>
 #include <context.h>
-#include <xlat_tables_v2.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
 #include <common/runtime_svc.h>
-#include <uuid.h>
+#include <tools_share/uuid.h>
 #include <smccc_helpers.h>
-#include <utils_def.h>
+#include <lib/utils_def.h>
 #include <plat_qti.h>
 #include <qti_secure_io_cfg.h>
 #include <qtiseclib_interface.h>

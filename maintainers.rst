@@ -28,11 +28,19 @@ Allwinner ARMv8 platform port
 
 Amlogic Meson S905 (GXBB) platform port
 ---------------------------------------
-:M: Antonio Niño Díaz <antonio.ninodiaz@arm.com>
-:G: `antonio-nino-diaz-arm`_
+:M: Andre Przywara <andre.przywara@arm.com>
+:G: `Andre-ARM`_
 :F: docs/plat/meson-gxbb.rst
 :F: drivers/meson/
 :F: plat/meson/gxbb/
+
+Amlogic Meson S905x (GXL) platform port
+---------------------------------------
+:M: Remi Pommarel <repk@triplefau.lt>
+:G: `remi-triplefault`_
+:F: docs/plat/meson-gxl.rst
+:F: drivers/meson/gxl
+:F: plat/meson/gxl/
 
 Armv7-A architecture port
 -------------------------
@@ -43,6 +51,8 @@ Arm System Guidance for Infrastructure / Mobile FVP platforms
 -------------------------------------------------------------
 :M: Nariman Poushin <nariman.poushin@linaro.org>
 :G: `npoushin`_
+:M: Thomas Abraham <thomas.abraham@arm.com>
+:G: `thomas-arm`_
 :F: plat/arm/css/sgi/
 :F: plat/arm/css/sgm/
 :F: plat/arm/board/sgi575/
@@ -92,6 +102,12 @@ HiSilicon Poplar platform port
 :G: `shawnguo2`_
 :F: docs/plat/poplar.rst
 :F: plat/hisilicon/poplar/
+
+Intel SocFPGA platform ports
+----------------------------
+:M: Tien Hock Loh <tien.hock.loh@intel.com>
+:G: `thloh85-intel`
+:F: plat/intel/soc
 
 MediaTek platform ports
 -----------------------
@@ -167,15 +183,19 @@ QEMU platform port
 
 Raspberry Pi 3 platform port
 ----------------------------
-:M: Antonio Niño Díaz <antonio.ninodiaz@arm.com>
-:G: `antonio-nino-diaz-arm`_
+:M: Ying-Chun Liu (PaulLiu) <paul.liu@linaro.org>
+:G: `grandpaul`_
 :F: docs/plat/rpi3.rst
 :F: plat/rpi3/
+:F: drivers/rpi3/
+:F: include/drivers/rpi3/
 
 Renesas rcar-gen3 platform port
 -------------------------------
 :M: Jorge Ramirez-Ortiz  <jramirez@baylibre.com>
 :G: `ldts`_
+:M: Marek Vasut <marek.vasut@gmail.com>
+:G: `marex`_
 :F: docs/plat/rcar-gen3.rst
 :F: plat/renesas/rcar
 :F: drivers/renesas/rcar
@@ -186,6 +206,8 @@ RockChip platform port
 :M: Tony Xie <tony.xie@rock-chips.com>
 :G: `TonyXie06`_
 :G: `rockchip-linux`_
+:M: Heiko Stuebner <heiko@sntech.de>
+:G: `mmind`_
 :F: plat/rockchip/
 
 STM32MP1 platform port
@@ -240,7 +262,6 @@ Xilinx platform port
 
 .. _Andre-ARM: https://github.com/Andre-ARM
 .. _Anson-Huang: https://github.com/Anson-Huang
-.. _antonio-nino-diaz-arm: https://github.com/antonio-nino-diaz-arm
 .. _bryanodonoghue: https://github.com/bryanodonoghue
 .. _b49020: https://github.com/b49020
 .. _danh-arm: https://github.com/danh-arm
@@ -251,17 +272,23 @@ Xilinx platform port
 .. _JackyBai: https://github.com/JackyBai
 .. _jenswi-linaro: https://github.com/jenswi-linaro
 .. _ldts: https://github.com/ldts
+.. _marex: https://github.com/marex
 .. _niej: https://github.com/niej
 .. _kostapr: https://github.com/kostapr
 .. _masahir0y: https://github.com/masahir0y
+.. _mmind: https://github.com/mmind
 .. _mtk09422: https://github.com/mtk09422
 .. _npoushin: https://github.com/npoushin
 .. _qoriq-open-source: https://github.com/qoriq-open-source
+.. _remi-triplefault: https://github.com/repk
 .. _rockchip-linux: https://github.com/rockchip-linux
 .. _shawnguo2: https://github.com/shawnguo2
 .. _sivadur: https://github.com/sivadur
 .. _smaeul: https://github.com/smaeul
 .. _soby-mathew: https://github.com/soby-mathew
+.. _thomas-arm: https://github.com/thomas-arm
 .. _TonyXie06: https://github.com/TonyXie06
 .. _vwadekar: https://github.com/vwadekar
 .. _Yann-lms: https://github.com/Yann-lms
+.. _grandpaul: https://github.com/grandpaul
+.. _jwerner-chromium: https://github.com/jwerner-chromium

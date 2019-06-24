@@ -87,12 +87,13 @@ static inline void _op ## _type(uint64_t v)		\
  * TLB maintenance accessor prototypes
  ******************************************************************************/
 
-#if ERRATA_A57_813419
+#if ERRATA_A57_813419 || ERRATA_A76_1286807
 /*
  * Define function for TLBI instruction with type specifier that implements
- * the workaround for errata 813419 of Cortex-A57.
+ * the workaround for errata 813419 of Cortex-A57 or errata 1286807 of
+ * Cortex-A76.
  */
-#define DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_FUNC(_type)\
+#define DEFINE_TLBIOP_ERRATA_TYPE_FUNC(_type)\
 static inline void tlbi ## _type(void)			\
 {							\
 	__asm__("tlbi " #_type "\n"			\
@@ -102,9 +103,10 @@ static inline void tlbi ## _type(void)			\
 
 /*
  * Define function for TLBI instruction with register parameter that implements
- * the workaround for errata 813419 of Cortex-A57.
+ * the workaround for errata 813419 of Cortex-A57 or errata 1286807 of
+ * Cortex-A76.
  */
-#define DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_PARAM_FUNC(_type)	\
+#define DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(_type)	\
 static inline void tlbi ## _type(uint64_t v)			\
 {								\
 	__asm__("tlbi " #_type ", %0\n"				\
@@ -113,27 +115,63 @@ static inline void tlbi ## _type(uint64_t v)			\
 }
 #endif /* ERRATA_A57_813419 */
 
+#if ERRATA_A53_819472 || ERRATA_A53_824069 || ERRATA_A53_827319
+/*
+ * Define function for DC instruction with register parameter that enables
+ * the workaround for errata 819472, 824069 and 827319 of Cortex-A53.
+ */
+#define DEFINE_DCOP_ERRATA_A53_TYPE_PARAM_FUNC(_name, _type)	\
+static inline void dc ## _name(uint64_t v)			\
+{								\
+	__asm__("dc " #_type ", %0" : : "r" (v));		\
+}
+#endif /* ERRATA_A53_819472 || ERRATA_A53_824069 || ERRATA_A53_827319 */
+
+#if ERRATA_A57_813419
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle1)
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle1is)
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle2)
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle2is)
-#if ERRATA_A57_813419
-DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_FUNC(alle3)
-DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_FUNC(alle3is)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle3)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle3is)
+DEFINE_SYSOP_TYPE_FUNC(tlbi, vmalle1)
+#elif ERRATA_A76_1286807
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle1)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle1is)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle2)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle2is)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle3)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(alle3is)
+DEFINE_TLBIOP_ERRATA_TYPE_FUNC(vmalle1)
 #else
+DEFINE_SYSOP_TYPE_FUNC(tlbi, alle1)
+DEFINE_SYSOP_TYPE_FUNC(tlbi, alle1is)
+DEFINE_SYSOP_TYPE_FUNC(tlbi, alle2)
+DEFINE_SYSOP_TYPE_FUNC(tlbi, alle2is)
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle3)
 DEFINE_SYSOP_TYPE_FUNC(tlbi, alle3is)
-#endif
 DEFINE_SYSOP_TYPE_FUNC(tlbi, vmalle1)
+#endif
 
+#if ERRATA_A57_813419
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vaae1is)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vaale1is)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vae2is)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vale2is)
-#if ERRATA_A57_813419
-DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_PARAM_FUNC(vae3is)
-DEFINE_TLBIOP_ERRATA_A57_813419_TYPE_PARAM_FUNC(vale3is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vae3is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vale3is)
+#elif ERRATA_A76_1286807
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vaae1is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vaale1is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vae2is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vale2is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vae3is)
+DEFINE_TLBIOP_ERRATA_TYPE_PARAM_FUNC(vale3is)
 #else
+DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vaae1is)
+DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vaale1is)
+DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vae2is)
+DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vale2is)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vae3is)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vale3is)
 #endif
@@ -143,11 +181,23 @@ DEFINE_SYSOP_TYPE_PARAM_FUNC(tlbi, vale3is)
  ******************************************************************************/
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, isw)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, cisw)
+#if ERRATA_A53_827319
+DEFINE_DCOP_ERRATA_A53_TYPE_PARAM_FUNC(csw, cisw)
+#else
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, csw)
+#endif
+#if ERRATA_A53_819472 || ERRATA_A53_824069 || ERRATA_A53_827319
+DEFINE_DCOP_ERRATA_A53_TYPE_PARAM_FUNC(cvac, civac)
+#else
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, cvac)
+#endif
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, ivac)
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, civac)
+#if ERRATA_A53_819472 || ERRATA_A53_824069 || ERRATA_A53_827319
+DEFINE_DCOP_ERRATA_A53_TYPE_PARAM_FUNC(cvau, civac)
+#else
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, cvau)
+#endif
 DEFINE_SYSOP_TYPE_PARAM_FUNC(dc, zva)
 
 /*******************************************************************************
@@ -184,7 +234,9 @@ DEFINE_SYSREG_RW_FUNCS(par_el1)
 DEFINE_SYSREG_READ_FUNC(id_pfr1_el1)
 DEFINE_SYSREG_READ_FUNC(id_aa64isar1_el1)
 DEFINE_SYSREG_READ_FUNC(id_aa64pfr0_el1)
+DEFINE_SYSREG_READ_FUNC(id_aa64pfr1_el1)
 DEFINE_SYSREG_READ_FUNC(id_aa64dfr0_el1)
+DEFINE_SYSREG_READ_FUNC(id_afr0_el1)
 DEFINE_SYSREG_READ_FUNC(CurrentEl)
 DEFINE_SYSREG_READ_FUNC(ctr_el0)
 DEFINE_SYSREG_RW_FUNCS(daif)
@@ -284,13 +336,6 @@ static inline void disable_debug_exceptions(void)
 	isb();
 }
 
-#if !ERROR_DEPRECATED
-uint32_t get_afflvl_shift(uint32_t);
-uint32_t mpidr_mask_lower_afflvls(uint64_t, uint32_t);
-
-void __dead2 eret(uint64_t x0, uint64_t x1, uint64_t x2, uint64_t x3,
-		  uint64_t x4, uint64_t x5, uint64_t x6, uint64_t x7);
-#endif
 void __dead2 smc(uint64_t x0, uint64_t x1, uint64_t x2, uint64_t x3,
 		 uint64_t x4, uint64_t x5, uint64_t x6, uint64_t x7);
 
@@ -453,7 +498,8 @@ DEFINE_RENAME_SYSREG_READ_FUNC(erxmisc1_el1, ERXMISC1_EL1)
 DEFINE_RENAME_SYSREG_READ_FUNC(id_aa64mmfr2_el1, ID_AA64MMFR2_EL1)
 
 /* Armv8.3 Pointer Authentication Registers */
-DEFINE_RENAME_SYSREG_RW_FUNCS(apgakeylo_el1, APGAKeyLo_EL1)
+DEFINE_RENAME_SYSREG_RW_FUNCS(apiakeyhi_el1, APIAKeyHi_EL1)
+DEFINE_RENAME_SYSREG_RW_FUNCS(apiakeylo_el1, APIAKeyLo_EL1)
 
 #define IS_IN_EL(x) \
 	(GET_EL(read_CurrentEl()) == MODE_EL##x)
@@ -480,10 +526,6 @@ static inline uint64_t el_implemented(unsigned int el)
 		return (read_id_aa64pfr0_el1() >> shift) & ID_AA64PFR0_ELX_MASK;
 	}
 }
-
-#if !ERROR_DEPRECATED
-#define EL_IMPLEMENTED(_el)	el_implemented(_el)
-#endif
 
 /* Previously defined accesor functions with incomplete register names  */
 

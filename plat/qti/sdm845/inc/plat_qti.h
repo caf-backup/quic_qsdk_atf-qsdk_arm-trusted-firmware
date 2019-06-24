@@ -8,11 +8,11 @@
 #ifndef __PLAT_QTI_H__
 #define __PLAT_QTI_H__
 
-#include <bl_common.h>
-#include <cassert.h>
-#include <cpu_data.h>
+#include <common/bl_common.h>
+#include <lib/cassert.h>
+#include <lib/el3_runtime/cpu_data.h>
 #include <stdint.h>
-#include <xlat_tables_v2.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
 
 /*
  * Utility functions common to QTI platforms

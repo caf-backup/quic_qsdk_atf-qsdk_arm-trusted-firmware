@@ -7,21 +7,22 @@
 #ifndef PLATFORM_DEF_H
 #define PLATFORM_DEF_H
 
-#include <arm_def.h>
-#include <css_def.h>
+#include <plat/arm/board/common/v2m_def.h>
+#include <plat/arm/common/arm_def.h>
+#include <plat/arm/css/common/css_def.h>
 
 /* UART related constants */
 #define PLAT_ARM_BOOT_UART_BASE			0x2A400000
 #define PLAT_ARM_BOOT_UART_CLK_IN_HZ		50000000
 
-#define PLAT_ARM_BL31_RUN_UART_BASE		0x2A410000
-#define PLAT_ARM_BL31_RUN_UART_CLK_IN_HZ	50000000
+#define PLAT_ARM_RUN_UART_BASE		0x2A410000
+#define PLAT_ARM_RUN_UART_CLK_IN_HZ	50000000
 
 #define PLAT_ARM_SP_MIN_RUN_UART_BASE		0x2A410000
 #define PLAT_ARM_SP_MIN_RUN_UART_CLK_IN_HZ	50000000
 
-#define PLAT_ARM_CRASH_UART_BASE		PLAT_ARM_BL31_RUN_UART_BASE
-#define PLAT_ARM_CRASH_UART_CLK_IN_HZ		PLAT_ARM_BL31_RUN_UART_CLK_IN_HZ
+#define PLAT_ARM_CRASH_UART_BASE		PLAT_ARM_RUN_UART_BASE
+#define PLAT_ARM_CRASH_UART_CLK_IN_HZ		PLAT_ARM_RUN_UART_CLK_IN_HZ
 
 #define PLAT_ARM_DRAM2_SIZE			ULL(0x780000000)
 
@@ -60,6 +61,7 @@
 
 #define PLAT_ARM_NSTIMER_FRAME_ID		0
 #define PLAT_CSS_MHU_BASE			0x45000000
+#define PLAT_MHUV2_BASE				PLAT_CSS_MHU_BASE
 #define PLAT_MAX_PWR_LVL			1
 
 #define PLAT_ARM_G1S_IRQS			ARM_G1S_IRQS,			\
@@ -84,5 +86,9 @@
 
 /* Platform ID address */
 #define SSC_VERSION				(SSC_REG_BASE + SSC_VERSION_OFFSET)
+
+/* Secure Watchdog Constants */
+#define SBSA_SECURE_WDOG_BASE			UL(0x2A480000)
+#define SBSA_SECURE_WDOG_TIMEOUT		UL(100)
 
 #endif /* PLATFORM_DEF_H */

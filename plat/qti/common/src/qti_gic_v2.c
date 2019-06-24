@@ -6,9 +6,9 @@
  */
 
 #include <common/bl_common.h>
-#include <gicv2.h>
-#include <gic_common.h>
-#include <interrupt_mgmt.h>
+#include <drivers/arm/gicv2.h>
+#include <drivers/arm/gic_common.h>
+#include <bl31/interrupt_mgmt.h>
 #include <plat_qti.h>
 #include <platform.h>
 #include <platform_def.h>

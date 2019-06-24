@@ -1,5 +1,10 @@
-Trusted Firmware-A - version 2.0
+Trusted Firmware-A - version 2.1
 ================================
+
+.. section-numbering::
+    :suffix: .
+
+.. contents::
 
 Trusted Firmware-A (TF-A) provides a reference implementation of secure world
 software for `Armv7-A and Armv8-A`_, including a `Secure Monitor`_ executing
@@ -7,7 +12,7 @@ at Exception Level 3 (EL3). It implements various Arm interface standards,
 such as:
 
 -  The `Power State Coordination Interface (PSCI)`_
--  Trusted Board Boot Requirements (TBBR, Arm DEN0006C-1)
+-  `Trusted Board Boot Requirements CLIENT (TBBR-CLIENT)`_
 -  `SMC Calling Convention`_
 -  `System Control and Management Interface (SCMI)`_
 -  `Software Delegated Exception Interface (SDEI)`_
@@ -15,10 +20,23 @@ such as:
 Where possible, the code is designed for reuse or porting to other Armv7-A and
 Armv8-A model and hardware platforms.
 
+This release provides a suitable starting point for productization of secure
+world boot and runtime firmware, in either the AArch32 or AArch64 execution
+states.
+
+Users are encouraged to do their own security validation, including penetration
+testing, on any secure world code derived from TF-A.
+
 Arm will continue development in collaboration with interested parties to
 provide a full reference implementation of Secure Monitor code and Arm standards
 to the benefit of all developers working with Armv7-A and Armv8-A TrustZone
 technology.
+
+Documentation contents
+----------------------
+
+The `Trusted Firmware-A Documentation Contents`_ page contains an overview of
+the documentation that is available, with links to facilitate easier browsing.
 
 License
 -------
@@ -53,18 +71,8 @@ license text is included in those source files.
    BSD-3-Clause license. Any contributions to this code must be made under the
    terms of both licenses.
 
-This release
-------------
-
-This release provides a suitable starting point for productization of secure
-world boot and runtime firmware, in either the AArch32 or AArch64 execution
-states.
-
-Users are encouraged to do their own security validation, including penetration
-testing, on any secure world code derived from TF-A.
-
 Functionality
-~~~~~~~~~~~~~
+-------------
 
 -  Initialization of the secure world, for example exception vectors, control
    registers and interrupts for the platform.
@@ -136,37 +144,50 @@ Functionality
 
 -  Support for the GCC, LLVM and Arm Compiler 6 toolchains.
 
--  Support for combining several libraries into a self-called "romlib" image
-   that may be shared across images to reduce memory footprint. The romlib image
-   is stored in ROM but is accessed through a jump-table that may be stored
+-  Support for combining several libraries into a "romlib" image that may be
+   shared across images to reduce memory footprint. The romlib image is stored
+   in ROM but is accessed through a jump-table that may be stored
    in read-write memory, allowing for the library code to be patched.
+
+-  A prototype implementation of a Secure Partition Manager (SPM) that is based
+   on the SPCI Alpha 1 and SPRT draft specifications.
+
+-  Support for ARMv8.3 pointer authentication in the normal and secure worlds.
+   The use of pointer authentication in the normal world is enabled whenever
+   architectural support is available, without the need for additional build
+   flags. Use of pointer authentication in the secure world remains an
+   experimental configuration at this time and requires the ``ENABLE_PAUTH``
+   build flag to be set.
+
+-  Position-Independent Executable (PIE) support. Initially for BL31 only, with
+   further support to be added in a future release.
 
 For a full description of functionality and implementation details, please
 see the `Firmware Design`_ and supporting documentation. The `Change Log`_
 provides details of changes made since the last release.
 
 Platforms
-~~~~~~~~~
+---------
 
 Various AArch32 and AArch64 builds of this release have been tested on r0, r1
 and r2 variants of the `Juno Arm Development Platform`_.
 
-Various AArch64 builds of this release have been tested on the following Arm
-Fixed Virtual Platforms (`FVP`_) without shifted affinities that do not
-support threaded CPU cores (64-bit host machine only):
+The latest version of the AArch64 build of TF-A has been tested on the following
+Arm FVPs without shifted affinities, and that do not support threaded CPU cores
+(64-bit host machine only).
 
-NOTE: Unless otherwise stated, the model version is Version 11.4 Build 37.
+The FVP models used are Version 11.5 Build 33, unless otherwise stated.
 
--  ``FVP_Base_Aresx4``
 -  ``FVP_Base_AEMv8A-AEMv8A``
 -  ``FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502``
--  ``FVP_Base_AEMv8A-AEMv8A``
 -  ``FVP_Base_RevC-2xAEMv8A``
 -  ``FVP_Base_Cortex-A32x4``
 -  ``FVP_Base_Cortex-A35x4``
 -  ``FVP_Base_Cortex-A53x4``
 -  ``FVP_Base_Cortex-A55x4+Cortex-A75x4``
 -  ``FVP_Base_Cortex-A55x4``
+-  ``FVP_Base_Cortex-A57x1-A53x1``
+-  ``FVP_Base_Cortex-A57x2-A53x4``
 -  ``FVP_Base_Cortex-A57x4-A53x4``
 -  ``FVP_Base_Cortex-A57x4``
 -  ``FVP_Base_Cortex-A72x4-A53x4``
@@ -175,15 +196,24 @@ NOTE: Unless otherwise stated, the model version is Version 11.4 Build 37.
 -  ``FVP_Base_Cortex-A73x4``
 -  ``FVP_Base_Cortex-A75x4``
 -  ``FVP_Base_Cortex-A76x4``
--  ``FVP_CSS_SGI-575`` (Version 11.3 build 40)
+-  ``FVP_Base_Cortex-A76AEx4`` (Tested with internal model)
+-  ``FVP_Base_Cortex-A76AEx8`` (Tested with internal model)
+-  ``FVP_Base_Neoverse-N1x4`` (Tested with internal model)
+-  ``FVP_Base_Deimos``
+-  ``FVP_CSS_SGI-575`` (Version 11.3 build 42)
+-  ``FVP_CSS_SGM-775`` (Version 11.3 build 42)
+-  ``FVP_RD_E1Edge`` (Version 11.3 build 42)
+-  ``FVP_RD_N1Edge`` (Version 11.3 build 42)
 -  ``Foundation_Platform``
 
 The latest version of the AArch32 build of TF-A has been tested on the following
-Arm FVPs without shifted affinities that do not support threaded CPU cores
+Arm FVPs without shifted affinities, and that do not support threaded CPU cores
 (64-bit host machine only).
 
 -  ``FVP_Base_AEMv8A-AEMv8A``
 -  ``FVP_Base_Cortex-A32x4``
+
+NOTE: The ``FVP_Base_RevC-2xAEMv8A`` FVP only supports shifted affinities.
 
 The Foundation FVP can be downloaded free of charge. The Base FVPs can be
 licensed from Arm. See the `Arm FVP website`_.
@@ -192,28 +222,41 @@ All the above platforms have been tested with `Linaro Release 18.04`_.
 
 This release also contains the following platform support:
 
--  Allwinner sun50i_64 and sun50i_h6
+-  Allwinner sun50i_a64 and sun50i_h6
 -  Amlogic Meson S905 (GXBB)
--  ARM SGI-575 and SGM-775
+-  Amlogic Meson S905x (GXL)
+-  Arm Juno Software Development Platform
+-  Arm Neoverse N1 System Development Platform (N1SDP)
+-  Arm Neoverse Reference Design N1 Edge (RD-N1-Edge) FVP
+-  Arm Neoverse Reference Design E1 Edge (RD-E1-Edge) FVP
+-  Arm SGI-575 and SGM-775
+-  Arm Versatile Express FVP
 -  HiKey, HiKey960 and Poplar boards
--  Marvell Armada 8K
+-  Intel Stratix 10 SoC FPGA
+-  Marvell Armada 3700 and 8K
 -  MediaTek MT6795 and MT8173 SoCs
--  NVidia T132, T186 and T210 SoCs
--  NXP QorIQ LS1043A, i.MX8QX, i.MX8QM and i.MX7Solo WaRP7
--  QEMU emulator
--  Raspberry Pi 3 board
+-  NVIDIA T132, T186 and T210 SoCs
+-  NXP QorIQ LS1043A, i.MX8MM, i.MX8MQ, i.MX8QX, i.MX8QM and i.MX7Solo WaRP7
+-  QEMU
+-  Raspberry Pi 3
+-  Renesas R-Car Generation 3
 -  RockChip RK3328, RK3368 and RK3399 SoCs
 -  Socionext UniPhier SoC family and SynQuacer SC2A11 SoCs
 -  STMicroelectronics STM32MP1
 -  Texas Instruments K3 SoCs
--  Xilinx Zynq UltraScale + MPSoC
+-  Xilinx Versal and Zynq UltraScale + MPSoC
 
 Still to come
-~~~~~~~~~~~~~
+-------------
 
--  More platform support.
+-  Support for additional platforms.
 
--  Position independent executable (PIE) support.
+-  Refinements to Position Independent Executable (PIE) support.
+
+-  Refinements to the SPCI-based SPM implementation as the draft SPCI and SPRT
+   specifications continue to evolve.
+
+-  Documentation enhancements.
 
 -  Ongoing support for new architectural features, CPUs and System IP.
 
@@ -222,15 +265,13 @@ Still to come
 -  Ongoing security hardening, optimization and quality improvements.
 
 For a full list of detailed issues in the current code, please see the `Change
-Log`_ and the `GitHub issue tracker`_.
+Log`_ and the `issue tracker`_.
 
 Getting started
 ---------------
 
-Get the TF-A source code from `GitHub`_.
-
-See the `User Guide`_ for instructions on how to install, build and use TF-A
-with the Arm `FVP`_\ s.
+See the `User Guide`_ for instructions on how to download, install, build and
+use TF-A with the Arm `FVP`_\ s.
 
 See the `Firmware Design`_ for information on how TF-A works.
 
@@ -246,26 +287,40 @@ IRC channel
 
 Development discussion takes place on the #trusted-firmware-a channel
 on the Freenode IRC network. This is not an official support channel.
-If you have an issue to raise, please use the `GitHub issue tracker`_.
+If you have an issue to raise, please use the `issue tracker`_.
 
 Feedback and support
 ~~~~~~~~~~~~~~~~~~~~
 
 Arm welcomes any feedback on TF-A. If you think you have found a security
 vulnerability, please report this using the process defined in the TF-A
-`Security Centre`_. For all other feedback, please use the
-`GitHub issue tracker`_.
+`Security Center`_. For all other feedback, please use the
+`issue tracker`_.
 
 Arm licensees may contact Arm directly via their partner managers.
 
+Security advisories
+-------------------
+
+-  `Security Advisory TFV-1`_
+-  `Security Advisory TFV-2`_
+-  `Security Advisory TFV-3`_
+-  `Security Advisory TFV-4`_
+-  `Security Advisory TFV-5`_
+-  `Security Advisory TFV-6`_
+-  `Security Advisory TFV-7`_
+-  `Security Advisory TFV-8`_
+
+
 --------------
 
-*Copyright (c) 2013-2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2013-2019, Arm Limited and Contributors. All rights reserved.*
 
 .. _Armv7-A and Armv8-A: https://developer.arm.com/products/architecture/a-profile
 .. _Secure Monitor: http://www.arm.com/products/processors/technologies/trustzone/tee-smc.php
 .. _Power State Coordination Interface (PSCI): PSCI_
 .. _PSCI: http://infocenter.arm.com/help/topic/com.arm.doc.den0022d/Power_State_Coordination_Interface_PDD_v1_1_DEN0022D.pdf
+.. _Trusted Board Boot Requirements CLIENT (TBBR-CLIENT): https://developer.arm.com/docs/den0006/latest/trusted-board-boot-requirements-client-tbbr-client-armv8-a
 .. _SMC Calling Convention: http://infocenter.arm.com/help/topic/com.arm.doc.den0028b/ARM_DEN0028B_SMC_Calling_Convention.pdf
 .. _System Control and Management Interface (SCMI): SCMI_
 .. _SCMI: http://infocenter.arm.com/help/topic/com.arm.doc.den0056a/DEN0056A_System_Control_and_Management_Interface.pdf
@@ -278,9 +333,9 @@ Arm licensees may contact Arm directly via their partner managers.
 .. _OP-TEE Secure OS: https://github.com/OP-TEE/optee_os
 .. _NVIDIA Trusted Little Kernel: http://nv-tegra.nvidia.com/gitweb/?p=3rdparty/ote_partner/tlk.git;a=summary
 .. _Trusty Secure OS: https://source.android.com/security/trusty
-.. _GitHub: https://www.github.com/ARM-software/arm-trusted-firmware
-.. _GitHub issue tracker: https://github.com/ARM-software/tf-issues/issues
-.. _Security Centre: https://github.com/ARM-software/arm-trusted-firmware/wiki/ARM-Trusted-Firmware-Security-Centre
+.. _trustedfirmware.org: https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
+.. _issue tracker: https://developer.trustedfirmware.org/project/board/1/
+.. _Security Center: ./docs/security-center.rst
 .. _license: ./license.rst
 .. _Contributing Guidelines: ./contributing.rst
 .. _Acknowledgments: ./acknowledgements.rst
@@ -290,3 +345,12 @@ Arm licensees may contact Arm directly via their partner managers.
 .. _Porting Guide: ./docs/porting-guide.rst
 .. _FreeBSD: http://www.freebsd.org
 .. _SCC: http://www.simple-cc.org/
+.. _Security Advisory TFV-1: ./docs/security_advisories/security-advisory-tfv-1.rst
+.. _Security Advisory TFV-2: ./docs/security_advisories/security-advisory-tfv-2.rst
+.. _Security Advisory TFV-3: ./docs/security_advisories/security-advisory-tfv-3.rst
+.. _Security Advisory TFV-4: ./docs/security_advisories/security-advisory-tfv-4.rst
+.. _Security Advisory TFV-5: ./docs/security_advisories/security-advisory-tfv-5.rst
+.. _Security Advisory TFV-6: ./docs/security_advisories/security-advisory-tfv-6.rst
+.. _Security Advisory TFV-7: ./docs/security_advisories/security-advisory-tfv-7.rst
+.. _Security Advisory TFV-8: ./docs/security_advisories/security-advisory-tfv-8.rst
+.. _Trusted Firmware-A Documentation Contents: ./docs/contents.rst

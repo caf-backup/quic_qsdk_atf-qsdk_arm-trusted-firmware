@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2013-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -64,12 +64,33 @@ void __init bl31_lib_init(void)
 }
 
 /*******************************************************************************
+ * Setup function for BL31.
+ ******************************************************************************/
+void bl31_setup(u_register_t arg0, u_register_t arg1, u_register_t arg2,
+		u_register_t arg3)
+{
+	/* Perform early platform-specific setup */
+	bl31_early_platform_setup2(arg0, arg1, arg2, arg3);
+
+	/*
+	 * Update pointer authentication key before the MMU is enabled. It is
+	 * saved in the rodata section, that can be writen before enabling the
+	 * MMU. This function must be called after the console is initialized
+	 * in the early platform setup.
+	 */
+	bl_handle_pauth();
+
+	/* Perform late platform-specific setup */
+	bl31_plat_arch_setup();
+}
+
+/*******************************************************************************
  * BL31 is responsible for setting up the runtime services for the primary cpu
  * before passing control to the bootloader or an Operating System. This
  * function calls runtime_svc_init() which initializes all registered runtime
  * services. The run time services would setup enough context for the core to
- * swtich to the next exception level. When this function returns, the core will
- * switch to the programmed exception level via. an ERET.
+ * switch to the next exception level. When this function returns, the core will
+ * switch to the programmed exception level via an ERET.
  ******************************************************************************/
 void bl31_main(void)
 {
@@ -96,13 +117,13 @@ void bl31_main(void)
 	 * decide which is the next image (BL32 or BL33) and how to execute it.
 	 * If the SPD runtime service is present, it would want to pass control
 	 * to BL32 first in S-EL1. In that case, SPD would have registered a
-	 * function to intialize bl32 where it takes responsibility of entering
+	 * function to initialize bl32 where it takes responsibility of entering
 	 * S-EL1 and returning control back to bl31_main. Once this is done we
 	 * can prepare entry into BL33 as normal.
 	 */
 
 	/*
-	 * If SPD had registerd an init hook, invoke it.
+	 * If SPD had registered an init hook, invoke it.
 	 */
 	if (bl32_init != NULL) {
 		INFO("BL31: Initializing BL32\n");

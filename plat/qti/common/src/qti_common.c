@@ -8,7 +8,7 @@
 #include <common/debug.h>
 #include <assert.h>
 #include <errno.h>
-#include <xlat_tables_v2.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
 #include <plat_qti.h>
 #include <platform_def.h>
 #include <qtiseclib_interface.h>

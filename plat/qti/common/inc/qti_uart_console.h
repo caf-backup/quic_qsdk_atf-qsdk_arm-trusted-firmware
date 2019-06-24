@@ -8,7 +8,7 @@
 #ifndef __QTI_UART_CONSOLE_H__
 #define __QTI_UART_CONSOLE_H__
 
-#include <console.h>
+#include <drivers/console.h>
 
 #define QTI_CONSOLE_T_UART_BASE_OFF		(CONSOLE_T_DRVDATA)
 

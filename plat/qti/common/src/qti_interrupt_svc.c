@@ -9,9 +9,9 @@
 #include <assert.h>
 #include <platform.h>
 #include <arch_helpers.h>
-#include <gic_common.h>
-#include <interrupt_mgmt.h>
-#include <context_mgmt.h>
+#include <drivers/arm/gic_common.h>
+#include <bl31/interrupt_mgmt.h>
+#include <lib/el3_runtime/context_mgmt.h>
 #include <qti_interrupt_svc.h>
 #include <qtiseclib_interface.h>
 

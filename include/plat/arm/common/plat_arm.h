@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -38,7 +38,7 @@ typedef struct arm_tzc_regions_info {
  *   - Region 1 with secure access only;
  *   - the remaining DRAM regions access from the given Non-Secure masters.
  ******************************************************************************/
-#if ENABLE_SPM && SPM_DEPRECATED
+#if ENABLE_SPM && SPM_MM
 #define ARM_TZC_REGIONS_DEF						\
 	{ARM_AP_TZC_DRAM1_BASE, ARM_EL3_TZC_DRAM1_END,			\
 		TZC_REGION_S_RDWR, 0},					\
@@ -46,8 +46,8 @@ typedef struct arm_tzc_regions_info {
 		PLAT_ARM_TZC_NS_DEV_ACCESS}, 				\
 	{ARM_DRAM2_BASE, ARM_DRAM2_END, ARM_TZC_NS_DRAM_S_ACCESS,	\
 		PLAT_ARM_TZC_NS_DEV_ACCESS},				\
-	{ARM_SP_IMAGE_NS_BUF_BASE, (ARM_SP_IMAGE_NS_BUF_BASE +		\
-		ARM_SP_IMAGE_NS_BUF_SIZE) - 1, TZC_REGION_S_NONE,	\
+	{PLAT_SP_IMAGE_NS_BUF_BASE, (PLAT_SP_IMAGE_NS_BUF_BASE +	\
+		PLAT_SP_IMAGE_NS_BUF_SIZE) - 1, TZC_REGION_S_NONE,	\
 		PLAT_ARM_TZC_NS_DEV_ACCESS}
 
 #else
@@ -187,7 +187,9 @@ void arm_bl2_platform_setup(void);
 void arm_bl2_plat_arch_setup(void);
 uint32_t arm_get_spsr_for_bl32_entry(void);
 uint32_t arm_get_spsr_for_bl33_entry(void);
+int arm_bl2_plat_handle_post_image_load(unsigned int image_id);
 int arm_bl2_handle_post_image_load(unsigned int image_id);
+struct bl_params *arm_get_next_bl_params(void);
 
 /* BL2 at EL3 functions */
 void arm_bl2_el3_early_platform_setup(void);
@@ -292,5 +294,9 @@ void plat_arm_sp_min_early_platform_setup(u_register_t arg0, u_register_t arg1,
 extern plat_psci_ops_t plat_arm_psci_pm_ops;
 extern const mmap_region_t plat_arm_mmap[];
 extern const unsigned int arm_pm_idle_states[];
+
+/* secure watchdog */
+void plat_arm_secure_wdt_start(void);
+void plat_arm_secure_wdt_stop(void);
 
 #endif /* PLAT_ARM_H */

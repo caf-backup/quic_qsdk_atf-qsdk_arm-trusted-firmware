@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Arm Limited. All rights reserved.
+ * Copyright (c) 2018-2019, Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <common/debug.h>
+#include <common/runtime_svc.h>
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/smccc.h>
 #include <lib/spinlock.h>
@@ -379,6 +380,41 @@ static uint64_t spci_service_request_blocking(void *handle,
 }
 
 /*******************************************************************************
+ * This function handles the returned values from the Secure Partition.
+ ******************************************************************************/
+static void spci_handle_returned_values(const cpu_context_t *cpu_ctx,
+					uint64_t ret)
+{
+	if (ret == SPRT_PUT_RESPONSE_AARCH64) {
+		uint32_t token;
+		uint64_t x3, x4, x5, x6;
+
+		token = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X1);
+		x3 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X3);
+		x4 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X4);
+		x5 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X5);
+		x6 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X6);
+
+		uint16_t client_id = x6 & 0xFFFFU;
+		uint16_t service_handle = x6 >> 16;
+
+		int rc = spm_response_add(client_id, service_handle, token,
+					  x3, x4, x5);
+		if (rc != 0) {
+			/*
+			 * This is error fatal because we can't return to the SP
+			 * from this SMC. The SP has crashed.
+			 */
+			panic();
+		}
+	} else if ((ret != SPRT_YIELD_AARCH64) &&
+		   (ret != SPM_SECURE_PARTITION_PREEMPTED)) {
+		ERROR("SPM: %s: Unexpected x0 value 0x%llx\n", __func__, ret);
+		panic();
+	}
+}
+
+/*******************************************************************************
  * This function requests a Secure Service from a given handle and client ID.
  ******************************************************************************/
 static uint64_t spci_service_request_start(void *handle,
@@ -464,34 +500,8 @@ static uint64_t spci_service_request_start(void *handle,
 	/* Jump to the Secure Partition. */
 	uint64_t ret = spm_sp_synchronous_entry(sp_ctx, 1);
 
-	/* Verify returned values */
-	if (ret == SPRT_PUT_RESPONSE_AARCH64) {
-		uint32_t token;
-		uint64_t rx1, rx2, rx3, x6;
-
-		token = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X1);
-		rx1 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X3);
-		rx2 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X4);
-		rx3 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X5);
-		x6 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X6);
-
-		uint16_t client_id = x6 & 0xFFFFU;
-		uint16_t service_handle = x6 >> 16;
-
-		int rc = spm_response_add(client_id, service_handle, token,
-					  rx1, rx2, rx3);
-		if (rc != 0) {
-			/*
-			 * This is error fatal because we can't return to the SP
-			 * from this SMC. The SP has crashed.
-			 */
-			panic();
-		}
-	} else if ((ret != SPRT_YIELD_AARCH64) &&
-		   (ret != SPM_SECURE_PARTITION_PREEMPTED)) {
-		ERROR("SPM: %s: Unexpected x0 value 0x%llx\n", __func__, ret);
-		panic();
-	}
+	/* Handle returned values */
+	spci_handle_returned_values(cpu_ctx, ret);
 
 	/* Flag Secure Partition as idle. */
 	assert(sp_ctx->state == SP_STATE_BUSY);
@@ -571,34 +581,8 @@ static uint64_t spci_service_request_resume(void *handle, u_register_t x1,
 	/* Jump to the Secure Partition. */
 	uint64_t ret = spm_sp_synchronous_entry(sp_ctx, 1);
 
-	/* Verify returned values */
-	if (ret == SPRT_PUT_RESPONSE_AARCH64) {
-		uint32_t token;
-		uint64_t rx1, rx2, rx3, x6;
-
-		token = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X1);
-		rx1 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X3);
-		rx2 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X4);
-		rx3 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X5);
-		x6 = read_ctx_reg(get_gpregs_ctx(cpu_ctx), CTX_GPREG_X6);
-
-		uint16_t client_id = x6 & 0xFFFFU;
-		uint16_t service_handle = x6 >> 16;
-
-		int rc = spm_response_add(client_id, service_handle, token,
-					  rx1, rx2, rx3);
-		if (rc != 0) {
-			/*
-			 * This is error fatal because we can't return to the SP
-			 * from this SMC. The SP has crashed.
-			 */
-			panic();
-		}
-	} else if ((ret != SPRT_YIELD_AARCH64) &&
-		   (ret != SPM_SECURE_PARTITION_PREEMPTED)) {
-		ERROR("SPM: %s: Unexpected x0 value 0x%llx\n", __func__, ret);
-		panic();
-	}
+	/* Handle returned values */
+	spci_handle_returned_values(cpu_ctx, ret);
 
 	/* Flag Secure Partition as idle. */
 	assert(sp_ctx->state == SP_STATE_BUSY);
@@ -679,9 +663,10 @@ static uint64_t spci_service_get_response(void *handle, u_register_t x1,
 /*******************************************************************************
  * This function handles all SMCs in the range reserved for SPCI.
  ******************************************************************************/
-uint64_t spci_smc_handler(uint32_t smc_fid, uint64_t x1, uint64_t x2,
-			  uint64_t x3, uint64_t x4, void *cookie, void *handle,
-			  uint64_t flags)
+static uintptr_t spci_smc_handler(uint32_t smc_fid, u_register_t x1,
+				  u_register_t x2, u_register_t x3,
+				  u_register_t x4, void *cookie, void *handle,
+				  u_register_t flags)
 {
 	uint32_t spci_fid;
 
@@ -773,3 +758,12 @@ uint64_t spci_smc_handler(uint32_t smc_fid, uint64_t x1, uint64_t x2,
 	WARN("SPCI: Unsupported call 0x%08x\n", smc_fid);
 	SMC_RET1(handle, SPCI_NOT_SUPPORTED);
 }
+
+DECLARE_RT_SVC(
+	spci_handler,
+	OEN_SPCI_START,
+	OEN_SPCI_END,
+	SMC_TYPE_FAST,
+	NULL,
+	spci_smc_handler
+);

@@ -9,10 +9,10 @@
 #include <common/debug.h>
 #include <platform.h>
 #include <common/ep_info.h>
-#include <bl31.h>
-#include <console.h>
-#include <coreboot.h>
-#include <spinlock.h>
+#include <bl31/bl31.h>
+#include <drivers/console.h>
+#include <lib/coreboot.h>
+#include <lib/spinlock.h>
 #include <plat_qti.h>
 #include <qti_plat_params.h>
 #include <qti_interrupt_svc.h>

@@ -7,10 +7,10 @@
 
 #include <arch.h>
 #include <asm_macros.S>
-#include <gicv2.h>
-#include <gicv3.h>
+#include <drivers/arm/gicv2.h>
+#include <drivers/arm/gicv3.h>
 #include <platform_def.h>
-#include <console.h>
+#include <drivers/console.h>
 
 	.globl	plat_my_core_pos
 	.globl	plat_qti_core_pos_by_mpidr

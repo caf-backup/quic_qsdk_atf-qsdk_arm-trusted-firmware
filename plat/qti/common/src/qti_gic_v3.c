@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <bl_common.h>
-#include <gicv3.h>
+#include <common/bl_common.h>
+#include <drivers/arm/gicv3.h>
 #include <plat_qti.h>
 #include <platform.h>
 #include <platform_def.h>

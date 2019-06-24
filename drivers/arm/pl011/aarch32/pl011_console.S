@@ -6,7 +6,6 @@
 #include <arch.h>
 #include <asm_macros.S>
 #include <assert_macros.S>
-#define USE_FINISH_CONSOLE_REG_2
 #include <console_macros.S>
 #include <drivers/arm/pl011.h>
 
@@ -63,7 +62,14 @@ func console_pl011_core_init
 	/* Program the baudrate */
 	/* Divisor =  (Uart clock * 4) / baudrate */
 	lsl	r1, r1, #2
+#if (ARM_ARCH_MAJOR == 7) && !defined(ARMV7_SUPPORTS_VIRTUALIZATION)
+	push	{r0,r3}
+	softudiv	r0,r1,r2,r3
+	mov	r1, r0
+	pop	{r0,r3}
+#else
 	udiv	r2, r1, r2
+#endif
 	/* IBRD = Divisor >> 6 */
 	lsr	r1, r2, #6
 	/* Write the IBRD */

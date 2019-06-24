@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2017-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,8 +8,6 @@
 
 #include <lib/utils_def.h>
 #include <lib/xlat_tables/xlat_tables_defs.h>
-
-#include <arm_def.h>
 
 /*
  * Reserve 4 MiB for binaries of Secure Partitions and Resource Description
@@ -34,7 +32,7 @@
 #define PLAT_SPM_HEAP_BASE	(PLAT_SP_PACKAGE_BASE + PLAT_SP_PACKAGE_SIZE)
 #define PLAT_SPM_HEAP_SIZE	(BL32_LIMIT - BL32_BASE - PLAT_SP_PACKAGE_SIZE)
 
-#if SPM_DEPRECATED
+#if SPM_MM
 
 /*
  * If BL31 is placed in DRAM, place the Secure Partition in DRAM right after the
@@ -88,12 +86,12 @@
  * requests. Mapped as RW and NS. Placed after the shared memory between EL3 and
  * S-EL0.
  */
-#define ARM_SP_IMAGE_NS_BUF_BASE	(PLAT_SPM_BUF_BASE + PLAT_SPM_BUF_SIZE)
-#define ARM_SP_IMAGE_NS_BUF_SIZE	ULL(0x10000)
+#define PLAT_SP_IMAGE_NS_BUF_BASE	(PLAT_SPM_BUF_BASE + PLAT_SPM_BUF_SIZE)
+#define PLAT_SP_IMAGE_NS_BUF_SIZE	ULL(0x10000)
 #define ARM_SP_IMAGE_NS_BUF_MMAP	MAP_REGION2(				\
-						ARM_SP_IMAGE_NS_BUF_BASE,	\
-						ARM_SP_IMAGE_NS_BUF_BASE,	\
-						ARM_SP_IMAGE_NS_BUF_SIZE,	\
+						PLAT_SP_IMAGE_NS_BUF_BASE,	\
+						PLAT_SP_IMAGE_NS_BUF_BASE,	\
+						PLAT_SP_IMAGE_NS_BUF_SIZE,	\
 						MT_RW_DATA | MT_NS | MT_USER,	\
 						PAGE_SIZE)
 
@@ -123,7 +121,7 @@
 /* Total number of memory regions with distinct properties */
 #define ARM_SP_IMAGE_NUM_MEM_REGIONS	6
 
-#endif /* SPM_DEPRECATED */
+#endif /* SPM_MM */
 
 /* Cookies passed to the Secure Partition at boot. Not used by ARM platforms. */
 #define PLAT_SPM_COOKIE_0		ULL(0)
