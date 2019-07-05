@@ -15,12 +15,19 @@
 
 	.globl	bl31_entrypoint
 	.globl	bl31_warm_entrypoint
-
+	.globl  bl31_entrypoint_qti
 	/* -----------------------------------------------------
 	 * bl31_entrypoint() is the cold boot entrypoint,
 	 * executed only by the primary cpu.
 	 * -----------------------------------------------------
 	 */
+
+#if QTI_6018_PLATFORM
+func bl31_entrypoint_qti
+	ldr     x9, =bl31_entrypoint
+	br      x9
+endfunc bl31_entrypoint_qti
+#endif
 
 func bl31_entrypoint
 	/* ---------------------------------------------------------------
@@ -68,6 +75,7 @@ func bl31_entrypoint
 	 * skip the warm boot mailbox mechanism.
 	 * ---------------------------------------------------------------------
 	 */
+
 	el3_entrypoint_common					\
 		_init_sctlr=1					\
 		_warm_boot_mailbox=!PROGRAMMABLE_RESET_ADDRESS	\
@@ -153,7 +161,6 @@ func bl31_warm_entrypoint
 	mrs	x1, cntpct_el0
 	str	x1, [x0]
 #endif
-
 	/*
 	 * On the warm boot path, most of the EL3 initialisations performed by
 	 * 'el3_entrypoint_common' must be skipped:
