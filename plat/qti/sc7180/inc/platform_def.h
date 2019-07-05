@@ -8,15 +8,11 @@
 #define __PLATFORM_DEF_H__
 
 /* Enable the dynamic translation tables library. */
-#define PLAT_XLAT_TABLES_DYNAMIC     1
+#define PLAT_XLAT_TABLES_DYNAMIC	1
 
-#include <board_qti_def.h>
+#include <qti_board_def.h>
 #include <common_def.h>
 
-/*----------------------------------------------------------------------------*/
-/* SOC_VERSION definitions */
-/*----------------------------------------------------------------------------*/
-#define SOC_ID_SDM845		0x60000100
 
 /*----------------------------------------------------------------------------*/
 
@@ -93,7 +89,7 @@
 #define PLAT_CX_RAIL_COUNT		1
 
 /* There is one top-level FCM cluster */
-#define PLAT_CLUSTER_COUNT       	1
+#define PLAT_CLUSTER_COUNT		1
 
 /* No. of cores in the FCM cluster */
 #define PLAT_CLUSTER0_CORE_COUNT	8
@@ -119,9 +115,9 @@
 #define BASE_GICH_BASE		0x0
 #define BASE_GICV_BASE		0x0
 
-#define QTI_GICD_BASE      	BASE_GICD_BASE
+#define QTI_GICD_BASE		BASE_GICD_BASE
 #define QTI_GICR_BASE		BASE_GICR_BASE
-#define QTI_GICC_BASE      	BASE_GICC_BASE
+#define QTI_GICC_BASE		BASE_GICC_BASE
 
 /*----------------------------------------------------------------------------*/
 
@@ -148,7 +144,7 @@
 /* Device address space for mapping. Excluding starting 4K */
 /*----------------------------------------------------------------------------*/
 #define QTI_DEVICE_BASE				0x1000
-#define QTI_DEVICE_SIZE				(0x19000000 - QTI_DEVICE_BASE)
+#define QTI_DEVICE_SIZE				(0x80000000 - QTI_DEVICE_BASE)
 
 /*******************************************************************************
  * BL31 specific defines.
@@ -157,7 +153,7 @@
  * Put BL31 at DDR as per memory map. BL31_BASE is calculated using the
  * current BL31 debug size plus a little space for growth.
  */
-#define BL31_BASE						0x86300000
+#define BL31_BASE						0x80C00000
 #define BL31_SIZE						0x00200000
 #define QTI_TRUSTED_MAILBOX_SIZE				0x1000
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)

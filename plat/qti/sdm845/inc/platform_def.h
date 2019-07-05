@@ -8,15 +8,11 @@
 #define __PLATFORM_DEF_H__
 
 /* Enable the dynamic translation tables library. */
-#define PLAT_XLAT_TABLES_DYNAMIC     1
+#define PLAT_XLAT_TABLES_DYNAMIC	1
 
-#include <board_qti_def.h>
+#include <qti_board_def.h>
 #include <common_def.h>
 
-/*----------------------------------------------------------------------------*/
-/* SOC_VERSION definitions */
-/*----------------------------------------------------------------------------*/
-#define SOC_ID_SDM845		0x60000100
 
 /*----------------------------------------------------------------------------*/
 
@@ -93,7 +89,7 @@
 #define PLAT_CX_RAIL_COUNT		1
 
 /* There is one top-level FCM cluster */
-#define PLAT_CLUSTER_COUNT       	1
+#define PLAT_CLUSTER_COUNT		1
 
 /* No. of cores in the FCM cluster */
 #define PLAT_CLUSTER0_CORE_COUNT	8
@@ -119,9 +115,9 @@
 #define BASE_GICH_BASE		0x0
 #define BASE_GICV_BASE		0x0
 
-#define QTI_GICD_BASE      	BASE_GICD_BASE
+#define QTI_GICD_BASE		BASE_GICD_BASE
 #define QTI_GICR_BASE		BASE_GICR_BASE
-#define QTI_GICC_BASE      	BASE_GICC_BASE
+#define QTI_GICC_BASE		BASE_GICC_BASE
 
 /*----------------------------------------------------------------------------*/
 

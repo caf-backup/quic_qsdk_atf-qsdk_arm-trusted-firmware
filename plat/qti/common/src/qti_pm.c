@@ -8,6 +8,7 @@
 #include <platform.h>
 #include "qti_cpu.h"
 #include "lib/psci/psci.h"
+#include <qtiseclib_defs_plat.h>
 #include <qtiseclib_interface.h>
 #include <common/debug.h>
 #include "assert.h"

@@ -1,0 +1,34 @@
+/*
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifndef __QTISECLIB_DEFS_PLAT_H__
+#define __QTISECLIB_DEFS_PLAT_H__
+
+
+#define QTISECLIB_PLAT_CLUSTER_COUNT	1
+#define QTISECLIB_PLAT_CORE_COUNT	8
+
+
+/* Chipset specific secure interrupt number/ID defs. */
+#define QTISECLIB_INT_ID_SEC_WDOG_BARK			(0x204)
+#define QTISECLIB_INT_ID_NON_SEC_WDOG_BITE		(0x21)
+
+#define QTISECLIB_INT_ID_VMIDMT_ERR_CLT_SEC		(0xC6)
+#define QTISECLIB_INT_ID_VMIDMT_ERR_CLT_NONSEC		(0xC7)
+#define QTISECLIB_INT_ID_VMIDMT_ERR_CFG_SEC		(0xC8)
+#define QTISECLIB_INT_ID_VMIDMT_ERR_CFG_NONSEC		(0xC9)
+
+#define QTISECLIB_INT_ID_XPU_SEC			(0xC3)
+#define QTISECLIB_INT_ID_XPU_NON_SEC			(0xC4)
+
+#define QTISECLIB_INT_ID_A2_NOC_ERROR			(0x194)
+#define QTISECLIB_INT_ID_CONFIG_NOC_ERROR		(0xE2)
+#define QTISECLIB_INT_ID_DC_NOC_ERROR			(0x122)
+#define QTISECLIB_INT_ID_MEM_NOC_ERROR			(0x6C)
+#define QTISECLIB_INT_ID_SYSTEM_NOC_ERROR		(0xC6)
+#define QTISECLIB_INT_ID_MMSS_NOC_ERROR			(0xBA)
+
+#endif /* __QTISECLIB_DEFS_PLAT_H__ */

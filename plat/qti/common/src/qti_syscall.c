@@ -16,7 +16,7 @@
 #include <tools_share/uuid.h>
 #include <smccc_helpers.h>
 #include <lib/utils_def.h>
-#include <plat_qti.h>
+#include <qti_plat.h>
 #include <qti_secure_io_cfg.h>
 #include <qtiseclib_interface.h>
 

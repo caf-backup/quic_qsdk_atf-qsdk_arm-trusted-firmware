@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <plat_qti.h>
+#include <qti_plat.h>
 #include <platform_def.h>
 #include <qtiseclib_interface.h>
 

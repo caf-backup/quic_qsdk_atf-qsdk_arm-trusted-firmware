@@ -20,12 +20,6 @@
  */
 
 typedef struct {
-	/* tag and size are already in cb_entry_t, so omit them here */
-	uint64_t range_start;
-	uint32_t range_size;
-} lb_range_t;
-
-typedef struct {
 	char signature[4];
 	uint32_t header_bytes;
 	uint32_t header_checksum;
@@ -40,18 +34,44 @@ typedef enum {
 	CB_TAG_VBOOT_HANDOFF = 0x20,
 } cb_tag_t;
 
-coreboot_serial_t coreboot_serial;
-static uint64_t vboot_handoff_base_addr;
-
 typedef struct __attribute__((__packed__)){
 	uint32_t tag;
 	uint32_t size;
 	union {
 		coreboot_serial_t serial;
 		uint64_t uint64;
-		lb_range_t range;
 	};
-}cb_entry_t;
+} cb_entry_t;
+
+coreboot_serial_t coreboot_serial;
+
+typedef struct __attribute__((__packed__)){
+	uint32_t tag;
+	uint32_t size;
+
+	uint64_t range_start;
+	uint32_t range_size;
+} lb_range_t;
+
+/*
+ * The vboot_handoff structure contains the data to be consumed by downstream
+ * firmware after firmware selection has been completed. Namely it provides
+ * vboot shared data as well as the flags from VbInit.
+ */
+//#define VB_SHARED_DATA_MIN_SIZE 3072
+typedef struct VbInitParams {
+	uint32_t deprecated; /* Was init flags */
+	uint32_t out_flags;
+} VbInitParams;
+
+typedef struct __attribute__((__packed__)){
+	VbInitParams init_params;
+	uint32_t selected_firmware;
+	char shared_data[/* VB_SHARED_DATA_MIN_SIZE */];
+} vboot_handoff_t;
+
+static vboot_handoff_t vboot_handoff;
+
 
 /*
  * The coreboot table is parsed before the MMU is enabled (i.e. with strongly
@@ -68,7 +88,6 @@ static uint32_t read_le32(uint32_t *p)
 	       mmio_read_8(addr + 2) << 16	|
 	       mmio_read_8(addr + 3) << 24;
 }
-
 static uint64_t read_le64(uint64_t *p)
 {
 	return read_le32((void *)p) | (uint64_t)read_le32((void *)p + 4) << 32;
@@ -96,16 +115,20 @@ static void setup_cbmem_console(uintptr_t baseaddr)
 					    CONSOLE_FLAG_CRASH);
 }
 
-static void setup_vboot_handoff_info(uint64_t addr)
+static void setup_vboot_handoff_info(lb_range_t * range)
 {
-	vboot_handoff_base_addr = addr;
+	if(range) {
+		expand_and_mmap((uintptr_t)range, sizeof(lb_range_t));
+		expand_and_mmap((uintptr_t)range->range_start, sizeof(vboot_handoff_t));
+		if(range->range_size >= sizeof(vboot_handoff_t)) {
+			vboot_handoff = *(vboot_handoff_t *)range->range_start;
+		}
+	}
 }
 
-void coreboot_get_dev_data_addr(uint64_t *addr)
+uint32_t coreboot_get_vbinit_out_flag(void)
 {
-	if ( addr != NULL ) {
-		*addr = vboot_handoff_base_addr;
-	}
+	return vboot_handoff.init_params.out_flags;
 }
 
 void coreboot_table_setup(void *base)
@@ -122,6 +145,7 @@ void coreboot_table_setup(void *base)
 	ptr = base + header->header_bytes;
 	for (i = 0; i < header->table_entries; i++) {
 		cb_entry_t *entry = ptr;
+		lb_range_t *range = ptr;
 
 		if (ptr - base >= header->header_bytes + header->table_bytes) {
 			ERROR("coreboot table exceeds its bounds!\n");
@@ -136,10 +160,8 @@ void coreboot_table_setup(void *base)
 		case CB_TAG_CBMEM_CONSOLE:
 			setup_cbmem_console(read_le64(&entry->uint64));
 			break;
-		case CB_TAG_VBOOT_HANDOFF: ;
-			expand_and_mmap((uintptr_t)entry, sizeof(sizeof(cb_entry_t)));
-			expand_and_mmap((uintptr_t)entry->range.range_start, sizeof(sizeof(cb_entry_t)));
-			setup_vboot_handoff_info(entry->range.range_start);
+		case CB_TAG_VBOOT_HANDOFF:
+			setup_vboot_handoff_info(range);
 			break;
 		default:
 			/* There are many tags TF doesn't need to care about. */

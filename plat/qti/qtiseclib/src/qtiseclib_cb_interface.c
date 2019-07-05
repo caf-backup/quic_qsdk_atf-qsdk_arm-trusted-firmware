@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <lib/spinlock.h>
 #include <platform.h>
-#include <plat_qti.h>
+#include <qti_plat.h>
 #include <bl31/bl31.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
 #include <qtiseclib_cb_interface.h>
@@ -20,6 +20,7 @@
 #include <context.h>
 #include <arch.h>
 #include <arch_helpers.h>
+#include <lib/coreboot.h>
 
 /*Adding it till 64 bit address support will be merged to arm tf*/
 static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
@@ -143,6 +144,16 @@ int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
 {
 	return qti_mmap_remove_dynamic_region(base_va, size);
 }
+
+bool qtiseclib_cb_is_developer_mode_set(void)
+{
+#if COREBOOT
+	return ((coreboot_get_vbinit_out_flag() & VB_INIT_OUT_ENABLE_DEVELOPER) ? true : false);
+#else
+	return false; /* Set it to default, developer mode disable.*/
+#endif
+}
+
 
 /* GIC platform functions */
 void qtiseclib_cb_gic_pcpu_init(void)

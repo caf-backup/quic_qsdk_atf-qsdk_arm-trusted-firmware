@@ -14,6 +14,14 @@
 /* KRYO-3xx Silver MIDR */
 #define QTI_KRYO3_SILVER_MIDR	0x517F803D
 
+/* KRYO-4xx Gold MIDR */
+#define QTI_KRYO4_GOLD_MIDR	0x517F804D
+#define QTI_KRYO4_GOLD_IMPL_PN	0x51008040
+
+/* KRYO-4xx Silver MIDR */
+#define QTI_KRYO4_SILVER_MIDR	0x517F805D
+
+
 #ifndef __ASSEMBLER__
 /* API to execute CPU specific cache maintenance
  * operation before power collapse.

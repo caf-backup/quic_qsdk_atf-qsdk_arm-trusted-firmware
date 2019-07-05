@@ -13,9 +13,6 @@
 typedef uintptr_t u_register_t;
 #endif
 
-#define QTISECLIB_PLAT_CLUSTER_COUNT	1
-#define QTISECLIB_PLAT_CORE_COUNT	8
-
 /* Different Log Level supported in qtiseclib.
    TODO: Currently no filtering done on QTISECLIB logs. */
 #define QTISECLIB_LOG_LEVEL_NONE	0
@@ -28,28 +25,11 @@ typedef uintptr_t u_register_t;
 #define QTI_GICV3_IRM_PE		0
 #define QTI_GICV3_IRM_ANY		1
 
-/* Interrupt number/ID defs. TODO: Chipset specific.
-   Need to be feature gurded with Chipset Macro. */
-#define QTISECLIB_INT_ID_SEC_WDOG_BARK			(0xD5)
-#define QTISECLIB_INT_ID_NON_SEC_WDOG_BITE		(0x24)
+/* Common interrupt number/ID defs. */
 #define QTISECLIB_INT_ID_RESET_SGI			(0xf)
 #define QTISECLIB_INT_ID_CPU_WAKEUP_SGI			(0x8)
 
-#define QTISECLIB_INT_ID_VMIDMT_ERR_CLT_SEC		(0xE6)
-#define QTISECLIB_INT_ID_VMIDMT_ERR_CLT_NONSEC		(0xE7)
-#define QTISECLIB_INT_ID_VMIDMT_ERR_CFG_SEC		(0xE8)
-#define QTISECLIB_INT_ID_VMIDMT_ERR_CFG_NONSEC		(0xE9)
 
-#define QTISECLIB_INT_ID_XPU_SEC			(0xE3)
-#define QTISECLIB_INT_ID_XPU_NON_SEC			(0xE4)
-
-#define QTISECLIB_INT_ID_A1_NOC_ERROR			(0x18B)
-#define QTISECLIB_INT_ID_A2_NOC_ERROR			(0x194)
-#define QTISECLIB_INT_ID_CONFIG_NOC_ERROR		(0xE2)
-#define QTISECLIB_INT_ID_DC_NOC_ERROR			(0x122)
-#define QTISECLIB_INT_ID_MEM_NOC_ERROR			(0x6C)
-#define QTISECLIB_INT_ID_SYSTEM_NOC_ERROR		(0xC6)
-#define QTISECLIB_INT_ID_MMSS_NOC_ERROR			(0xBA)
 #define	QTISECLIB_INT_INVALID_INT_NUM			(0xFFFFFFFFU)
 
 /* External CPU Dump Structure - 64 bit EL */

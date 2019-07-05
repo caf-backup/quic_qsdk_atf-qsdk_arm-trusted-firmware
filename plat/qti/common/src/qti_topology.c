@@ -6,7 +6,7 @@
  */
 
 #include <arch.h>
-#include <plat_qti.h>
+#include <qti_plat.h>
 #include <platform_def.h>
 
 /* The QTI power domain tree descriptor */

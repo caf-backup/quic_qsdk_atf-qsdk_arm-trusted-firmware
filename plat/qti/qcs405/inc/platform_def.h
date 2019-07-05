@@ -8,19 +8,13 @@
 #define __PLATFORM_DEF_H__
 
 /* Enable the dynamic translation tables library. */
-#define PLAT_XLAT_TABLES_DYNAMIC     1
+#define PLAT_XLAT_TABLES_DYNAMIC	1
 
-#include <board_qti_def.h>
+#include <qti_board_def.h>
 #include <common_def.h>
 
-/*----------------------------------------------------------------------------*/
-/* SOC_VERSION definitions */
-/*----------------------------------------------------------------------------*/
-#define SOC_ID_QCS6200   0x20140100
+
 #define QTI_A53_MIDR     0x410FD034
-
-
-/*----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------*/
 /* MPIDR_PRIMARY_CPU
@@ -95,7 +89,7 @@
 #define PLAT_CX_RAIL_COUNT		1
 
 /* There is one top-level FCM cluster */
-#define PLAT_CLUSTER_COUNT       	2
+#define PLAT_CLUSTER_COUNT		2
 
 /* No. of cores in the FCM cluster */
 #define PLAT_CLUSTER0_CORE_COUNT	8
@@ -118,38 +112,17 @@
 #define BASE_GICD_BASE		0xB000000
 #define BASE_GICC_BASE		0xB002000
 
-#define QTI_GICD_BASE      	BASE_GICD_BASE
-#define QTI_GICC_BASE      	BASE_GICC_BASE
+#define QTI_GICD_BASE		BASE_GICD_BASE
+#define QTI_GICC_BASE		BASE_GICC_BASE
 
 /*----------------------------------------------------------------------------*/
 
-/*----------------------------------------------------------------------------*/
-/* UART related constants. */
-/*----------------------------------------------------------------------------*/
-/* BASE ADDRESS OF DIFFERENT REGISTER SPACES IN HW */
-#define GENI4_CFG				0x0
-#define GENI4_IMAGE_REGS			0x100
-#define GENI4_DATA				0x600
-
-/* COMMON STATUS/CONFIGURATION REGISTERS AND MASKS */
-#define GENI_STATUS_REG				(GENI4_CFG + 0x00000040)
-#define GENI_STATUS_M_GENI_CMD_ACTIVE_MASK	(0x1)
-#define UART_TX_TRANS_LEN_REG			(GENI4_IMAGE_REGS + 0x00000170)
-/* MASTER/TX ENGINE REGISTERS */
-#define GENI_M_CMD0_REG				(GENI4_DATA + 0x00000000)
-/* FIFO, STATUS REGISTERS AND MASKS */
-#define GENI_TX_FIFOn_REG			(GENI4_DATA + 0x00000100)
-
-#define GENI_M_CMD_TX				(0x08000000)
 
 /*----------------------------------------------------------------------------*/
 /* Device address space for mapping. Excluding starting 4K */
 /*----------------------------------------------------------------------------*/
 #define QTI_DEVICE_BASE				0x00000000UL
 #define QTI_DEVICE_SIZE				(0x40000000UL - QTI_DEVICE_BASE)
-
-#define QTI_SHARED_IMEM_BASE			0x08600000
-#define QTI_SHARED_IMEM_TF_STACK_CANARY_ADDR	(QTI_SHARED_IMEM_BASE + 0x7F0)
 
 /*******************************************************************************
  * BL31 specific defines.

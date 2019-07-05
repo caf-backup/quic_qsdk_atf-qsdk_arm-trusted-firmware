@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <qtiseclib_defs.h>
 
 /* Standard Library API's */
@@ -45,6 +46,9 @@ void qtiseclib_cb_flush_dcache_range(uintptr_t addr, size_t size);
 void qtiseclib_cb_flush_dcache_all(void);
 
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
+
+bool qtiseclib_cb_is_developer_mode_set(void);
+
 
 /* GIC platform wrappers */
 void qtiseclib_cb_gic_pcpu_init(void);

@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef __BOARD_QTI_DEF_H__
-#define __BOARD_QTI_DEF_H__
+#ifndef __QTI_BOARD_DEF_H__
+#define __QTI_BOARD_DEF_H__
 
 /*
  * Required platform porting definitions common to all ARM
@@ -26,4 +26,4 @@
  */
 #define MAX_XLAT_TABLES	12
 
-#endif /* __BOARD_QTI_DEF_H__ */
+#endif /* __QTI_BOARD_DEF_H__ */
