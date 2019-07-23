@@ -36,6 +36,7 @@
 #define	QTI_SIP_SVC_SECURE_IO_READ_ID		U(0x02000501)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_ID		U(0x02000502)
 
+#define QTI_SIP_IS_ARMV8                        U(0x02000601)
 /*
  * Syscall's to assigns a list of intermediate PAs from a
  * source Virtual Machine (VM) to a destination VM.
@@ -49,6 +50,7 @@
 #define	QTI_SIP_SVC_CALL_COUNT			U(0x3)
 #define QTI_SIP_SVC_VERSION_MAJOR		U(0x0)
 #define	QTI_SIP_SVC_VERSION_MINOR		U(0x0)
+#define SMC_ARMV8                             ULL(0x1)
 
 
 #define	FUNCID_OEN_NUM_MASK  ((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
@@ -214,6 +216,10 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			return qti_sip_mem_assign(handle, GET_SMC_CC(smc_fid),
 									  x1, x2, x3, x4);
 		}
+        case QTI_SIP_IS_ARMV8:
+                {
+                        SMC_RET2(handle, SMC_OK, SMC_ARMV8);
+                }
 	default:
 		{
 			SMC_RET1(handle, SMC_UNK);
