@@ -43,9 +43,11 @@
  * source Virtual Machine (VM) to a destination VM.
  */
 #define	QTI_SIP_SVC_MEM_ASSIGN_ID			U(0x02000C16)
+#define	QTI_SIP_SVC_RESET_DEBUG_ID				U(0x02000109)
 
 #define	QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID		U(0x1)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
+#define	QTI_SIP_SVC_RESET_DEBUG_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID			U(0x1117)
 
 #define	QTI_SIP_SVC_CALL_COUNT			U(0x3)
@@ -225,6 +227,11 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
                 {
                         SMC_RET1(handle, SMC_OK);
                 }
+	case QTI_SIP_SVC_RESET_DEBUG_ID:
+		{
+			if ((QTI_SIP_SVC_RESET_DEBUG_PARAM_ID == x1))
+			    SMC_RET1(handle, qtiseclib_config_reset_debug(x2, x3));
+		}
 	default:
 		{
 			SMC_RET1(handle, SMC_UNK);
