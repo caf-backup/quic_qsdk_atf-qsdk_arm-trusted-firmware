@@ -61,8 +61,10 @@ int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
 						  u_register_t	spare);
 
 void qtiseclib_oem_register_wifi_interrupt(int irq);
+#if !QTI_6018_PLATFORM
 void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t *cbuf);
 void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t *cbuf);
+#endif
 int qtiseclib_psci_init(void);
 int qtiseclib_psci_node_power_on(u_register_t mpidr);
 void qtiseclib_psci_node_on_finish(const uint8_t * states);
