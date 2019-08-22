@@ -101,6 +101,21 @@ static void expand_and_mmap(uintptr_t baseaddr, size_t size)
 			MT_MEMORY | MT_RW | MT_NS | MT_EXECUTE_NEVER);
 }
 
+static void expand_and_mmap_dynamic(uintptr_t baseaddr, size_t size)
+{
+	uintptr_t pageaddr = round_down(baseaddr, PAGE_SIZE);
+	size_t expanded = round_up(baseaddr - pageaddr + size, PAGE_SIZE);
+	mmap_add_dynamic_region(pageaddr, pageaddr, expanded,
+			MT_MEMORY | MT_RW | MT_NS | MT_EXECUTE_NEVER);
+}
+
+static void expand_and_remove_mmap_dynamic(uintptr_t baseaddr, size_t size)
+{
+	uintptr_t pageaddr = round_down(baseaddr, PAGE_SIZE);
+	size_t expanded = round_up(baseaddr - pageaddr + size, PAGE_SIZE);
+	mmap_remove_dynamic_region(pageaddr, expanded);
+}
+
 static void setup_cbmem_console(uintptr_t baseaddr)
 {
 	static console_cbmc_t console;
@@ -118,11 +133,13 @@ static void setup_cbmem_console(uintptr_t baseaddr)
 static void setup_vboot_handoff_info(lb_range_t * range)
 {
 	if(range) {
-		expand_and_mmap((uintptr_t)range, sizeof(lb_range_t));
-		expand_and_mmap((uintptr_t)range->range_start, sizeof(vboot_handoff_t));
-		if(range->range_size >= sizeof(vboot_handoff_t)) {
-			vboot_handoff = *(vboot_handoff_t *)range->range_start;
-		}
+		uintptr_t range_start_ptr;
+		expand_and_mmap_dynamic((uintptr_t)range, sizeof(lb_range_t));
+		range_start_ptr = (uintptr_t)range->range_start;
+		expand_and_remove_mmap_dynamic((uintptr_t)range,sizeof(lb_range_t));
+		expand_and_mmap_dynamic(range_start_ptr, sizeof(vboot_handoff_t));
+		vboot_handoff = *(vboot_handoff_t *)range->range_start;
+		expand_and_remove_mmap_dynamic((uintptr_t)range,sizeof(lb_range_t));
 	}
 }
 
