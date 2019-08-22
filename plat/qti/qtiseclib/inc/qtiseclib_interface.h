@@ -79,4 +79,5 @@ __attribute__((noreturn)) void qtiseclib_psci_system_reset(void);
 void qtiseclib_disable_cluster_coherency(uint8_t state);
 int qtiseclib_psci_validate_power_state(unsigned int pwr_state, uint8_t * req_state);
 int qtiseclib_config_reset_debug(uint32_t, uint32_t);
+int qtiseclib_set_cpu_ctx_buf(uintptr_t addr, uint32_t size);
 #endif /* __QTISECLIB_INTERFACE_H__ */

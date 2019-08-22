@@ -38,6 +38,7 @@
 
 #define QTI_SIP_IS_ARMV8                        U(0x02000601)
 #define QTI_SIP_SVC_AUTH_CHECK_ID               U(0x02000807)
+#define QTI_DUMP_SET_CPU_CTX_BUF_ID             U(0x02000302)
 /*
  * Syscall's to assigns a list of intermediate PAs from a
  * source Virtual Machine (VM) to a destination VM.
@@ -171,6 +172,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 				 void *cookie, void *handle, u_register_t flags)
 {
 	uint32_t l_smc_fid = smc_fid & FUNCID_OEN_NUM_MASK;
+	int ret;
 
 	if (SMC_32 == GET_SMC_CC(smc_fid)) {
 		x1 = (uint32_t)x1;
@@ -232,7 +234,12 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			if ((QTI_SIP_SVC_RESET_DEBUG_PARAM_ID == x1))
 			    SMC_RET1(handle, qtiseclib_config_reset_debug(x2, x3));
 		}
-	default:
+        case QTI_DUMP_SET_CPU_CTX_BUF_ID:
+                {
+			ret = qtiseclib_set_cpu_ctx_buf(x2, x3);
+                        SMC_RET2(handle, SMC_OK, ret);
+                }
+ 	default:
 		{
 			SMC_RET1(handle, SMC_UNK);
 		}
