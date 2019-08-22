@@ -105,6 +105,7 @@ void plat_qti_gic_cpuif_disable(void)
 void plat_qti_gic_pcpu_init(void)
 {
 	gicv2_pcpu_distif_init();
+	gicv2_set_pe_target_mask(plat_my_core_pos());
 }
 
 /******************************************************************************
