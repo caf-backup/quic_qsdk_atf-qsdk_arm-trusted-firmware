@@ -46,6 +46,7 @@ typedef uintptr_t u_register_t;
 #define QTISECLIB_INT_ID_MEM_NOC_ERROR			(0x51)
 #define QTISECLIB_INT_ID_SYSTEM_NOC_ERROR		(0xE1)
 #define QTISECLIB_INT_ID_PC_NOC_ERROR			(0xE2)
+#define QTISECLIB_INT_ID_AHB_TIMEOUT                    (0xE5)
 #define	QTISECLIB_INT_INVALID_INT_NUM			(0xFFFFFFFFU)
 
 /* External CPU Dump Structure - 64 bit EL */
