@@ -28,7 +28,7 @@
 	 */
 func qti_console_uart_register
 	str	x1, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]		/* Save UART base. */
-	finish_console_register uart
+	finish_console_register uart putc=1, flush=1
 endfunc qti_console_uart_register
 
 	/* -----------------------------------------------
