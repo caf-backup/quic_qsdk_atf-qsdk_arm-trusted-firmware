@@ -4,10 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
 #include <assert.h>
 #include <lib/spinlock.h>
 #include <platform.h>
@@ -44,6 +40,15 @@ void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 {
 	va_list argp;
 	static spinlock_t qti_log_lock;
+
+	uint32_t tick32_low,tick32_high;
+	uint64_t uptime;
+	uptime = read_cntpct_el0();
+
+	tick32_low=uptime&0xFFFFFFFF;
+	tick32_high=(uptime>>32)&0xFFFFFFFF;
+
+	printf("[%x%08x]", tick32_high,tick32_low);
 
 	va_start(argp, fmt);
 

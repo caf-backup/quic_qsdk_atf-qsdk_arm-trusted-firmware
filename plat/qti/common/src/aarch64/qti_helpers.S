@@ -11,11 +11,14 @@
 #include <drivers/arm/gicv3.h>
 #include <platform_def.h>
 #include <drivers/console.h>
+#include <console_macros.S>
+#include <qti_uart_console.h>
 
 	.globl	plat_my_core_pos
 	.globl	plat_qti_core_pos_by_mpidr
 	.globl	plat_reset_handler
 	.globl	plat_panic_handler
+	.globl	qti_diag_register
 
 	/* -----------------------------------------------------
 	 *  unsigned int plat_qti_core_pos_by_mpidr(uint64_t mpidr)
@@ -84,3 +87,25 @@ func plat_reset_handler
 	mov	x30, x18
 	ret
 endfunc plat_reset_handler
+
+#ifdef QTI_6018_PLATFORM
+	/*----------------------------------------------------
+	* Register diag region as console. So that we could
+	* use console related apis like printf, putchar etc.
+	* with diag region alongside UART
+	*-----------------------------------------------------
+	*/
+func qti_diag_register
+	str	x1, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]		/* Save UART base. */
+	finish_console_register diag putc=1, getc=0, flush=0
+endfunc qti_diag_register
+
+func console_diag_putc
+	stp     x29, x30, [sp,#-16]!
+	mov     x29, sp
+	bl log_put
+	mov	w0, #0x0
+	ldp     x29, x30, [sp],#16
+	ret
+endfunc	console_diag_putc
+#endif

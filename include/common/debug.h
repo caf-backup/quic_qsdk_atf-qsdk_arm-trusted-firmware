@@ -66,11 +66,7 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_NOTICE
-#if QTI_6018_PLATFORM
-# define NOTICE(...)	no_tf_log(LOG_MARKER_NOTICE __VA_ARGS__)
-#else
 # define NOTICE(...)	tf_log(LOG_MARKER_NOTICE __VA_ARGS__)
-#endif
 #else
 # define NOTICE(...)	no_tf_log(LOG_MARKER_NOTICE __VA_ARGS__)
 #endif
@@ -82,21 +78,13 @@
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_INFO
-#if QTI_6018_PLATFORM
-# define INFO(...)	no_tf_log(LOG_MARKER_NOTICE __VA_ARGS__)
-#else
-# define INFO(...)	tf_log(LOG_MARKER_NOTICE __VA_ARGS__)
-#endif
+# define INFO(...)	tf_log(LOG_MARKER_INFO __VA_ARGS__)
 #else
 # define INFO(...)	no_tf_log(LOG_MARKER_INFO __VA_ARGS__)
 #endif
 
 #if LOG_LEVEL >= LOG_LEVEL_VERBOSE
-#if QTI_6018_PLATFORM
-# define VERBOSE(...)	no_tf_log(LOG_MARKER_VERBOSE __VA_ARGS__)
-#else
 # define VERBOSE(...)	tf_log(LOG_MARKER_VERBOSE __VA_ARGS__)
-#endif
 #else
 # define VERBOSE(...)	no_tf_log(LOG_MARKER_VERBOSE __VA_ARGS__)
 #endif

@@ -49,13 +49,15 @@
  * BL31 from BL2.
  */
 static entry_point_info_t bl33_image_ep_info;
-
 /*
  * Variable to hold counter frequency for the CPU's generic timer. In this
  * platform coreboot image configure counter frequency for boot core before
  * reaching ATF.
  */
 static uint64_t g_qti_cpu_cntfrq;
+
+extern uint8_t __DIAG_REGION_START__;
+void qtiseclib_diag_init(void);
 
 /*
  * Lock variable to serialize cpuss reset execution.
@@ -128,8 +130,17 @@ void bl31_early_platform_setup(qti_bl31_params_t * from_bl2,
 
 void qti_bl31_early_platform_setup(uint64_t from_bl2)
 {
+	static qti_console_uart_t g_qti_diag;
+
 	qtiseclib_get_entrypoint_param(from_bl2, &bl33_image_ep_info);
 	SET_SECURITY_STATE(bl33_image_ep_info.h.attr, NON_SECURE);
+
+	/*
+	Register ram region __DIAG_REGION_START__ as console to
+	log diagnostics messages.
+	*/
+	qti_diag_register(&g_qti_diag, __DIAG_REGION_START__);
+	qtiseclib_diag_init();
 }
 
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,

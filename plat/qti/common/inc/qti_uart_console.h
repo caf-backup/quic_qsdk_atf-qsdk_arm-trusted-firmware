@@ -22,6 +22,8 @@ typedef struct {
 int qti_console_uart_register(qti_console_uart_t * console,
 			      uintptr_t uart_base_addr);
 
+int qti_diag_register(qti_console_uart_t * console,
+			      uintptr_t uart_base_addr);
 #endif /* __ASSEMBLER__ */
 
 #endif /* __QTI_UART_CONSOLE_H__ */

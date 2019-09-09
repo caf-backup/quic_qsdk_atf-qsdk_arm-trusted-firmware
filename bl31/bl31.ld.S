@@ -319,6 +319,19 @@ SECTIONS
     } >RAM
 #endif
 
+#if QTI_6018_PLATFORM
+      /****************************************************************
+   *  TZOS Diag
+   *  Attrib.: RW, PXN=1, Uncacheable, PL1
+   *  Note: TZ Diag size is 8KB, uncacheable region.
+   ****************************************************************/
+    diag . : {
+     __DIAG_REGION_START__ = .;
+      . = . + QTI_DIAG_RG_SIZE;
+     __DIAG_REGION_END__ = .;
+    } >RAM
+
+#endif
     /*
      * Define a linker symbol to mark end of the RW memory area for this
      * image.
