@@ -92,6 +92,8 @@ void qti_setup_page_tables(uintptr_t total_base,
 						   uintptr_t rodata_limit,
 						   uintptr_t coh_start, uintptr_t coh_limit)
 {
+
+	static uint64_t total_ddr_size = 0;
 	/*
 	 * Map the Trusted SRAM with appropriate memory attributes.
 	 * Subsequent mappings will adjust the attributes for specific regions.
@@ -126,6 +128,11 @@ void qti_setup_page_tables(uintptr_t total_base,
 			SP_IMAGE_XLAT_TABLES_SIZE,
 			MT_MEMORY | MT_RW | MT_SECURE);
 #endif
+
+	/* Get DDR size to map the HLOS address space*/
+        total_ddr_size = qtiseclib_get_ddr_size();
+        mmap_add_region(BL31_LIMIT, BL31_LIMIT,
+                        ((QTI_DDR_BASE + total_ddr_size) - BL31_LIMIT), MT_MEMORY | MT_RW | MT_SECURE);
 
 	/* Now (re-)map the platform-specific memory regions */
 	mmap_add(plat_qti_mmap);
