@@ -240,6 +240,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		{
 			if ((QTI_SIP_SVC_RESET_DEBUG_PARAM_ID == x1))
 			    SMC_RET1(handle, qtiseclib_config_reset_debug(x2, x3));
+			SMC_RET1(handle, SMC_UNK);
 		}
         case QTI_DUMP_SET_CPU_CTX_BUF_ID:
                 {
