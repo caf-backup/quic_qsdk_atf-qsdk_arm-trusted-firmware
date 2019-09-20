@@ -105,7 +105,6 @@ $(warning Release version of qtisec library used in Debug build!!..)
 endif
 endif
 
-LDFLAGS += -L ${LIB_QTI_PATH}
-
+LDFLAGS += -z max-page-size=4096 -L ${LIB_QTI_PATH}
 LDLIBS += -l$(QTISECLIB)
 
