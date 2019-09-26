@@ -120,40 +120,40 @@ Other Documents
 `Change Log`_
 
 .. _About Trusted Firmware-A: ../readme.rst
-.. _Frequently-Asked Questions (FAQ): ./frequently-asked-questions.rst
-.. _Image Terminology: ./image-terminology.rst
-.. _Porting Guide: ./porting-guide.rst
-.. _User Guide: ./user-guide.rst
-.. _Coding Style and Guidelines: ./coding-guidelines.rst
-.. _Contributor Acknowledgements: ../acknowledgements.rst
-.. _`Contributor's Guide`: ../contributing.rst
+.. _Frequently-Asked Questions (FAQ): ./process/faq.rst
+.. _Image Terminology: ./getting_started/image-terminology.rst
+.. _Porting Guide: ./getting_started/porting-guide.rst
+.. _User Guide: ./getting_started/user-guide.rst
+.. _Coding Style and Guidelines: ./process/coding-guidelines.rst
+.. _Contributor Acknowledgements: ./acknowledgements.rst
+.. _`Contributor's Guide`: ./process/contributing.rst
 .. _License: ../license.rst
-.. _Maintainers: ../maintainers.rst
-.. _Platform Compatibility Policy: ./platform-compatibility-policy.rst
-.. _Release Processes: ./release-information.rst
-.. _Arm SiP Services: ./arm-sip-service.rst
-.. _Exception Handling Framework: ./exception-handling.rst
-.. _Firmware Update (FWU): ./firmware-update.rst
-.. _Interrupt Management Framework: ./interrupt-framework-design.rst
-.. _Library at ROM: ./romlib-design.rst
-.. _Platform Interrupt Controller API: ./platform-interrupt-controller-API.rst
-.. _`Reliability, Availability, and Serviceability (RAS) Extensions`: ./ras.rst
-.. _Secure Partition Manager: ./secure-partition-manager-design.rst
-.. _Software Delegated Exception Interface: ./sdei.rst
-.. _Translation (XLAT) Tables Library: ./xlat-tables-lib-v2-design.rst
-.. _OP-TEE Dispatcher: ./spd/optee-dispatcher.rst
-.. _Trusted Little Kernel (TLK) Dispatcher: ./spd/tlk-dispatcher.rst
-.. _Trusty Dispatcher: ./spd/trusty-dispatcher.rst
-.. _Arm CPU Specific Build Macros: ./cpu-specific-build-macros.rst
-.. _`Authentication Framework & Chain of Trust`: ./auth-framework.rst
-.. _CPU Reset: ./reset-design.rst
-.. _`EL3 Runtime Service Writer’s Guide`: ./rt-svc-writers-guide.rst
-.. _Firmware Design Overview: ./firmware-design.rst
-.. _PSCI Library Integration Guide for Armv8-A AArch32 systems: ./psci-lib-integration-guide.rst
-.. _PSCI Power Domain Tree design: ./psci-pd-tree.rst
-.. _Trusted Board Boot Design Guide: ./trusted-board-boot.rst
-.. _PSCI Performance Measurements on Arm Juno Development Platform: ./psci-performance-juno.rst
-.. _Security Processes: ./security-center.rst
+.. _Maintainers: ./maintainers.rst
+.. _Platform Compatibility Policy: ./process/platform-compatibility-policy.rst
+.. _Release Processes: ./process/release-information.rst
+.. _Arm SiP Services: ./components/arm-sip-service.rst
+.. _Exception Handling Framework: ./components/exception-handling.rst
+.. _Firmware Update (FWU): ./components/firmware-update.rst
+.. _Interrupt Management Framework: ./design/interrupt-framework-design.rst
+.. _Library at ROM: ./components/romlib-design.rst
+.. _Platform Interrupt Controller API: ./components/platform-interrupt-controller-API.rst
+.. _`Reliability, Availability, and Serviceability (RAS) Extensions`: ./components/ras.rst
+.. _Secure Partition Manager: ./components/secure-partition-manager-design.rst
+.. _Software Delegated Exception Interface: ./components/sdei.rst
+.. _Translation (XLAT) Tables Library: ./components/xlat-tables-lib-v2-design.rst
+.. _OP-TEE Dispatcher: ./components/spd/optee-dispatcher.rst
+.. _Trusted Little Kernel (TLK) Dispatcher: ./components/spd/tlk-dispatcher.rst
+.. _Trusty Dispatcher: ./components/spd/trusty-dispatcher.rst
+.. _Arm CPU Specific Build Macros: ./design/cpu-specific-build-macros.rst
+.. _`Authentication Framework & Chain of Trust`: ./design/auth-framework.rst
+.. _CPU Reset: ./design/reset-design.rst
+.. _`EL3 Runtime Service Writer’s Guide`: ./getting_started/rt-svc-writers-guide.rst
+.. _Firmware Design Overview: ./design/firmware-design.rst
+.. _PSCI Library Integration Guide for Armv8-A AArch32 systems: ./getting_started/psci-lib-integration-guide.rst
+.. _PSCI Power Domain Tree design: ./design/psci-pd-tree.rst
+.. _Trusted Board Boot Design Guide: ./design/trusted-board-boot.rst
+.. _PSCI Performance Measurements on Arm Juno Development Platform: ./perf/psci-performance-juno.rst
+.. _Security Processes: ./process/security.rst
 .. _Change Log: ./change-log.rst
 .. _TFV-1: ./security_advisories/security-advisory-tfv-1.rst
 .. _TFV-2: ./security_advisories/security-advisory-tfv-2.rst

@@ -180,7 +180,7 @@ INTR_PROP_DESC(MT_IRQ_SEC_SGI_7, GIC_HIGHEST_SEC_PRIORITY, grp, \
 #define MTK_WDT_STATUS_SECURITY_RST         (1 << 28)
 #define MTK_WDT_STATUS_IRQ_ASSERT           (1 << 29)
 #define MTK_WDT_STATUS_SW_WDT_RST           (1 << 30)
-#define MTK_WDT_STATUS_HW_WDT_RST           (1 << 31)
+#define MTK_WDT_STATUS_HW_WDT_RST           (1U << 31)
 
 /* RGU other related */
 #define MTK_WDT_MODE_DUAL_MODE    0x0040
@@ -273,7 +273,7 @@ INTR_PROP_DESC(MT_IRQ_SEC_SGI_7, GIC_HIGHEST_SEC_PRIORITY, grp, \
  ******************************************************************************/
 
 #define TZRAM_BASE          0x54600000
-#define TZRAM_SIZE          0x00020000
+#define TZRAM_SIZE          0x00030000
 
 /*******************************************************************************
  * BL31 specific defines.
@@ -291,7 +291,7 @@ INTR_PROP_DESC(MT_IRQ_SEC_SGI_7, GIC_HIGHEST_SEC_PRIORITY, grp, \
  ******************************************************************************/
 #define PLAT_PHY_ADDR_SPACE_SIZE    (1ULL << 32)
 #define PLAT_VIRT_ADDR_SPACE_SIZE   (1ULL << 32)
-#define MAX_XLAT_TABLES             4
+#define MAX_XLAT_TABLES             16
 #define MAX_MMAP_REGIONS            16
 
 /*******************************************************************************

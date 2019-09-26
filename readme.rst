@@ -156,8 +156,8 @@ Functionality
    The use of pointer authentication in the normal world is enabled whenever
    architectural support is available, without the need for additional build
    flags. Use of pointer authentication in the secure world remains an
-   experimental configuration at this time and requires the ``ENABLE_PAUTH``
-   build flag to be set.
+   experimental configuration at this time and requires the
+   ``BRANCH_PROTECTION`` option to be set to non-zero.
 
 -  Position-Independent Executable (PIE) support. Initially for BL31 only, with
    further support to be added in a future release.
@@ -176,7 +176,7 @@ The latest version of the AArch64 build of TF-A has been tested on the following
 Arm FVPs without shifted affinities, and that do not support threaded CPU cores
 (64-bit host machine only).
 
-The FVP models used are Version 11.5 Build 33, unless otherwise stated.
+The FVP models used are Version 11.6 Build 45, unless otherwise stated.
 
 -  ``FVP_Base_AEMv8A-AEMv8A``
 -  ``FVP_Base_AEMv8A-AEMv8A-AEMv8A-AEMv8A-CCN502``
@@ -196,14 +196,14 @@ The FVP models used are Version 11.5 Build 33, unless otherwise stated.
 -  ``FVP_Base_Cortex-A73x4``
 -  ``FVP_Base_Cortex-A75x4``
 -  ``FVP_Base_Cortex-A76x4``
--  ``FVP_Base_Cortex-A76AEx4`` (Tested with internal model)
--  ``FVP_Base_Cortex-A76AEx8`` (Tested with internal model)
--  ``FVP_Base_Neoverse-N1x4`` (Tested with internal model)
--  ``FVP_Base_Deimos``
+-  ``FVP_Base_Cortex-A76AEx4``
+-  ``FVP_Base_Cortex-A76AEx8``
+-  ``FVP_Base_Cortex-A77x4`` (Version 11.7 build 36)
+-  ``FVP_Base_Neoverse-N1x4``
 -  ``FVP_CSS_SGI-575`` (Version 11.3 build 42)
 -  ``FVP_CSS_SGM-775`` (Version 11.3 build 42)
 -  ``FVP_RD_E1Edge`` (Version 11.3 build 42)
--  ``FVP_RD_N1Edge`` (Version 11.3 build 42)
+-  ``FVP_RD_N1Edge``
 -  ``Foundation_Platform``
 
 The latest version of the AArch32 build of TF-A has been tested on the following
@@ -222,7 +222,7 @@ All the above platforms have been tested with `Linaro Release 18.04`_.
 
 This release also contains the following platform support:
 
--  Allwinner sun50i_a64 and sun50i_h6
+-  Allwinner sun50i (A64, H5, and H6) SoCs
 -  Amlogic Meson S905 (GXBB)
 -  Amlogic Meson S905x (GXL)
 -  Arm Juno Software Development Platform
@@ -282,20 +282,13 @@ See the `Contributing Guidelines`_ for information on how to contribute to this
 project and the `Acknowledgments`_ file for a list of contributors to the
 project.
 
-IRC channel
-~~~~~~~~~~~
+Contact us
+~~~~~~~~~~
 
-Development discussion takes place on the #trusted-firmware-a channel
-on the Freenode IRC network. This is not an official support channel.
-If you have an issue to raise, please use the `issue tracker`_.
-
-Feedback and support
-~~~~~~~~~~~~~~~~~~~~
-
-Arm welcomes any feedback on TF-A. If you think you have found a security
+We welcome any feedback on TF-A. If you think you have found a security
 vulnerability, please report this using the process defined in the TF-A
-`Security Center`_. For all other feedback, please use the
-`issue tracker`_.
+`Security Center`_. For all other feedback, you can use either the
+`issue tracker`_ or our `mailing list`_.
 
 Arm licensees may contact Arm directly via their partner managers.
 
@@ -335,14 +328,15 @@ Security advisories
 .. _Trusty Secure OS: https://source.android.com/security/trusty
 .. _trustedfirmware.org: https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
 .. _issue tracker: https://developer.trustedfirmware.org/project/board/1/
-.. _Security Center: ./docs/security-center.rst
+.. _mailing list: https://lists.trustedfirmware.org/mailman/listinfo/tf-a
+.. _Security Center: ./docs/process/security.rst
 .. _license: ./license.rst
-.. _Contributing Guidelines: ./contributing.rst
-.. _Acknowledgments: ./acknowledgements.rst
-.. _Firmware Design: ./docs/firmware-design.rst
+.. _Contributing Guidelines: ./docs/process/contributing.rst
+.. _Acknowledgments: ./docs/acknowledgements.rst
+.. _Firmware Design: ./docs/design/firmware-design.rst
 .. _Change Log: ./docs/change-log.rst
-.. _User Guide: ./docs/user-guide.rst
-.. _Porting Guide: ./docs/porting-guide.rst
+.. _User Guide: ./docs/getting_started/user-guide.rst
+.. _Porting Guide: ./docs/getting_started/porting-guide.rst
 .. _FreeBSD: http://www.freebsd.org
 .. _SCC: http://www.simple-cc.org/
 .. _Security Advisory TFV-1: ./docs/security_advisories/security-advisory-tfv-1.rst

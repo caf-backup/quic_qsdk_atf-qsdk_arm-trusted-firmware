@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -73,12 +73,12 @@ void __init gicv3_driver_init(const gicv3_driver_data_t *plat_driver_data)
 	       plat_driver_data->interrupt_props != NULL : 1);
 
 	/* Check for system register support */
-#ifdef AARCH32
-	assert((read_id_pfr1() & (ID_PFR1_GIC_MASK << ID_PFR1_GIC_SHIFT)) != 0U);
-#else
+#ifdef __aarch64__
 	assert((read_id_aa64pfr0_el1() &
 			(ID_AA64PFR0_GIC_MASK << ID_AA64PFR0_GIC_SHIFT)) != 0U);
-#endif /* AARCH32 */
+#else
+	assert((read_id_pfr1() & (ID_PFR1_GIC_MASK << ID_PFR1_GIC_SHIFT)) != 0U);
+#endif /* __aarch64__ */
 
 	/* The GIC version should be 3.0 */
 	gic_version = gicd_read_pidr2(plat_driver_data->gicd_base);
@@ -265,6 +265,10 @@ void gicv3_cpuif_enable(unsigned int proc_num)
 	write_scr_el3(scr_el3 & (~SCR_NS_BIT));
 	isb();
 
+	/* Write the secure ICC_SRE_EL1 register */
+	write_icc_sre_el1(ICC_SRE_SRE_BIT);
+	isb();
+
 	/* Program the idle priority in the PMR */
 	write_icc_pmr_el1(GIC_PRI_MASK);
 
@@ -274,9 +278,6 @@ void gicv3_cpuif_enable(unsigned int proc_num)
 	/* Enable Group1 Secure interrupts */
 	write_icc_igrpen1_el3(read_icc_igrpen1_el3() |
 				IGRPEN1_EL3_ENABLE_G1S_BIT);
-
-	/* Write the secure ICC_SRE_EL1 register */
-	write_icc_sre_el1(ICC_SRE_SRE_BIT);
 	isb();
 }
 

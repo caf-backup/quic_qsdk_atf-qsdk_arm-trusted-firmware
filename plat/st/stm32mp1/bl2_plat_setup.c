@@ -15,7 +15,9 @@
 #include <common/desc_image_load.h>
 #include <drivers/delay_timer.h>
 #include <drivers/generic_delay_timer.h>
+#include <drivers/st/bsec.h>
 #include <drivers/st/stm32_console.h>
+#include <drivers/st/stm32_iwdg.h>
 #include <drivers/st/stm32mp_pmic.h>
 #include <drivers/st/stm32mp_reset.h>
 #include <drivers/st/stm32mp1_clk.h>
@@ -27,6 +29,7 @@
 #include <plat/common/platform.h>
 
 #include <stm32mp1_context.h>
+#include <stm32mp1_dbgmcu.h>
 
 static struct console_stm32 console;
 
@@ -211,6 +214,10 @@ void bl2_el3_plat_arch_setup(void)
 		;
 	}
 
+	if (bsec_probe() != 0) {
+		panic();
+	}
+
 	/* Reset backup domain on cold boot cases */
 	if ((mmio_read_32(rcc_base + RCC_BDCR) & RCC_BDCR_RTCSRC_MASK) == 0U) {
 		mmio_setbits_32(rcc_base + RCC_BDCR, RCC_BDCR_VSWRST);
@@ -235,6 +242,8 @@ void bl2_el3_plat_arch_setup(void)
 	if (stm32mp1_clk_init() < 0) {
 		panic();
 	}
+
+	stm32mp1_syscfg_init();
 
 	result = dt_get_stdout_uart_info(&dt_uart_info);
 
@@ -263,12 +272,29 @@ void bl2_el3_plat_arch_setup(void)
 		panic();
 	}
 
+	console_set_scope(&console.console, CONSOLE_FLAG_BOOT |
+			  CONSOLE_FLAG_CRASH | CONSOLE_FLAG_TRANSLATE_CRLF);
+
+	stm32mp_print_cpuinfo();
+
 	board_model = dt_get_board_model();
 	if (board_model != NULL) {
 		NOTICE("Model: %s\n", board_model);
 	}
 
+	stm32mp_print_boardinfo();
+
 skip_console_init:
+	if (stm32_iwdg_init() < 0) {
+		panic();
+	}
+
+	stm32_iwdg_refresh();
+
+	result = stm32mp1_dbgmcu_freeze_iwdg2();
+	if (result != 0) {
+		INFO("IWDG2 freeze error : %i\n", result);
+	}
 
 	if (stm32_save_boot_interface(boot_context->boot_interface_selected,
 				      boot_context->boot_interface_instance) !=

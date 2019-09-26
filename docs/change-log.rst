@@ -1,10 +1,8 @@
-Trusted Firmware-A Release Notes
-================================
+Change Log & Release Notes
+==========================
 
 This document contains a summary of the new features, changes, fixes and known
 issues in each release of Trusted Firmware-A.
-
-.. contents::
 
 Version 2.1
 -----------
@@ -296,12 +294,12 @@ Changed
 
 - SDEI
    - Added support for unconditionally resuming secure world execution after
-     SDEI event processing completes
+     |SDEI| event processing completes
 
-     SDEI interrupts, although targeting EL3, occur on behalf of the non-secure
+     |SDEI| interrupts, although targeting EL3, occur on behalf of the non-secure
      world, and may have higher priority than secure world
      interrupts. Therefore they might preempt secure execution and yield
-     execution to the non-secure SDEI handler. Upon completion of SDEI event
+     execution to the non-secure |SDEI| handler. Upon completion of |SDEI| event
      handling, resume secure execution if it was preempted.
 
 - Translation Tables (XLAT)
@@ -503,7 +501,7 @@ New Features
 
    -  Implement dynamic mitigation for CVE-2018-3639 on Cortex-A76
 
-   -  Ensure SDEI handler executes with CVE-2018-3639 mitigation enabled
+   -  Ensure |SDEI| handler executes with CVE-2018-3639 mitigation enabled
 
 -  Introduce RAS handling on AArch64
 
@@ -623,7 +621,7 @@ New Features
 
    -  Introduce jump primitives for BL31
 
-   -  Mask events after CPU wakeup in SDEI dispatcher to conform to the
+   -  Mask events after CPU wakeup in |SDEI| dispatcher to conform to the
       specification
 
 -  Misc TF-A Core Common Code Enhancements
@@ -634,8 +632,8 @@ New Features
 
    -  Introduce External Abort handling on AArch64
       External Abort routed to EL3 was reported as an unhandled exception
-      and caused a panic. This change enables Arm Trusted Firmware-A to
-      handle External Aborts routed to EL3.
+      and caused a panic. This change enables Trusted Firmware-A to handle
+      External Aborts routed to EL3.
 
    -  Save value of ACTLR_EL1 implementation-defined register in the CPU
       context structure rather than forcing it to 0.
@@ -787,8 +785,8 @@ New features
       management and security services. The SPM is the firmware component that
       is responsible for managing a Secure Partition.
 
-   -  SDEI dispatcher: Support for interrupt-based SDEI events and all
-      interfaces as defined by the SDEI specification v1.0, see
+   -  SDEI dispatcher: Support for interrupt-based |SDEI| events and all
+      interfaces as defined by the |SDEI| specification v1.0, see
       `SDEI Specification`_
 
    -  Exception Handling Framework (EHF): Framework that allows dispatching of
@@ -1188,7 +1186,8 @@ New features
 -  Migrated to use SPDX[0] license identifiers to make software license
    auditing simpler.
 
-   *NOTE:* Files that have been imported by FreeBSD have not been modified.
+   .. note::
+      Files that have been imported by FreeBSD have not been modified.
 
    [0]: https://spdx.org/
 
@@ -1627,7 +1626,7 @@ New features
    -  `Power Domain Topology Design`_
 
 -  Applied the new image terminology to the code base and documentation, as
-   described on the `TF-A wiki on GitHub`_.
+   described in the `image terminology document`_.
 
 -  The build system has been reworked to improve readability and facilitate
    adding future extensions.
@@ -2207,7 +2206,8 @@ New features
    be used on the AEMv8 and Cortex-A57-A53 Base FVPs, as well as the Foundation
    FVP.
 
-   NOTE: The software will not work on Version 1.0 of the Foundation FVP.
+   .. note::
+      The software will not work on Version 1.0 of the Foundation FVP.
 
 -  Enabled third party contributions. Added a new contributing.md containing
    instructions for how to contribute and updated copyright text in all files
@@ -2238,15 +2238,18 @@ New features
    FIP from NOR flash, although some support for image loading using semi-
    hosting is retained.
 
-   NOTE: Building a FIP by default is a non-backwards-compatible change.
+   .. note::
+      Building a FIP by default is a non-backwards-compatible change.
 
-   NOTE: Generic BL2 code now loads a BL3-3 (non-trusted firmware) image into
-   DRAM instead of expecting this to be pre-loaded at known location. This is
-   also a non-backwards-compatible change.
+   .. note::
+      Generic BL2 code now loads a BL3-3 (non-trusted firmware) image into
+      DRAM instead of expecting this to be pre-loaded at known location. This is
+      also a non-backwards-compatible change.
 
-   NOTE: Some non-trusted firmware (e.g. UEFI) will need to be rebuilt so that
-   it knows the new location to execute from and no longer needs to copy
-   particular code modules to DRAM itself.
+   .. note::
+      Some non-trusted firmware (e.g. UEFI) will need to be rebuilt so that
+      it knows the new location to execute from and no longer needs to copy
+      particular code modules to DRAM itself.
 
 -  Reworked BL2 to BL3-1 handover interface. A new composite structure
    (bl31_args) holds the superset of information that needs to be passed from
@@ -2272,8 +2275,11 @@ New features
    Dispatcher (TSPD), which is loaded as an EL3 runtime service. The TSPD
    implements Secure Monitor functionality such as world switching and
    EL1 context management, and is responsible for communication with the TSP.
-   NOTE: The TSPD does not yet contain support for secure world interrupts.
-   NOTE: The TSP/TSPD is not built by default.
+
+   .. note::
+      The TSPD does not yet contain support for secure world interrupts.
+   .. note::
+      The TSP/TSPD is not built by default.
 
 Issues resolved since last release
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2414,18 +2420,19 @@ releases of TF-A.
 
 --------------
 
-*Copyright (c) 2013-2018, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2013-2019, Arm Limited and Contributors. All rights reserved.*
 
 .. _SDEI Specification: http://infocenter.arm.com/help/topic/com.arm.doc.den0054a/ARM_DEN0054A_Software_Delegated_Exception_Interface.pdf
-.. _PSCI Integration Guide: psci-lib-integration-guide.rst
+.. _PSCI Integration Guide: ./getting_started/psci-lib-integration-guide.rst
 .. _Developer Certificate of Origin: ../dco.txt
-.. _Contribution Guide: ../contributing.rst
-.. _Authentication framework: auth-framework.rst
-.. _Firmware Update: firmware-update.rst
-.. _TF-A Reset Design: reset-design.rst
-.. _Power Domain Topology Design: psci-pd-tree.rst
-.. _TF-A wiki on GitHub: https://github.com/ARM-software/arm-trusted-firmware/wiki/ARM-Trusted-Firmware-Image-Terminology
-.. _Authentication Framework: auth-framework.rst
-.. _OP-TEE Dispatcher: optee-dispatcher.rst
+.. _Contribution Guide: ./process/contributing.rst
+.. _Authentication framework: ./design/auth-framework.rst
+.. _Firmware Update: ./design/firmware-update.rst
+.. _Firmware Design: ./design/firmware-design.rst
+.. _TF-A Reset Design: ./design/reset-design.rst
+.. _Power Domain Topology Design: ./design/psci-pd-tree.rst
+.. _image terminology document: ./getting_started/image-terminology.rst
+.. _Authentication Framework: ./design/auth-framework.rst
+.. _OP-TEE Dispatcher: ./spd/optee-dispatcher.rst
 .. _tf-issue#501: https://github.com/ARM-software/tf-issues/issues/501
 .. _PR#1002: https://github.com/ARM-software/arm-trusted-firmware/pull/1002#issuecomment-312650193

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2019, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -19,7 +19,6 @@
 /* Weak definitions may be overridden in specific ARM standard platform */
 #pragma weak bl1_early_platform_setup
 #pragma weak bl1_plat_arch_setup
-#pragma weak bl1_platform_setup
 #pragma weak bl1_plat_sec_mem_layout
 #pragma weak bl1_plat_prepare_exit
 #pragma weak bl1_plat_get_next_image_id
@@ -122,11 +121,11 @@ void arm_bl1_plat_arch_setup(void)
 	};
 
 	setup_page_tables(bl_regions, plat_arm_get_mmap());
-#ifdef AARCH32
-	enable_mmu_svc_mon(0);
-#else
+#ifdef __aarch64__
 	enable_mmu_el3(0);
-#endif /* AARCH32 */
+#else
+	enable_mmu_svc_mon(0);
+#endif /* __aarch64__ */
 
 	arm_setup_romlib();
 }
@@ -160,11 +159,6 @@ void arm_bl1_platform_setup(void)
 #if (ARM_ARCH_MAJOR > 7) || defined(ARMV7_SUPPORTS_GENERIC_TIMER)
 	write_cntfrq_el0(plat_get_syscnt_freq2());
 #endif
-}
-
-void bl1_platform_setup(void)
-{
-	arm_bl1_platform_setup();
 }
 
 void bl1_plat_prepare_exit(entry_point_info_t *ep_info)

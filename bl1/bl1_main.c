@@ -9,6 +9,7 @@
 #include <platform_def.h>
 
 #include <arch.h>
+#include <arch_features.h>
 #include <arch_helpers.h>
 #include <bl1/bl1.h>
 #include <common/bl_common.h>
@@ -59,18 +60,16 @@ void bl1_setup(void)
 	/* Perform early platform-specific setup */
 	bl1_early_platform_setup();
 
-#ifdef AARCH64
-	/*
-	 * Update pointer authentication key before the MMU is enabled. It is
-	 * saved in the rodata section, that can be writen before enabling the
-	 * MMU. This function must be called after the console is initialized
-	 * in the early platform setup.
-	 */
-	bl_handle_pauth();
-#endif /* AARCH64 */
-
 	/* Perform late platform-specific setup */
 	bl1_plat_arch_setup();
+
+#if CTX_INCLUDE_PAUTH_REGS
+	/*
+	 * Assert that the ARMv8.3-PAuth registers are present or an access
+	 * fault will be triggered when they are being saved or restored.
+	 */
+	assert(is_armv8_3_pauth_present());
+#endif /* CTX_INCLUDE_PAUTH_REGS */
 }
 
 /*******************************************************************************
@@ -97,10 +96,10 @@ void bl1_main(void)
 	/*
 	 * Ensure that MMU/Caches and coherency are turned on
 	 */
-#ifdef AARCH32
-	val = read_sctlr();
-#else
+#ifdef __aarch64__
 	val = read_sctlr_el3();
+#else
+	val = read_sctlr();
 #endif
 	assert(val & SCTLR_M_BIT);
 	assert(val & SCTLR_C_BIT);
@@ -198,11 +197,11 @@ static void bl1_load_bl2(void)
  ******************************************************************************/
 void bl1_print_next_bl_ep_info(const entry_point_info_t *bl_ep_info)
 {
-#ifdef AARCH32
-	NOTICE("BL1: Booting BL32\n");
-#else
+#ifdef __aarch64__
 	NOTICE("BL1: Booting BL31\n");
-#endif /* AARCH32 */
+#else
+	NOTICE("BL1: Booting BL32\n");
+#endif /* __aarch64__ */
 	print_entry_point_info(bl_ep_info);
 }
 
