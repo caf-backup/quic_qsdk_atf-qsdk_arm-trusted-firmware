@@ -8,41 +8,16 @@
 #include <assert.h>
 #include <common/debug.h>
 #include <platform.h>
-#include <common/ep_info.h>
+#include <common/desc_image_load.h>
+#include <lib/bl_aux_params/bl_aux_params.h>
 #include <bl31/bl31.h>
 #include <drivers/console.h>
 #include <lib/coreboot.h>
 #include <lib/spinlock.h>
 #include <qti_plat.h>
-#include <qti_plat_params.h>
 #include <qti_interrupt_svc.h>
 #include <qti_uart_console.h>
 #include <qtiseclib_interface.h>
-
-/*
- * Below constants identify the extents of the code, RO data region and the
- * limit of the BL31 image.  These addresses are used by the MMU setup code and
- * therefore they must be page-aligned.  It is the responsibility of the linker
- * script to ensure that __RO_START__, __RO_END__ & __BL31_END__ linker symbols
- * refer to page-aligned addresses.
- */
-#define BL31_CODE_BASE 				(uintptr_t)(&__TEXT_START__)
-#define BL31_CODE_LIMIT 			(uintptr_t)(&__TEXT_END__)
-#define BL31_RO_DATA_BASE			(uintptr_t)(&__RODATA_START__)
-#define BL31_RO_DATA_LIMIT 			(uintptr_t)(&__RODATA_END__)
-#define BL31_RW_BASE 				(uintptr_t)(&__DATA_START__)
-#define BL31_RW_LIMIT 				(uintptr_t)(&__DATA_END__)
-#define BL31_END 				(uintptr_t)(&__BL31_END__)
-
-/*
- * The next 2 constants identify the extents of the coherent memory region.
- * These addresses are used by the MMU setup code and therefore they must be
- * page-aligned.  It is the responsibility of the linker script to ensure that
- * __COHERENT_RAM_START__ and __COHERENT_RAM_END__ linker symbols
- * refer to page-aligned addresses.
- */
-#define BL31_COHERENT_RAM_BASE (uintptr_t)(&__COHERENT_RAM_START__)
-#define BL31_COHERENT_RAM_LIMIT (uintptr_t)(&__COHERENT_RAM_END__)
 
 /*
  * Placeholder variables for copying the arguments that have been passed to
@@ -68,27 +43,9 @@ spinlock_t g_qti_cpuss_boot_lock __attribute__((section("tzfw_coherent_mem"), al
  */
 uint32_t g_qti_bl31_cold_booted __attribute__((section("tzfw_coherent_mem"))) = 0x0;
 
-static void params_early_setup(void *plat_param_from_bl2)
+static void params_early_setup(u_register_t plat_param_from_bl2)
 {
-	struct bl31_plat_param *bl2_param;
-
-	/* keep plat parameters for later processing if need */
-	bl2_param = (struct bl31_plat_param *)plat_param_from_bl2;
-	while (bl2_param) {
-		switch (bl2_param->type) {
-#if COREBOOT
-		case PARAM_COREBOOT_TABLE:
-			coreboot_table_setup((void *)
-				((struct bl31_u64_param *)bl2_param)->value);
-			break;
-#endif
-		default:
-			ERROR("not expected type found %lld\n",
-			      bl2_param->type);
-			break;
-		}
-		bl2_param = bl2_param->next;
-	}
+	bl_aux_params_parse(plat_param_from_bl2, NULL);
 }
 
 /*******************************************************************************
@@ -99,15 +56,9 @@ static void params_early_setup(void *plat_param_from_bl2)
  * while creating page tables. BL2 has flushed this information to memory, so
  * we are guaranteed to pick up good data.
  ******************************************************************************/
-void bl31_early_platform_setup(qti_bl31_params_t * from_bl2,
-			       void *plat_params_from_bl2)
+void bl31_early_platform_setup(u_register_t from_bl2,
+			       u_register_t plat_params_from_bl2)
 {
-	/*
-	 * Tell BL31 where the non-trusted software image
-	 * is located and the entry state information
-	 */
-	bl33_image_ep_info = *from_bl2->bl33_ep_info;
-	SET_SECURITY_STATE(bl33_image_ep_info.h.attr, NON_SECURE);
 
 	g_qti_cpu_cntfrq = read_cntfrq_el0();
 
@@ -121,12 +72,18 @@ void bl31_early_platform_setup(qti_bl31_params_t * from_bl2,
 	}
 #endif
 
+	/*
+	 * Tell BL31 where the non-trusted software image
+	 * is located and the entry state information
+	*/
+	bl31_params_parse_helper(from_bl2, NULL, &bl33_image_ep_info);
+	SET_SECURITY_STATE(bl33_image_ep_info.h.attr, NON_SECURE);
 }
 
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 				u_register_t arg2, u_register_t arg3)
 {
-	bl31_early_platform_setup((void *)arg0, (void *)arg1);
+	bl31_early_platform_setup(arg0, arg1);
 }
 
 /*******************************************************************************
@@ -135,13 +92,14 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
  ******************************************************************************/
 void bl31_plat_arch_setup(void)
 {
-	qti_setup_page_tables(BL31_BASE,
-			      BL31_END - BL31_BASE,
-			      BL31_CODE_BASE,
-			      BL31_CODE_LIMIT,
-			      BL31_RO_DATA_BASE,
-			      BL31_RO_DATA_LIMIT,
-			      BL_COHERENT_RAM_BASE, BL_COHERENT_RAM_END);
+	qti_setup_page_tables(BL_CODE_BASE,
+				BL_COHERENT_RAM_END - BL_CODE_BASE,
+				BL_CODE_BASE,
+				BL_CODE_END,
+				BL_RO_DATA_BASE,
+				BL_RO_DATA_END,
+				BL_COHERENT_RAM_BASE,
+				BL_COHERENT_RAM_END);
 	enable_mmu_el3(0);
 }
 
@@ -170,7 +128,7 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 {
 	/* QTI platform don't have BL32 implementation. */
 	assert(NON_SECURE == type);
-
+	assert(bl33_image_ep_info.h.type == PARAM_EP);
 	/*
 	 * None of the images on the ARM development platforms can have 0x0
 	 * as the entrypoint.
