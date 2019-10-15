@@ -115,4 +115,19 @@ typedef enum qtiseclib_mmap_attr_s {
 	QTISECLIB_MAP_RW_XN_DATA = 3,
 } qtiseclib_mmap_attr_t;
 
+typedef struct hlos_boot_params_s
+{
+  uintptr_t el1_x0;
+  uintptr_t el1_x1;
+  uintptr_t el1_x2;
+  uintptr_t el1_x3;
+  uintptr_t el1_x4;
+  uintptr_t el1_x5;
+  uintptr_t el1_x6;
+  uintptr_t el1_x7;
+  uintptr_t el1_x8;
+  uintptr_t el1_elr;
+} hlos_boot_params_t;
+
+
 #endif /* __QTISECLIB_DEFS_H__ */

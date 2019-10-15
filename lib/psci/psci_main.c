@@ -481,6 +481,15 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 		/* 64-bit PSCI function */
 
 		switch (smc_fid) {
+
+                case PSCI_VERSION:
+                        ret = (u_register_t)psci_version();
+                        break;
+
+                case PSCI_FEATURES:
+                        ret = (u_register_t)psci_features(x1);
+                        break;
+
 		case PSCI_CPU_SUSPEND_AARCH64:
 			ret = (u_register_t)
 				psci_cpu_suspend((unsigned int)x1, x2, x3);

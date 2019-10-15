@@ -19,7 +19,7 @@
 #include <plat_qti.h>
 #include <qti_secure_io_cfg.h>
 #include <qtiseclib_interface.h>
-
+#include <lib/el3_runtime/context_mgmt.h>
 
 /*----------------------------------------------------------------------------
  * SIP service - SMC function IDs for SiP Service queries
@@ -41,6 +41,7 @@
 #define QTI_SIP_SVC_AUTH_CHECK_ID               U(0x02000807)
 #define QTI_DUMP_SET_CPU_CTX_BUF_ID             U(0x02000302)
 
+#define QTI_SIP_DO_HLOS_MODE_SWITCH             U(0x0200010F)
 /*
  * Syscall's to assigns a list of intermediate PAs from a
  * source Virtual Machine (VM) to a destination VM.
@@ -163,6 +164,40 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 }
 
 /*
+ * This function does a mode switch to Aarch64 HLOS
+ */
+static uintptr_t qti_sip_hlos_mode_switch(void *handle, hlos_boot_params_t* hlos_boot_params)
+{
+	void *ns_ctx;
+	ns_ctx = cm_get_context(NON_SECURE);
+	/* Map the buffer passed by Lower EL*/
+	qti_mmap_add_dynamic_region((uintptr_t)hlos_boot_params, (uintptr_t)hlos_boot_params, sizeof(hlos_boot_params_t), (MT_NS | MT_RO | MT_EXECUTE_NEVER));
+
+	/* zero out all the register values in non secure context*/
+	memset(ns_ctx, 0 , sizeof(qtiseclib_dbg_a64_ctxt_regs_type));
+	/*switch to aarch64*/
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X0, hlos_boot_params->el1_x0);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X1, hlos_boot_params->el1_x1);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X2, hlos_boot_params->el1_x2);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X3, hlos_boot_params->el1_x3);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X4, hlos_boot_params->el1_x4);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X5, hlos_boot_params->el1_x5);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X6, hlos_boot_params->el1_x6);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X7, hlos_boot_params->el1_x7);
+	write_ctx_reg(get_gpregs_ctx(ns_ctx), CTX_GPREG_X8, hlos_boot_params->el1_x8);
+
+	write_ctx_reg(get_el3state_ctx(ns_ctx), CTX_SPSR_EL3, (SPSR_D_BIT | SPSR_I_BIT | SPSR_MODE_EL1h));
+	write_ctx_reg(get_el3state_ctx(ns_ctx), CTX_ELR_EL3, hlos_boot_params->el1_elr);
+	write_ctx_reg(get_el3state_ctx(ns_ctx),CTX_SCR_EL3, (SCR_FIQ_BIT | SCR_RW_BIT | SCR_NS_BIT));
+	write_hcr_el2(read_hcr_el2() | HCR_RW_BIT);
+
+	/* Unmap the buffer passed by Lower EL*/
+	qti_mmap_remove_dynamic_region((uintptr_t)hlos_boot_params, sizeof(hlos_boot_params_t));
+
+	SMC_RET0(handle);
+}
+
+/*
  * This function handles QTI specific syscalls. Currently only SiP calls are present.
  * Both FAST & YIELD type call land here.
  */
@@ -247,6 +282,11 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			ret = qtiseclib_set_cpu_ctx_buf(x2, x3);
                         SMC_RET2(handle, SMC_OK, ret);
                 }
+        case QTI_SIP_DO_HLOS_MODE_SWITCH:
+                {
+			return qti_sip_hlos_mode_switch(handle, (hlos_boot_params_t *)x2);
+                }
+
  	default:
 		{
 			SMC_RET1(handle, SMC_UNK);

@@ -379,6 +379,11 @@
 #define CPTR_EL2_RESET_VAL	CPTR_EL2_RES1
 
 /* CPSR/SPSR definitions */
+#define SPSR_F_BIT              U(0x40)
+#define SPSR_I_BIT              U(0x80)
+#define SPSR_A_BIT              U(0x100)
+#define SPSR_D_BIT              U(0x200)
+
 #define DAIF_FIQ_BIT		(U(1) << 0)
 #define DAIF_IRQ_BIT		(U(1) << 1)
 #define DAIF_ABT_BIT		(U(1) << 2)
@@ -403,6 +408,14 @@
 #define SPSR_M_MASK		U(0x1)
 #define SPSR_M_AARCH64		U(0x0)
 #define SPSR_M_AARCH32		U(0x1)
+
+#define SPSR_MODE_EL0t          U(0)
+#define SPSR_MODE_EL1t          U(0x4)
+#define SPSR_MODE_EL1h          U(0x5)
+#define SPSR_MODE_EL2t          U(0x8)
+#define SPSR_MODE_EL2h          U(0x9)
+#define SPSR_MODE_EL3t          U(0xC)
+#define SPSR_MODE_EL3h          U(0xD)
 
 #define DISABLE_ALL_EXCEPTIONS \
 		(DAIF_FIQ_BIT | DAIF_IRQ_BIT | DAIF_ABT_BIT | DAIF_DBG_BIT)
