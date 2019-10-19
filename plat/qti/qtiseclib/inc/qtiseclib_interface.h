@@ -80,6 +80,8 @@ void qtiseclib_disable_cluster_coherency(uint8_t state);
 int qtiseclib_psci_validate_power_state(unsigned int pwr_state, uint8_t * req_state);
 int qtiseclib_config_reset_debug(uint32_t, uint32_t);
 int qtiseclib_set_cpu_ctx_buf(uintptr_t addr, uint32_t size);
+int qtiseclib_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, uint32_t size);
+int qtiseclib_clear_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, uint32_t size, uint32_t auth_key);
 int qtiseclib_get_diag(char* buf, size_t buf_size);
 uint64_t qtiseclib_get_ddr_size();
 #endif /* __QTISECLIB_INTERFACE_H__ */

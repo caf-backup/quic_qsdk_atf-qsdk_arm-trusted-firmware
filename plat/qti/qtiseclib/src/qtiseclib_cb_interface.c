@@ -18,7 +18,7 @@
 #include <arch_helpers.h>
 
 /*Adding it till 64 bit address support will be merged to arm tf*/
-static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
+uintptr_t qti_page_align(uintptr_t value, unsigned dir)
 {
 	/* Round up the limit to the next page boundary */
 	if (value & (PAGE_SIZE - 1)) {

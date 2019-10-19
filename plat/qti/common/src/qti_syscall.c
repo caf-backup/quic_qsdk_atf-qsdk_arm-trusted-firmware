@@ -42,6 +42,8 @@
 #define QTI_DUMP_SET_CPU_CTX_BUF_ID             U(0x02000302)
 
 #define QTI_SIP_DO_HLOS_MODE_SWITCH             U(0x0200010F)
+#define QTI_SIP_PROTECT_MEM_SUBSYS_ID           U(0x0200020C)
+#define QTI_SIP_CLEAR_MEM_SUBSYS_ID             U(0x0200020D)
 /*
  * Syscall's to assigns a list of intermediate PAs from a
  * source Virtual Machine (VM) to a destination VM.
@@ -53,7 +55,8 @@
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_RESET_DEBUG_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID			U(0x1117)
-
+#define QTI_SIP_PROTECT_MEM_SUBSYS_ID_PARAM_ID	U(0x3)
+#define QTI_SIP_CLEAR_MEM_SUBSYS_ID_PARAM_ID	U(0x4)
 #define	QTI_SIP_SVC_CALL_COUNT			U(0x3)
 #define QTI_SIP_SVC_VERSION_MAJOR		U(0x0)
 #define	QTI_SIP_SVC_VERSION_MINOR		U(0x0)
@@ -286,6 +289,21 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
                 {
 			return qti_sip_hlos_mode_switch(handle, (hlos_boot_params_t *)x2);
                 }
+	case QTI_SIP_PROTECT_MEM_SUBSYS_ID:
+		{
+		        if (QTI_SIP_PROTECT_MEM_SUBSYS_ID_PARAM_ID == x1)
+			        SMC_RET1(handle, qtiseclib_protect_mem_subsystem(x2, x3, x4));
+			SMC_RET1(handle, SMC_UNK);
+		}
+	case QTI_SIP_CLEAR_MEM_SUBSYS_ID:
+		{
+		        if (QTI_SIP_CLEAR_MEM_SUBSYS_ID_PARAM_ID == x1) {
+				u_register_t x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
+			        SMC_RET1(handle, qtiseclib_clear_protect_mem_subsystem(x2, x3, x4, x5));
+			}
+			SMC_RET1(handle, SMC_UNK);
+		}
+
 
  	default:
 		{

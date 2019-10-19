@@ -58,5 +58,5 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *ns_ctx);
 /* Crash reporting api's wrappers */
 int qtiseclib_cb_crash_console_init(void);
 int qtiseclib_cb_crash_console_flush(void);
-
+uintptr_t qti_page_align(uintptr_t value, unsigned dir);
 #endif /* __QTISECLIB_CB_INTERFACE_H__ */
