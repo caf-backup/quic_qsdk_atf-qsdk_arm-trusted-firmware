@@ -119,6 +119,24 @@
 
 
 /*----------------------------------------------------------------------------*/
+/* UART related constants. */
+/*----------------------------------------------------------------------------*/
+/* BASE ADDRESS OF DIFFERENT REGISTER SPACES IN HW */
+
+/* UART Status Register */
+#define MSM_BOOT_UART_DM_SR                   0x008
+#define MSM_BOOT_UART_DM_SR_TXEMT             (1 << 3)
+
+/* Number of characters for Transmission */
+#define MSM_BOOT_UART_DM_NO_CHARS_FOR_TX      0x040
+
+/* UART DM TX FIFO Registers - 4 */
+#define MSM_BOOT_UART_DM_TF                   0x70
+
+/*----------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------*/
 /* Device address space for mapping. Excluding starting 4K */
 /*----------------------------------------------------------------------------*/
 #define QTI_DEVICE_BASE				0x00000000UL
