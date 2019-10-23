@@ -15,6 +15,8 @@
  */
 
 	.globl qti_console_uart_register
+	.globl console_uart_putc
+	.globl console_uart_flush
 
 	/* -----------------------------------------------
 	 * int qti_console_uart_register(qti_console_uart_t *console,
@@ -28,7 +30,7 @@
 	 */
 func qti_console_uart_register
 	str	x1, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]		/* Save UART base. */
-	finish_console_register uart
+	finish_console_register uart putc=1, flush=1
 endfunc qti_console_uart_register
 
 	/* -----------------------------------------------
@@ -38,12 +40,45 @@ endfunc qti_console_uart_register
 	 * In: x0 - character to be stored
 	 *     x1 - pointer to qti_console_uart_t struct
 	 * Clobber list: x1, x2
-	 * now this is a stub function.
 	 * -----------------------------------------------
 	 */
 func console_uart_putc
+	/* set x1 = UART base. */
+	ldr	x1, [x1, #QTI_CONSOLE_T_UART_BASE_OFF]
+
+	/* Wait until transmit FIFO is empty. */
+1:	ldr	w2, [x1, #MSM_BOOT_UART_DM_SR]
+	and	w2, w2, #MSM_BOOT_UART_DM_SR_TXEMT
+	cmp	w2, #MSM_BOOT_UART_DM_SR_TXEMT
+	b.ne	1b
+
+	/* Transmit data. */
+	cmp	w0, #0xA
+	b.ne	3f
+
+	/* Add '\r' when input char is '\n' */
+	mov	w2, #0x1
+	/* add '\r' to w0 register */
+	mov	w0, #0xD
+	/* Transmit '\r' now */
+	str	w2, [x1, #MSM_BOOT_UART_DM_NO_CHARS_FOR_TX]
+	str	w0, [x1, #MSM_BOOT_UART_DM_TF]
+	/* New line feed to w0 */
+	mov	w0, #0xA
+
+	/* Wait until transmit FIFO is empty. */
+2:	ldr	w2, [x1, #MSM_BOOT_UART_DM_SR]
+	and	w2, w2, #MSM_BOOT_UART_DM_SR_TXEMT
+	cmp	w2, #MSM_BOOT_UART_DM_SR_TXEMT
+	b.ne	2b
+
+	/* Transmit i/p data. */
+3:	mov	w2, #0x1
+	str	w2, [x1, #MSM_BOOT_UART_DM_NO_CHARS_FOR_TX]
+	str	w0, [x1, #MSM_BOOT_UART_DM_TF]
+
 	ret
-endfunc	console_uart_putc
+endfunc console_uart_putc
 
 	/* -----------------------------------------------
 	 * int qti_console_uart_flush(qti_console_uart_t *console)
@@ -54,6 +89,15 @@ endfunc	console_uart_putc
 	 * -----------------------------------------------
 	 */
 func console_uart_flush
+	/* set x0 = UART base. */
+	ldr	x0, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]
+
+	/* Wait until transmit FIFO is empty. */
+1:	ldr	w1, [x0, #MSM_BOOT_UART_DM_SR]
+	and	w1, w1, #MSM_BOOT_UART_DM_SR_TXEMT
+	cmp	w1, #MSM_BOOT_UART_DM_SR_TXEMT
+	b.ne	1b
+
 	mov	x0, #0
 	ret
 endfunc console_uart_flush
