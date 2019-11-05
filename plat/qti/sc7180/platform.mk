@@ -31,8 +31,9 @@ RESET_TO_BL31			:=	0
 MULTI_CONSOLE_API		:=	1
 
 #disable CTX_INCLUDE_AARCH32_REGS to support sc7180 gold cores
-override CTX_INCLUDE_AARCH32_REGS        := 0
-WORKAROUND_CVE_2017_5715                :=      0
+override CTX_INCLUDE_AARCH32_REGS	:=	0
+WORKAROUND_CVE_2017_5715		:=      0
+DYNAMIC_WORKAROUND_CVE_2018_3639	:=      1
 # Enable stack protector.
 ENABLE_STACK_PROTECTOR := strong
 
