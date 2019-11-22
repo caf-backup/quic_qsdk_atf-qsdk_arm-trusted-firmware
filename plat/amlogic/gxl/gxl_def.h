@@ -105,6 +105,10 @@
 #define AML_HIU_MAILBOX_STAT_3			UL(0xDA83C42C)
 #define AML_HIU_MAILBOX_CLR_3			UL(0xDA83C430)
 
+#define AML_SHA_DMA_BASE			UL(0xC883E000)
+#define AML_SHA_DMA_DESC			(AML_SHA_DMA_BASE + 0x08)
+#define AML_SHA_DMA_STATUS			(AML_SHA_DMA_BASE + 0x18)
+
 /*******************************************************************************
  * System Monitor Call IDs and arguments
  ******************************************************************************/
@@ -116,6 +120,7 @@
 
 #define AML_SM_JTAG_ON				U(0x82000040)
 #define AML_SM_JTAG_OFF				U(0x82000041)
+#define AML_SM_GET_CHIP_ID			U(0x82000044)
 
 #define AML_JTAG_STATE_ON			U(0)
 #define AML_JTAG_STATE_OFF			U(1)

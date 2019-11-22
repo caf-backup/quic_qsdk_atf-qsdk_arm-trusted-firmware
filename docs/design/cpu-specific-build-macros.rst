@@ -29,6 +29,8 @@ vulnerability workarounds should be applied at runtime.
    platform contains at least 1 CPU that requires dynamic mitigation.
    Defaults to 0.
 
+.. _arm_cpu_macros_errata_workarounds:
+
 CPU Errata Workarounds
 ----------------------
 
@@ -47,9 +49,8 @@ errata notice document. The format of the define used to enable/disable the
 errata workaround is ``ERRATA_<Processor name>_<ID>``, where the ``Processor name``
 is for example ``A57`` for the ``Cortex_A57`` CPU.
 
-Refer to the section *CPU errata status reporting* in
-`Firmware Design guide`_ for information on how to write errata workaround
-functions.
+Refer to :ref:`firmware_design_cpu_errata_reporting` for information on how to
+write errata workaround functions.
 
 All workarounds are disabled by default. The platform is responsible for
 enabling these workarounds according to its requirement by defining the
@@ -258,6 +259,9 @@ For Neoverse N1, the following errata build flags are defined :
 -  ``ERRATA_N1_1315703``: This applies errata 1315703 workaround to Neoverse-N1
    CPU. This needs to be enabled only for revision <= r3p0 of the CPU.
 
+-  ``ERRATA_N1_1542419``: This applies errata 1542419 workaround to Neoverse-N1
+   CPU. This needs to be enabled only for revisions r3p0 - r4p0 of the CPU.
+
 DSU Errata Workarounds
 ----------------------
 
@@ -323,6 +327,5 @@ architecture that can be enabled by the platform as desired.
 .. _Cortex-A53 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm048406/index.html
 .. _Cortex-A57 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm049219/index.html
 .. _Cortex-A72 MPCore Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm012079/index.html
-.. _Firmware Design guide: firmware-design.rst
 .. _Cortex-A57 Software Optimization Guide: http://infocenter.arm.com/help/topic/com.arm.doc.uan0015b/Cortex_A57_Software_Optimization_Guide_external.pdf
 .. _Arm DSU Software Developers Errata Notice: http://infocenter.arm.com/help/topic/com.arm.doc.epm138168/index.html

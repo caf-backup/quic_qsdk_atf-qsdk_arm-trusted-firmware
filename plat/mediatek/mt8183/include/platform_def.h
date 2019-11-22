@@ -25,6 +25,7 @@
 #define MCUCFG_BASE        0x0c530000
 #define CFG_SF_CTRL        0x0c510014
 #define CFG_SF_INI         0x0c510010
+#define EMI_BASE           (IO_PHYS + 0x219000)
 #define EMI_MPU_BASE       (IO_PHYS + 0x226000)
 #define TRNG_base          (IO_PHYS + 0x20f000)
 #define MT_GIC_BASE        0x0c000000
@@ -41,6 +42,7 @@
 #define APMIXEDSYS         (IO_PHYS + 0xC000)
 #define ARMPLL_LL_CON0     (APMIXEDSYS + 0x200)
 #define ARMPLL_L_CON0      (APMIXEDSYS + 0x210)
+#define ARMPLL_L_PWR_CON0  (APMIXEDSYS + 0x21c)
 #define MAINPLL_CON0       (APMIXEDSYS + 0x220)
 #define CCIPLL_CON0        (APMIXEDSYS + 0x290)
 
@@ -74,6 +76,7 @@
 #define MT_L2_WRITE_ACCESS_RATE  (MCUCFG_BASE + 0x604)
 #define MP0_CA7L_CACHE_CONFIG    (MCUCFG_BASE + 0x7f0)
 #define MP1_CA7L_CACHE_CONFIG    (MCUCFG_BASE + 0x7f4)
+#define EMI_WFIFO                (MCUCFG_BASE + 0x0b5c)
 
 /*******************************************************************************
  * GIC related constants
@@ -87,6 +90,7 @@
  * UART related constants
  ******************************************************************************/
 #define UART0_BASE    (IO_PHYS + 0x01002000)
+#define UART1_BASE    (IO_PHYS + 0x01003000)
 
 #define UART_BAUDRATE 115200
 #define UART_CLOCK    26000000

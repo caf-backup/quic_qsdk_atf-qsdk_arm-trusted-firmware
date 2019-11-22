@@ -8,7 +8,7 @@
 # Trusted Firmware Version
 #
 VERSION_MAJOR			:= 2
-VERSION_MINOR			:= 1
+VERSION_MINOR			:= 2
 
 # Default goal is build all images
 .DEFAULT_GOAL			:= all
@@ -139,6 +139,15 @@ else ifeq (${BRANCH_PROTECTION},3)
 	ENABLE_PAUTH := 1
 else
         $(error Unknown BRANCH_PROTECTION value ${BRANCH_PROTECTION})
+endif
+
+# USE_SPINLOCK_CAS requires AArch64 build
+ifeq (${USE_SPINLOCK_CAS},1)
+ifneq (${ARCH},aarch64)
+        $(error USE_SPINLOCK_CAS requires AArch64)
+else
+        $(info USE_SPINLOCK_CAS is an experimental feature)
+endif
 endif
 
 ################################################################################
@@ -690,6 +699,7 @@ $(eval $(call assert_boolean,WARMBOOT_ENABLE_DCACHE_EARLY))
 $(eval $(call assert_boolean,BL2_AT_EL3))
 $(eval $(call assert_boolean,BL2_IN_XIP_MEM))
 $(eval $(call assert_boolean,BL2_INV_DCACHE))
+$(eval $(call assert_boolean,USE_SPINLOCK_CAS))
 
 $(eval $(call assert_numeric,ARM_ARCH_MAJOR))
 $(eval $(call assert_numeric,ARM_ARCH_MINOR))
@@ -755,6 +765,7 @@ $(eval $(call add_define,WARMBOOT_ENABLE_DCACHE_EARLY))
 $(eval $(call add_define,BL2_AT_EL3))
 $(eval $(call add_define,BL2_IN_XIP_MEM))
 $(eval $(call add_define,BL2_INV_DCACHE))
+$(eval $(call add_define,USE_SPINLOCK_CAS))
 
 ifeq (${SANITIZE_UB},trap)
         $(eval $(call add_define,MONITOR_TRAPS))

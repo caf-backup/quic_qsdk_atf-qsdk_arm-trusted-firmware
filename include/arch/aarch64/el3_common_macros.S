@@ -113,11 +113,18 @@
 	 *  prohibited in Secure state. This bit is RES0 in versions of the
 	 *  architecture earlier than ARMv8.5, setting it to 1 doesn't have any
 	 *  effect on them.
+	 *
+	 * MDCR_EL3.SPME: Set to zero so that event counting by the programmable
+	 *  counters PMEVCNTR<n>_EL0 is prohibited in Secure state. If ARMv8.2
+	 *  Debug is not implemented this bit does not have any effect on the
+	 *  counters unless there is support for the implementation defined
+	 *  authentication interface ExternalSecureNoninvasiveDebugEnabled().
 	 * ---------------------------------------------------------------------
 	 */
 	mov_imm	x0, ((MDCR_EL3_RESET_VAL | MDCR_SDD_BIT | \
 		      MDCR_SPD32(MDCR_SPD32_DISABLE) | MDCR_SCCD_BIT) & \
-		    ~(MDCR_TDOSA_BIT | MDCR_TDA_BIT | MDCR_TPM_BIT))
+		    ~(MDCR_SPME_BIT | MDCR_TDOSA_BIT | MDCR_TDA_BIT | \
+		      MDCR_TPM_BIT))
 
 	msr	mdcr_el3, x0
 
@@ -366,7 +373,7 @@
 		bl	zeromem
 #endif
 
-#if defined(IMAGE_BL1) || (defined(IMAGE_BL2) && BL2_IN_XIP_MEM)
+#if defined(IMAGE_BL1) || (defined(IMAGE_BL2) && BL2_AT_EL3 && BL2_IN_XIP_MEM)
 		adrp	x0, __DATA_RAM_START__
 		add	x0, x0, :lo12:__DATA_RAM_START__
 		adrp	x1, __DATA_ROM_START__
