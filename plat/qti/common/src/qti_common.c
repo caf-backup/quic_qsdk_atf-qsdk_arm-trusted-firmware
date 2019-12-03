@@ -117,6 +117,9 @@ void qti_setup_page_tables(uintptr_t total_base,
 			SP_IMAGE_XLAT_TABLES_SIZE,
 			MT_MEMORY | MT_RW | MT_SECURE);
 #endif
+	/*Remap the IMEM RW region to make it uncacheable*/
+	mmap_add_region(QTI_SHARED_IMEM_RW_BASE,QTI_SHARED_IMEM_RW_BASE,
+					QTI_SHARED_IMEM_RW_SIZE, MT_NON_CACHEABLE | MT_RW | MT_SECURE);
 
 	/* Now (re-)map the platform-specific memory regions */
 	mmap_add(plat_qti_mmap);
