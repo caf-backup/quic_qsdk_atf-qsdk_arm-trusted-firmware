@@ -11,8 +11,10 @@
 
 /* The QTI power domain tree descriptor */
 const unsigned char qti_power_domain_tree_desc[] = {
-	/* One domain to represent Cx rail */
-	PLAT_CX_RAIL_COUNT,
+	/* One domain to represent PDC */
+	PLAT_PDC_COUNT,
+	/* One domain to represent RSC */
+	PLAT_RSC_COUNT,
 	/* There is one top-level FCM cluster */
 	PLAT_CLUSTER_COUNT,
 	/* No. of cores in the FCM cluster */

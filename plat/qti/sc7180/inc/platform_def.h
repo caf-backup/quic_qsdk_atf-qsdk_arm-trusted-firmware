@@ -25,6 +25,11 @@
 #define MPIDR_PRIMARY_CPU	0x0000
 /*----------------------------------------------------------------------------*/
 
+#define ARM_PWR_LVL0	MPIDR_AFFLVL0
+#define ARM_PWR_LVL1	MPIDR_AFFLVL1
+#define ARM_PWR_LVL2	MPIDR_AFFLVL2
+#define ARM_PWR_LVL3	MPIDR_AFFLVL3
+#define CORE_PWRDN_EN_MASK	U(0x1)
 /*
  *  Macros for local power states encoded by State-ID field
  *  within the power-state parameter.
@@ -42,7 +47,7 @@
 #define QTI_LOCAL_STATE_OFF	3
 /* Local power state for OFF/power-down. Valid for CPU and cluster power
    domains */
-#define QTI_LOCAL_STATE_DEEPOFF	0xF
+#define QTI_LOCAL_STATE_DEEPOFF	4
 
 /*
  * This macro defines the deepest retention state possible. A higher state
@@ -85,8 +90,9 @@
 /*----------------------------------------------------------------------------*/
 /* PSCI power domain topology definitions */
 /*----------------------------------------------------------------------------*/
-/* One domain to represent Cx level */
-#define PLAT_CX_RAIL_COUNT		1
+/* One domain each to represent RSC and PDC level */
+#define PLAT_PDC_COUNT			1
+#define PLAT_RSC_COUNT			1
 
 /* There is one top-level FCM cluster */
 #define PLAT_CLUSTER_COUNT		1
@@ -96,11 +102,12 @@
 
 #define PLATFORM_CORE_COUNT		(PLAT_CLUSTER0_CORE_COUNT)
 
-#define PLAT_NUM_PWR_DOMAINS		(PLAT_CX_RAIL_COUNT	+\
+#define PLAT_NUM_PWR_DOMAINS		(PLAT_PDC_COUNT +\
+					PLAT_RSC_COUNT	+\
 					PLAT_CLUSTER_COUNT	+\
 					PLATFORM_CORE_COUNT)
 
-#define PLAT_MAX_PWR_LVL		2
+#define PLAT_MAX_PWR_LVL		3
 
 /*****************************************************************************/
 /* Memory mapped Generic timer interfaces  */
