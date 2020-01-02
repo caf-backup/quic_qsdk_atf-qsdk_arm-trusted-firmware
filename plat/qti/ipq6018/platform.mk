@@ -37,6 +37,11 @@ ENABLE_STACK_PROTECTOR := strong
 XBL_BOOT                       := 1
 $(eval $(call add_define,XBL_BOOT))
 
+#IPQ6018 Console Uart Prints
+#Set to 0 by Default to use Diag Ring Buffer
+QTI_UART_PRINT                       := 0
+$(eval $(call add_define,QTI_UART_PRINT))
+
 QTI_6018_PLATFORM             := 1
 $(eval $(call add_define,QTI_6018_PLATFORM))
 
