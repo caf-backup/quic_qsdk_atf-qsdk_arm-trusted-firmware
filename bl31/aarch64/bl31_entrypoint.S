@@ -149,9 +149,22 @@ endfunc bl31_entrypoint
 	 * warmboot entrypoint
 	 * --------------------------------------------------------------------
 	 */
+#if QTI_6018_PLATFORM
+func_in_section bl31_warm_entrypoint, QTI_IMEM_RESET_ENTRY
+#else
 func bl31_warm_entrypoint
-#if ENABLE_RUNTIME_INSTRUMENTATION
+#endif
 
+#if QTI_6018_PLATFORM
+	/* Save X0,X1 and X30, since those registers will be clobbered*/
+	msr     TPIDR_EL0, x0
+	msr     TPIDR_EL1, x1
+	msr     TPIDRRO_EL0, x30
+
+	bl	qti_sysdbg_reset_check
+#endif
+
+#if ENABLE_RUNTIME_INSTRUMENTATION
 	/*
 	 * This timestamp update happens with cache off.  The next
 	 * timestamp collection will need to do cache maintenance prior

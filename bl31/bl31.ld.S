@@ -30,13 +30,15 @@ SECTIONS
 
     shared_imem_ro (QTI_SHARED_IMEM_RO_BASE) : {
 	   . = ALIGN(PAGE_SIZE);
+	   KEEP(* (QTI_IMEM_RESET_ENTRY))
+	   KEEP(* (QTI_SYSDBG_IMEM_CODE))
            KEEP(*(.code_imem.QTISECLIB_IMEM_CODE))
     }
     ASSERT(. <= (QTI_SHARED_IMEM_RO_BASE + QTI_SHARED_IMEM_RO_SIZE), "Shared IMEM RO region has exceeded its limit.")
 
     shared_imem_rw (QTI_SHARED_IMEM_RW_BASE):  {
 	   . = ALIGN(PAGE_SIZE);
-	   __DBG_IMEM_STACK_BASE__  = . + QTI_SHARED_IMEM_DBG_STACK_SIZE;
+	   KEEP(* (.uncached_imem.QTI_SYSDBG_IMEM_DATA))
     }
     ASSERT(. <= (QTI_SHARED_IMEM_RW_BASE +  QTI_SHARED_IMEM_RW_SIZE), "Shared IMEM RW region has exceeded its limit.")
 #endif
