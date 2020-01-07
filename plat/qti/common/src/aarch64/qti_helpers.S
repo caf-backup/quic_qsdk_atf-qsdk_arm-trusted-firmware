@@ -22,6 +22,7 @@
 	.globl  qti_sysdbg_reset_check
 
 	.extern sysdbg_entry_handler
+	.extern due_to_resin_tsen_reset
 
 	/* -----------------------------------------------------
 	 *  unsigned int plat_qti_core_pos_by_mpidr(uint64_t mpidr)
@@ -113,15 +114,21 @@ func console_diag_putc
 endfunc	console_diag_putc
 #endif
 
-#define DEBUG_STATUS_CHECK_MASK      0x00000038
+#define SDI_DEBUG_STATUS_CHECK_MASK	0x00000028
+#define RESIN_DEBUG_STATUS_CHECK_MASK	0x00000013
 
 func_in_section qti_sysdbg_reset_check, QTI_SYSDBG_IMEM_CODE
-    movz    x0, #0x181, lsl #16
+	movz    x0, #0x181, lsl #16
     add     x0, x0, #0x5000          /*#0x5000 is not a valid #bimm32, orr cannot be used here*/
     add     x0, x0, #0x8             /*add #0x5008 is not valid since exceeds #uimm12 that can be shifted*/
-    ldr     x0, [x0]                 /*check for debug reset*/
-    and     x0, x0, #DEBUG_STATUS_CHECK_MASK
+    ldr     x1, [x0]                 /*check for debug reset*/
+    ldr     x0, =SDI_DEBUG_STATUS_CHECK_MASK
+    and     x0, x0, x1
     cmp     x0, #0
     b.ne    sysdbg_entry_handler
+    ldr     x0, =RESIN_DEBUG_STATUS_CHECK_MASK
+    and     x0, x0, x1
+    cmp     x0, #0
+    b.ne    due_to_resin_tsen_reset
     ret
 endfunc qti_sysdbg_reset_check
