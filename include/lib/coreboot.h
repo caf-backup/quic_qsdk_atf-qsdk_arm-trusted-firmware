@@ -19,10 +19,6 @@ typedef struct {
 } coreboot_serial_t;
 extern coreboot_serial_t coreboot_serial;
 
-/* Enable developer path. */
-#define VB_INIT_OUT_ENABLE_DEVELOPER     0x80
-
-
 void coreboot_table_setup(void *base);
-uint32_t coreboot_get_vbinit_out_flag(void);
+
 #endif /* COREBOOT_H */

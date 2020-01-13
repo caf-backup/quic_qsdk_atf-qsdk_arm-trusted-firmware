@@ -45,11 +45,11 @@ void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 {
 	va_list argp;
 	static spinlock_t qti_log_lock;
-
+	uint64_t uptime = read_cntpct_el0();
 	va_start(argp, fmt);
 
 	spin_lock(&qti_log_lock);
-	printf("QTISECLIB ");
+	printf("QTISECLIB [%x%08x]",(uint32_t)((uptime>>32)&0xFFFFFFFF),(uint32_t)(uptime&0xFFFFFFFF));
 	vprintf(fmt, argp);
 	putchar('\n');
 	spin_unlock(&qti_log_lock);
@@ -144,16 +144,6 @@ int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
 {
 	return qti_mmap_remove_dynamic_region(base_va, size);
 }
-
-bool qtiseclib_cb_is_developer_mode_set(void)
-{
-#if COREBOOT
-	return ((coreboot_get_vbinit_out_flag() & VB_INIT_OUT_ENABLE_DEVELOPER) ? true : false);
-#else
-	return false; /* Set it to default, developer mode disable.*/
-#endif
-}
-
 
 /* GIC platform functions */
 void qtiseclib_cb_gic_pcpu_init(void)
