@@ -62,7 +62,7 @@ int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
 						  u_register_t	spare);
 
 void qtiseclib_oem_register_wifi_interrupt(int irq);
-#if !QTI_6018_PLATFORM
+#if !QTI_6018_PLATFORM && !QTI_5018_PLATFORM
 void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t *cbuf);
 void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t *cbuf);
 #endif

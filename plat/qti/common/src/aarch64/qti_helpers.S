@@ -92,7 +92,7 @@ func plat_reset_handler
 	ret
 endfunc plat_reset_handler
 
-#ifdef QTI_6018_PLATFORM
+#if QTI_6018_PLATFORM || QTI_5018_PLATFORM
 	/*----------------------------------------------------
 	* Register diag region as console. So that we could
 	* use console related apis like printf, putchar etc.

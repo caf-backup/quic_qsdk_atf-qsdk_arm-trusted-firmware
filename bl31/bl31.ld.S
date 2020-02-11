@@ -321,7 +321,7 @@ SECTIONS
     } >RAM
 #endif
 
-#if QTI_6018_PLATFORM
+#if QTI_6018_PLATFORM || QTI_5018_PLATFORM
       /****************************************************************
    *  TZOS Diag
    *  Attrib.: RW, PXN=1, Uncacheable, PL1
