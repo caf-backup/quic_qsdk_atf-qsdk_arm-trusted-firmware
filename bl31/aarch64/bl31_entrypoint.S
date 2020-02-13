@@ -22,7 +22,7 @@
 	 * -----------------------------------------------------
 	 */
 
-#if QTI_6018_PLATFORM
+#if QTI_6018_PLATFORM || QTI_5018_PLATFORM
 func bl31_entrypoint_qti
 	ldr     x9, =bl31_entrypoint
 	br      x9

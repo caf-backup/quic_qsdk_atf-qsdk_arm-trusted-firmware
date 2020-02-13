@@ -159,6 +159,7 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
  ******************************************************************************/
 void bl31_plat_arch_setup(void)
 {
+#if QTI_6018_PLATFORM
 	qti_setup_page_tables(BL31_BASE,
 			      BL31_END - BL31_BASE,
 			      BL31_CODE_BASE,
@@ -167,6 +168,7 @@ void bl31_plat_arch_setup(void)
 			      BL31_RO_DATA_LIMIT,
 			      BL_COHERENT_RAM_BASE, BL_COHERENT_RAM_END);
 	enable_mmu_el3(0);
+#endif
 }
 
 /*******************************************************************************
