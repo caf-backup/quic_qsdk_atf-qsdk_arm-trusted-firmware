@@ -60,7 +60,7 @@ SECTIONS
     } >RAM
 
     .rodata . : {
-        __RODATA_START__ = .;
+        __RODATA_START__ = ALIGN(PAGE_SIZE);
         *(.rodata*)
 
         /* Ensure 8-byte alignment for descriptors and ensure inclusion */
@@ -105,7 +105,7 @@ SECTIONS
     } >RAM
 #else
     ro . : {
-        __RO_START__ = .;
+        __RO_START__ = ALIGN(PAGE_SIZE);
         *bl31_entrypoint.o(.text*)
         *(.text*)
         *(.rodata*)
