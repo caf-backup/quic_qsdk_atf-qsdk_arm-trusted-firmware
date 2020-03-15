@@ -267,7 +267,8 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
                 }
         case QTI_SIP_SVC_AUTH_CHECK_ID:
                 {
-                        SMC_RET1(handle, SMC_OK);
+			 *((volatile uint32_t *)x2) = 0;
+			 SMC_RET1(handle, SMC_OK);
                 }
 	case QTI_INFO_GET_DIAG_ID:
 		{
