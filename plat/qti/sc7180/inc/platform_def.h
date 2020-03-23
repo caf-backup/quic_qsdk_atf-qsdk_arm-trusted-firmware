@@ -12,7 +12,7 @@
 
 #include <qti_board_def.h>
 #include <common_def.h>
-
+#include <qtiseclib_defs_plat.h>
 
 /*----------------------------------------------------------------------------*/
 
@@ -160,8 +160,6 @@
  * Put BL31 at DDR as per memory map. BL31_BASE is calculated using the
  * current BL31 debug size plus a little space for growth.
  */
-#define BL31_BASE						0x80C00000
-#define BL31_SIZE						0x00200000
 #define QTI_TRUSTED_MAILBOX_SIZE				0x1000
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)
 
