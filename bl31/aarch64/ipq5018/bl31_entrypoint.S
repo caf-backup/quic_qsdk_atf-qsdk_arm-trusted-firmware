@@ -22,12 +22,10 @@
 	 * -----------------------------------------------------
 	 */
 
-#if QTI_6018_PLATFORM || QTI_5018_PLATFORM
 func bl31_entrypoint_qti
 	ldr     x9, =bl31_entrypoint
 	br      x9
 endfunc bl31_entrypoint_qti
-#endif
 
 func bl31_entrypoint
 	/* ---------------------------------------------------------------
@@ -38,6 +36,19 @@ func bl31_entrypoint
 	mov	x21, x1
 	mov	x22, x2
 	mov	x23, x3
+
+    /*SDI Check*/
+    /* Clear the upper 32 bits, sometimes it contains junk */
+    mov     x1, #0xffff
+    lsl     x1, x1, #0x10
+    orr     x1, x1, #0xffff
+    lsl     x1, x1, #0x20
+    bic     x0, x0, x1
+    /* Save X0,X1 and X30, since those registers will be clobbered*/
+    msr     TPIDR_EL0, x0
+    msr     TPIDR_EL1, x1
+    msr     TPIDRRO_EL0, x30
+    bl  qti_sysdbg_reset_check
 
 	/* --------------------------------------------------------------------
 	 * If PIE is enabled, fixup the Global descriptor Table and dynamic
@@ -149,20 +160,7 @@ endfunc bl31_entrypoint
 	 * warmboot entrypoint
 	 * --------------------------------------------------------------------
 	 */
-#if QTI_6018_PLATFORM
-func_in_section bl31_warm_entrypoint, QTI_IMEM_RESET_ENTRY
-#else
 func bl31_warm_entrypoint
-#endif
-
-#if QTI_6018_PLATFORM
-	/* Save X0,X1 and X30, since those registers will be clobbered*/
-	msr     TPIDR_EL0, x0
-	msr     TPIDR_EL1, x1
-	msr     TPIDRRO_EL0, x30
-
-	bl	qti_sysdbg_reset_check
-#endif
 
 #if ENABLE_RUNTIME_INSTRUMENTATION
 	/*

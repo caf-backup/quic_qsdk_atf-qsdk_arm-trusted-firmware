@@ -92,7 +92,6 @@ func plat_reset_handler
 	ret
 endfunc plat_reset_handler
 
-#if QTI_6018_PLATFORM || QTI_5018_PLATFORM
 	/*----------------------------------------------------
 	* Register diag region as console. So that we could
 	* use console related apis like printf, putchar etc.
@@ -112,7 +111,6 @@ func console_diag_putc
 	ldp     x29, x30, [sp],#16
 	ret
 endfunc	console_diag_putc
-#endif
 
 #define SDI_DEBUG_STATUS_CHECK_MASK	0x00000028
 #define RESIN_DEBUG_STATUS_CHECK_MASK	0x00000013
