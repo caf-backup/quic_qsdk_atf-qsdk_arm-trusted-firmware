@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
-# Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+# Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -108,7 +108,14 @@ $(warning Release version of qtisec library used in Debug build!!..)
 endif
 endif
 
+# if No lib then use stub implementation for qtiseclib interface
+ifeq ("$(wildcard $(LIB_QTI_PATH)/lib$(QTISECLIB).a)","")
+$(warning No qtisec lib found using stub implemenattion)
+BL31_SOURCES		+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c
+else
 LDFLAGS += -L ${LIB_QTI_PATH}
-
 LDLIBS += -l$(QTISECLIB)
+endif
+
+
 
