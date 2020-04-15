@@ -200,12 +200,20 @@ __dead2 void qti_system_reset(void)
 
 void qti_get_sys_suspend_power_state(psci_power_state_t * req_state)
 {
-	int i;
+	int i = 0;
+	unsigned int state_id, power_state;
+	int size = sizeof(arm_pm_idle_states) / sizeof(arm_pm_idle_states[0]);
 
-	for (i = 0; i <= PSCI_MAX_PWR_LVL; i++)
-		req_state->pwr_domain_state[i] = PLAT_MAX_OFF_STATE;
+	/* Find deepest state */
+	power_state = arm_pm_idle_states[size - 2];
+	state_id = psci_get_pstate_id(power_state);
+
+	/* Parse the State ID and populate the state info parameter */
+	while (state_id) {
+		req_state->pwr_domain_state[i++] = state_id & ARM_LOCAL_PSTATE_MASK;
+		state_id >>= ARM_LOCAL_PSTATE_WIDTH;
+	}
 }
-
 /* Structure containing platform specific PSCI operations. Common
  * PSCI layer will use this. */
 const plat_psci_ops_t plat_qti_psci_pm_ops = {
