@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <qtiseclib_defs.h>
-
+#include "qtiseclib_interface.h"
 /*----------------------------------------------------------------------------
  * QTISECLIB Published API's.
  * -------------------------------------------------------------------------*/
@@ -81,14 +81,12 @@ int qtiseclib_prng_get_data(uint8_t *out, uint32_t out_len)
  return 0;
 }
 
-
-int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
-						  u_register_t	IPAinfolistsize,
-						  u_register_t	sourceVMlist_hyp,
-						  u_register_t	srcVMlistsize,
-						  u_register_t	destVMlist_hyp,
-						  u_register_t	dstVMlistsize,
-						  u_register_t	spare)
+int qtiseclib_mem_assign(const memprot_info_t * mem_info,
+			 uint32_t mem_info_list_cnt,
+			 const uint32_t * source_vm_list,
+			 uint32_t src_vm_list_cnt,
+			 const memprot_dst_vm_perm_info_t * dest_vm_list,
+			 uint32_t dst_vm_list_cnt)
 {
  return 0;
 }
@@ -112,8 +110,12 @@ void qtiseclib_psci_node_suspend_finish(const uint8_t * states){}
 void qtiseclib_save_dev_data_addr( void* data){}
 void qtiseclib_psci_system_off(void)
 {
+	while(1);
 }
-void qtiseclib_psci_system_reset(void){}
+void qtiseclib_psci_system_reset(void)
+{
+	while(1);
+}
 void qtiseclib_disable_cluster_coherency(uint8_t state){}
 int qtiseclib_psci_validate_power_state(unsigned int pwr_state, uint8_t * req_state)
 {

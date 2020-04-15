@@ -11,6 +11,18 @@
 #include <stdbool.h>
 #include <qtiseclib_defs.h>
 
+typedef struct memprot_ipa_info_s {
+	uint64_t mem_addr;
+	uint64_t mem_size;
+}memprot_info_t;
+
+typedef struct memprot_dst_vm_perm_info_s {
+	uint32_t dst_vm;
+	uint32_t dst_vm_perm;
+	uint64_t ctx;
+	uint32_t ctx_size;
+}memprot_dst_vm_perm_info_t;
+
 /*----------------------------------------------------------------------------
  * QTISECLIB Published API's.
  * -------------------------------------------------------------------------*/
@@ -60,26 +72,24 @@ void qtiseclib_kryo4_gold_reset_asm(void);
  */
 void qtiseclib_kryo4_silver_reset_asm(void);
 
-
 /*----------------------------------------------------------------------------
  * C Api's
  * -------------------------------------------------------------------------*/
 void qtiseclib_bl31_platform_setup(void);
 void qtiseclib_invoke_isr(uint32_t irq, void *handle);
 void qtiseclib_panic(void);
-int qtiseclib_prng_get_data(uint8_t *out, uint32_t out_len);
+int qtiseclib_prng_get_data(uint8_t * out, uint32_t out_len);
 
-int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
-						  u_register_t	IPAinfolistsize,
-						  u_register_t	sourceVMlist_hyp,
-						  u_register_t	srcVMlistsize,
-						  u_register_t	destVMlist_hyp,
-						  u_register_t	dstVMlistsize,
-						  u_register_t	spare);
+int qtiseclib_mem_assign(const memprot_info_t * mem_info,
+			 uint32_t mem_info_list_cnt,
+			 const uint32_t * source_vm_list,
+			 uint32_t src_vm_list_cnt,
+			 const memprot_dst_vm_perm_info_t * dest_vm_list,
+			 uint32_t dst_vm_list_cnt);
 
 void qtiseclib_oem_register_wifi_interrupt(int irq);
-void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t *cbuf);
-void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t *cbuf);
+void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t * cbuf);
+void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t * cbuf);
 int qtiseclib_psci_init(void);
 int qtiseclib_psci_node_power_on(u_register_t mpidr);
 void qtiseclib_psci_node_on_finish(const uint8_t * states);
@@ -87,10 +97,13 @@ void qtiseclib_psci_cpu_standby(uint8_t pwr_state);
 void qtiseclib_psci_node_power_off(const uint8_t * states);
 void qtiseclib_psci_node_suspend(const uint8_t * states);
 void qtiseclib_psci_node_suspend_finish(const uint8_t * states);
-void qtiseclib_save_dev_data_addr( void* data);
-__attribute__((noreturn)) void qtiseclib_psci_system_off(void);
-__attribute__((noreturn)) void qtiseclib_psci_system_reset(void);
+void qtiseclib_save_dev_data_addr(void *data);
+__attribute__ ((noreturn))
+void qtiseclib_psci_system_off(void);
+__attribute__ ((noreturn))
+void qtiseclib_psci_system_reset(void);
 void qtiseclib_disable_cluster_coherency(uint8_t state);
-int qtiseclib_psci_validate_power_state(unsigned int pwr_state, uint8_t * req_state);
+int qtiseclib_psci_validate_power_state(unsigned int pwr_state,
+					uint8_t * req_state);
 
-#endif /* __QTISECLIB_INTERFACE_H__ */
+#endif				/* __QTISECLIB_INTERFACE_H__ */
