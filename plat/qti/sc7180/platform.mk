@@ -61,13 +61,13 @@ QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo.S		\
 				$(QTI_PLAT_PATH)/qtiseclib/src/qtiseclib_cb_interface.c	\
 
 
-PLAT_INCLUDES		:=	-Idrivers/arm/gic/common/				\
-				-Idrivers/arm/gic/v3/					\
-				-Iinclude/plat/common/					\
+PLAT_INCLUDES		:=	-Iinclude/plat/common/					\
 
 PLAT_INCLUDES		+=	${QTI_EXTERNAL_INCLUDES}
 
 include lib/xlat_tables_v2/xlat_tables.mk
+# Include GICv3 driver files
+include drivers/arm/gic/v3/gicv3.mk
 PLAT_BL_COMMON_SOURCES	+=	${XLAT_TABLES_LIB_SRCS}					\
 				plat/common/aarch64/crash_console_helpers.S    \
 				common/desc_image_load.c			\
@@ -78,16 +78,9 @@ include lib/coreboot/coreboot.mk
 #PSCI Sources.
 PSCI_SOURCES		:=	plat/common/plat_psci_common.c				\
 
-# GIC sources.
-GIC_SOURCES		:=	drivers/arm/gic/common/gic_common.c			\
-				drivers/arm/gic/v3/arm_gicv3_common.c			\
-				drivers/arm/gic/v3/gic600.c				\
-				drivers/arm/gic/v3/gicv3_main.c				\
-				drivers/arm/gic/v3/gicv3_helpers.c			\
-				plat/common/plat_gicv3.c				\
-
-
-
+#GIC sources.
+GIC_SOURCES		:=	plat/common/plat_gicv3.c				\
+				${GICV3_SOURCES} 	                                 \
 
 BL31_SOURCES		+=	${QTI_BL31_SOURCES}					\
 				${PSCI_SOURCES}						\
