@@ -14,7 +14,9 @@ Trusted Firmware-A Documentation
    plat/index
    perf/index
    security_advisories/index
+   design_documents/index
    change-log
+   change-log-upcoming
    glossary
    license
 
@@ -81,7 +83,7 @@ have previously been raised against the software.
 
 --------------
 
-*Copyright (c) 2013-2019, Arm Limited and Contributors. All rights reserved.*
+*Copyright (c) 2013-2020, Arm Limited and Contributors. All rights reserved.*
 
 .. _Armv7-A and Armv8-A: https://developer.arm.com/products/architecture/a-profile
 .. _Secure Monitor: http://www.arm.com/products/processors/technologies/trustzone/tee-smc.php
