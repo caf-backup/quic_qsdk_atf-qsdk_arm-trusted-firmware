@@ -63,4 +63,6 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *ns_ctx);
 int qtiseclib_cb_crash_console_init(void);
 int qtiseclib_cb_crash_console_flush(void);
 
+void qtiseclib_cb_udelay(uint32_t usec);
+
 #endif /* __QTISECLIB_CB_INTERFACE_H__ */

@@ -81,6 +81,9 @@ GICV3_IMPL			:=	GIC600
 # Include GICv3 driver files
 include drivers/arm/gic/v3/gicv3.mk
 
+#Timer sources
+TIMER_SOURCES		:=	drivers/delay_timer/generic_delay_timer.c	\
+				drivers/delay_timer/delay_timer.c		\
 #GIC sources.
 GIC_SOURCES		:=	plat/common/plat_gicv3.c				\
 				${GICV3_SOURCES} 	                                 \
@@ -88,7 +91,7 @@ GIC_SOURCES		:=	plat/common/plat_gicv3.c				\
 BL31_SOURCES		+=	${QTI_BL31_SOURCES}					\
 				${PSCI_SOURCES}						\
 				${GIC_SOURCES}						\
-				${CONSOLE_SOURCES}					\
+				${TIMER_SOURCES}					\
 
 
 LIB_QTI_PATH	:=	${QTI_PLAT_PATH}/qtiseclib/lib/${CHIPSET}

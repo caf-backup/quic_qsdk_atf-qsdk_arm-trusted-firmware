@@ -12,6 +12,7 @@
 #include <lib/bl_aux_params/bl_aux_params.h>
 #include <bl31/bl31.h>
 #include <drivers/console.h>
+#include <drivers/generic_delay_timer.h>
 #include <lib/coreboot.h>
 #include <lib/spinlock.h>
 #include <qti_plat.h>
@@ -108,6 +109,7 @@ void bl31_plat_arch_setup(void)
  ******************************************************************************/
 void bl31_platform_setup(void)
 {
+	generic_delay_timer_init();
 	/* Initialize the GIC driver, cpu and distributor interfaces */
 	plat_qti_gic_driver_init();
 	plat_qti_gic_init();

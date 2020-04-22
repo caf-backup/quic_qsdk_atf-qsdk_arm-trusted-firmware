@@ -21,6 +21,7 @@
 #include <arch.h>
 #include <arch_helpers.h>
 #include <lib/coreboot.h>
+#include <drivers/delay_timer.h>
 
 /*Adding it till 64 bit address support will be merged to arm tf*/
 static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
@@ -227,4 +228,9 @@ int qtiseclib_cb_crash_console_init(void)
 int qtiseclib_cb_crash_console_flush(void)
 {
 	return plat_crash_console_flush();
+}
+
+void qtiseclib_cb_udelay(uint32_t usec)
+{
+	udelay(usec);
 }
