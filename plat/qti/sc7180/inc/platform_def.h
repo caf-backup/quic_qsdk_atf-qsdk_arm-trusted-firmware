@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -25,10 +25,10 @@
 #define MPIDR_PRIMARY_CPU	0x0000
 /*----------------------------------------------------------------------------*/
 
-#define ARM_PWR_LVL0	MPIDR_AFFLVL0
-#define ARM_PWR_LVL1	MPIDR_AFFLVL1
-#define ARM_PWR_LVL2	MPIDR_AFFLVL2
-#define ARM_PWR_LVL3	MPIDR_AFFLVL3
+#define QTI_PWR_LVL0		MPIDR_AFFLVL0
+#define QTI_PWR_LVL1		MPIDR_AFFLVL1
+#define QTI_PWR_LVL2		MPIDR_AFFLVL2
+#define QTI_PWR_LVL3		MPIDR_AFFLVL3
 #define CORE_PWRDN_EN_MASK	U(0x1)
 /*
  *  Macros for local power states encoded by State-ID field
@@ -42,11 +42,11 @@
 /* Local power state for retention. Valid for CPU and cluster power
    domains */
 #define QTI_LOCAL_STATE_RET	2
-/* Local power state for OFF/power-down. Valid for CPU and cluster power
-   domains */
+/* Local power state for OFF/power down. Valid for CPU, cluster, RSC and PDC
+ * power domains */
 #define QTI_LOCAL_STATE_OFF	3
-/* Local power state for OFF/power-down. Valid for CPU and cluster power
-   domains */
+/* Local power state for DEEPOFF/power rail down. Valid for CPU, cluster and RSC
+   power domains */
 #define QTI_LOCAL_STATE_DEEPOFF	4
 
 /*
