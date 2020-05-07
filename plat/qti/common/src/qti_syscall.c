@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,6 +16,7 @@
 #include <tools_share/uuid.h>
 #include <smccc_helpers.h>
 #include <lib/utils_def.h>
+#include <lib/coreboot.h>
 #include <qti_plat.h>
 #include <qti_secure_io_cfg.h>
 #include <qtiseclib_interface.h>
@@ -25,7 +26,7 @@
  * ---------------------------------------------------------------------------
  */
 #define	QTI_SIP_SVC_CALL_COUNT_ID			U(0x0200ff00)
-#define	QTI_SIP_SVC_UID_ID					U(0x0200ff01)
+#define	QTI_SIP_SVC_UID_ID				U(0x0200ff01)
 /*							0x8200ff02 is reserved */
 #define	QTI_SIP_SVC_VERSION_ID				U(0x0200ff03)
 
@@ -56,6 +57,13 @@
 
 #define	FUNCID_OEN_NUM_MASK	((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
 				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT ))
+
+enum {
+        QTI_SIP_SUCCESS = 0,
+        QTI_SIP_NOT_SUPPORTED = -1,
+	QTI_SIP_PREEMPTED = -2,
+        QTI_SIP_INVALID_PARAM = -3,
+};
 
 /* QTI SiP Service UUID */
 DEFINE_SVC_UUID2(qti_sip_svc_uid,
@@ -100,6 +108,17 @@ bool qti_mem_assign_validate_param(memprot_info_t * mem_info,
 		    mem_info[i].mem_addr) {
 			return false;
 		}
+		if (coreboot_get_memory_type(mem_info[i].mem_addr) !=
+		    CB_MEM_RAM) {
+			return false;
+		}
+
+		if (coreboot_get_memory_type
+		    (mem_info[i].mem_addr + mem_info[i].mem_size) !=
+		    CB_MEM_RAM) {
+			return false;
+		}
+
 	}
 	for (i = 0; i < src_vm_list_cnt; i++) {
 		if (source_vm_list[i] >= QTI_VM_LAST) {
@@ -117,19 +136,20 @@ bool qti_mem_assign_validate_param(memprot_info_t * mem_info,
 static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 				    u_register_t x1,
 				    u_register_t x2,
-				    u_register_t x3, u_register_t x4)
+				    u_register_t x3,
+				    u_register_t x4)
 {
 	uintptr_t dyn_map_start=0, dyn_map_end=0;
 	size_t dyn_map_size=0;
 	u_register_t x6, x7;
-	int ret = SMC_UNK;
+	int ret = QTI_SIP_NOT_SUPPORTED;
 	u_register_t x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
 	do {
 		if (SMC_32 == smc_cc) {
 			x5 = (uint32_t) x5;
 		}
 		/* Validate input arg count & retrieve arg3-6 from NS Buffer. */
-		if ((QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID != x1) && (0x0 == x5)) {
+		if ((QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID != x1) || (0x0 == x5)) {
 			break;
 		}
 
@@ -141,8 +161,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		if (0 !=
 		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
 						dyn_map_size,
-						(MT_NS | MT_RO |
-						 MT_EXECUTE_NEVER))) {
+						(MT_NS | MT_RO_DATA ))) {
 			break;
 		}
 		/* Retrieve indirect args. */
@@ -176,8 +195,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		if (0 !=
 		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
 						dyn_map_size,
-						(MT_NS | MT_RO |
-						 MT_EXECUTE_NEVER))) {
+						(MT_NS | MT_RO_DATA ))) {
 			break;
 		}
 		memprot_info_t *mem_info_p = (memprot_info_t *) x2;
@@ -226,7 +244,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 
 
 		if (0 == ret) {
-			SMC_RET2(handle, SMC_OK, ret);
+			SMC_RET2(handle, QTI_SIP_SUCCESS, ret);
 		}
 
 	} while (0);
@@ -236,7 +254,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		qti_mmap_remove_dynamic_region(dyn_map_start, dyn_map_size);
 	}
 
-	SMC_RET2(handle, SMC_UNK, ret);
+	SMC_RET2(handle, QTI_SIP_INVALID_PARAM, ret);
 }
 
 /*
@@ -281,19 +299,19 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		{
 			if ((QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID == x1) &&
 			    qti_is_secure_io_access_allowed(x2)) {
-				SMC_RET2(handle, SMC_OK,
+				SMC_RET2(handle, QTI_SIP_SUCCESS,
 					 *((volatile uint32_t *)x2));
 			}
-			SMC_RET1(handle, SMC_UNK);
+			SMC_RET1(handle, QTI_SIP_INVALID_PARAM);
 		}
 	case QTI_SIP_SVC_SECURE_IO_WRITE_ID:
 		{
 			if ((QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID == x1) &&
 			    qti_is_secure_io_access_allowed(x2)) {
 				*((volatile uint32_t *)x2) = x3;
-				SMC_RET1(handle, SMC_OK);
+				SMC_RET1(handle, QTI_SIP_SUCCESS);
 			}
-			SMC_RET1(handle, SMC_UNK);
+			SMC_RET1(handle, QTI_SIP_INVALID_PARAM);
 		}
 	case QTI_SIP_SVC_MEM_ASSIGN_ID:
 		{
@@ -302,7 +320,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		}
 	default:
 		{
-			SMC_RET1(handle, SMC_UNK);
+			SMC_RET1(handle, QTI_SIP_NOT_SUPPORTED);
 		}
 	}
 	return (uintptr_t) handle;

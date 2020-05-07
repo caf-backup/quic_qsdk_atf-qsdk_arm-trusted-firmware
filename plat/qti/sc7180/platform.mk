@@ -5,11 +5,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-# Make for sdm845 QTI platform.
+# Make for SC7180 QTI platform.
 
 QTI_PLAT_PATH		:=	plat/qti
 CHIPSET			:=	${PLAT}
-SOC			:=	$(patsubst sdm%,%,${PLAT})
 
 # Turn On Separate code & data.
 SEPARATE_CODE_AND_RODATA	:=	1
@@ -30,6 +29,10 @@ RESET_TO_BL31			:=	0
 
 MULTI_CONSOLE_API		:=	1
 
+ifeq (${DEBUG},1)
+$(eval $(call add_define,QTI_DEBUG_BUILD))
+endif
+
 #disable CTX_INCLUDE_AARCH32_REGS to support sc7180 gold cores
 override CTX_INCLUDE_AARCH32_REGS	:=	0
 WORKAROUND_CVE_2017_5715		:=      0
@@ -44,8 +47,7 @@ QTI_EXTERNAL_INCLUDES	:=	-I${QTI_PLAT_PATH}/${CHIPSET}/inc			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc			\
 				-I${QTI_PLAT_PATH}/qtiseclib/inc/${CHIPSET}			\
 
-QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo.S		\
-				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
+QTI_BL31_SOURCES	:=	$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_helpers.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo4_silver.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_kryo4_gold.S	\
 				$(QTI_PLAT_PATH)/common/src/$(ARCH)/qti_uart_console.S	\
@@ -83,37 +85,31 @@ include drivers/arm/gic/v3/gicv3.mk
 #Timer sources
 TIMER_SOURCES		:=	drivers/delay_timer/generic_delay_timer.c	\
 				drivers/delay_timer/delay_timer.c		\
+
 #GIC sources.
-GIC_SOURCES		:=	plat/common/plat_gicv3.c				\
-				${GICV3_SOURCES} 	                                 \
+GIC_SOURCES		:=	plat/common/plat_gicv3.c			\
+				${GICV3_SOURCES}				\
 
 BL31_SOURCES		+=	${QTI_BL31_SOURCES}					\
 				${PSCI_SOURCES}						\
 				${GIC_SOURCES}						\
 				${TIMER_SOURCES}					\
 
-
 LIB_QTI_PATH	:=	${QTI_PLAT_PATH}/qtiseclib/lib/${CHIPSET}
 
-# By default libqtisec_dbg.a used by debug variant. When this library doesn't exist,
-# debug variant will use release version (libqtisec.a) of the library.
-QTISECLIB = qtisec
-ifneq (${DEBUG}, 0)
-ifneq ("$(wildcard $(LIB_QTI_PATH)/libqtisec_dbg.a)","")
-QTISECLIB = qtisec_dbg
-else
-$(warning Release version of qtisec library used in Debug build!!..)
-endif
-endif
 
+# Override this on the command line to point to the qtiseclib library which
+# will be available in coreboot.org
+QTISECLIB_PATH ?=
+
+ifeq ($(QTISECLIB_PATH),)
 # if No lib then use stub implementation for qtiseclib interface
-ifeq ("$(wildcard $(LIB_QTI_PATH)/lib$(QTISECLIB).a)","")
-$(warning No qtisec lib found using stub implemenattion)
-BL31_SOURCES		+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c
+$(warning QTISECLIB_PATH is not provided while building, using stub implementation. \
+		THIS FIRMWARE WILL NOT BOOT!)
+BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c
 else
-LDFLAGS += -L ${LIB_QTI_PATH}
-LDLIBS += -l$(QTISECLIB)
+# use library provided by QTISECLIB_PATH
+LDFLAGS += -L $(dir $(QTISECLIB_PATH))
+LDLIBS += -l$(patsubst lib%.a,%,$(notdir $(QTISECLIB_PATH)))
 endif
-
-
 

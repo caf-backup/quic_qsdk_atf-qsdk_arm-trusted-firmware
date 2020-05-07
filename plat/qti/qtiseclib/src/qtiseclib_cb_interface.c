@@ -23,39 +23,30 @@
 #include <lib/coreboot.h>
 #include <drivers/delay_timer.h>
 
-/*Adding it till 64 bit address support will be merged to arm tf*/
-static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
-{
-	/* Round up the limit to the next page boundary */
-	if (value & (PAGE_SIZE - 1)) {
-		value &= ~((uintptr_t)PAGE_SIZE - 1);
-		if (dir == UP)
-			value += PAGE_SIZE;
-	}
-
-	return value;
-}
-
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {
 	return memcpy(dst, src, len);
 }
 
-/* Log Level not used right now. Printing all log from QTISECLIB. */
+/* Printing logs below or equal LOG_LEVEL from QTISECLIB. */
 void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 {
-	va_list argp;
-	static spinlock_t qti_log_lock;
-	uint64_t uptime = read_cntpct_el0();
-	va_start(argp, fmt);
+	if(loglvl <= LOG_LEVEL)
+	{
+		va_list argp;
+		static spinlock_t qti_log_lock;
+		uint64_t uptime = read_cntpct_el0();
+		va_start(argp, fmt);
 
-	spin_lock(&qti_log_lock);
-	printf("QTISECLIB [%x%08x]",(uint32_t)((uptime>>32)&0xFFFFFFFF),(uint32_t)(uptime&0xFFFFFFFF));
-	vprintf(fmt, argp);
-	putchar('\n');
-	spin_unlock(&qti_log_lock);
+		spin_lock(&qti_log_lock);
+		printf("QTISECLIB [%x%08x]",(uint32_t)((uptime>>32)&0xFFFFFFFF),
+		      (uint32_t)(uptime&0xFFFFFFFF));
+		vprintf(fmt, argp);
+		putchar('\n');
+		spin_unlock(&qti_log_lock);
 
-	va_end(argp);
+		va_end(argp);
+	}
 }
 
 void qtiseclib_cb_spin_lock(qtiseclib_cb_spinlock_t * lock)
@@ -78,19 +69,9 @@ int qtiseclib_cb_plat_core_pos_by_mpidr(u_register_t mpidr)
 	return plat_core_pos_by_mpidr(mpidr);
 }
 
-void qtiseclib_cb_set_interrupt_pending(unsigned int irq)
-{
-	plat_ic_set_interrupt_pending(irq);
-}
-
 unsigned int qtiseclib_cb_plat_my_cluster_pos(void)
 {
 	return plat_qti_my_cluster_pos();
-}
-
-void qtiseclib_cb_clear_interrupt_pending(unsigned int id)
-{
-	plat_ic_clear_interrupt_pending(id);
 }
 
 uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void)
@@ -115,57 +96,7 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 				       size, l_attr);
 }
 
-void qtiseclib_cb_inv_dcache_range(uintptr_t addr, size_t size)
-{
-	uintptr_t addr_align = qti_page_align(addr, DOWN);
-	size_t size_aign = qti_page_align(size, UP);
-
-	inv_dcache_range(addr_align, size_aign);
-}
-
-void qtiseclib_cb_flush_dcache_range(uintptr_t addr, size_t size)
-{
-	uintptr_t addr_align = qti_page_align(addr, DOWN);
-	size_t size_aign = qti_page_align(size, UP);
-
-	flush_dcache_range(addr_align, size_aign);
-}
-
-void qtiseclib_cb_flush_dcache_all(void)
-{
-	dcsw_op_all(DCCISW);
-}
-
-void qtiseclib_cb_tlbialle3(void)
-{
-	tlbialle3();
-}
-
-int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
-{
-	return qti_mmap_remove_dynamic_region(base_va, size);
-}
-
-/* GIC platform functions */
-void qtiseclib_cb_gic_pcpu_init(void)
-{
-	plat_qti_gic_pcpu_init();
-}
-
-void qtiseclib_cb_gic_cpuif_enable(void)
-{
-	plat_qti_gic_cpuif_enable();
-}
-
-void qtiseclib_cb_gic_cpuif_disable(void)
-{
-	plat_qti_gic_cpuif_disable();
-}
-
-void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target)
-{
-	plat_ic_raise_el3_sgi(sgi_num, target);
-}
+#ifdef QTI_DEBUG_BUILD
 
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 {
@@ -213,6 +144,37 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 	qti_ns_ctx->sp_el0 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_SP_EL0);
 }
 
+
+void qtiseclib_cb_flush_dcache_all(void)
+{
+	dcsw_op_all(DCCISW);
+}
+
+int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
+{
+	return qti_mmap_remove_dynamic_region(base_va, size);
+}
+#endif
+/* GIC platform functions */
+void qtiseclib_cb_gic_pcpu_init(void)
+{
+	plat_qti_gic_pcpu_init();
+}
+
+void qtiseclib_cb_gic_cpuif_enable(void)
+{
+	plat_qti_gic_cpuif_enable();
+}
+
+void qtiseclib_cb_gic_cpuif_disable(void)
+{
+	plat_qti_gic_cpuif_disable();
+}
+
+void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target)
+{
+	plat_ic_raise_el3_sgi(sgi_num, target);
+}
 void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm, u_register_t target)
 {
 	assert(QTI_GICV3_IRM_PE == GICV3_IRM_PE);
@@ -221,13 +183,9 @@ void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm, u_register_
 }
 
 /* Crash reporting api's wrappers */
-int qtiseclib_cb_crash_console_init(void)
+void qtiseclib_cb_switch_console_to_crash_state()
 {
-	return plat_crash_console_init();
-}
-int qtiseclib_cb_crash_console_flush(void)
-{
-	return plat_crash_console_flush();
+        console_switch_state(CONSOLE_FLAG_CRASH);
 }
 
 void qtiseclib_cb_udelay(uint32_t usec)

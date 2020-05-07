@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018,2020 The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,12 +14,7 @@
 
 #ifndef __ASSEMBLER__
 
-typedef struct {
-	console_t console;
-	uintptr_t base;
-} qti_console_uart_t;
-
-int qti_console_uart_register(qti_console_uart_t * console,
+int qti_console_uart_register(console_t * console,
 			      uintptr_t uart_base_addr);
 
 #endif /* __ASSEMBLER__ */

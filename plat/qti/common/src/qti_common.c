@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -81,12 +81,12 @@ unsigned int plat_qti_my_cluster_pos(void)
  * - Coherent memory region, if applicable.
  */
 void qti_setup_page_tables(uintptr_t total_base,
-						   size_t total_size,
-						   uintptr_t code_start,
-						   uintptr_t code_limit,
-						   uintptr_t rodata_start,
-						   uintptr_t rodata_limit,
-						   uintptr_t coh_start, uintptr_t coh_limit)
+			   size_t total_size,
+			   uintptr_t code_start,
+			   uintptr_t code_limit,
+			   uintptr_t rodata_start,
+			   uintptr_t rodata_limit,
+			   uintptr_t coh_start, uintptr_t coh_limit)
 {
 	/*
 	 * Map the Trusted SRAM with appropriate memory attributes.
@@ -130,12 +130,21 @@ void qti_setup_page_tables(uintptr_t total_base,
 	init_xlat_tables();
 }
 
-int qti_mmap_add_dynamic_region(unsigned long long base_pa, uintptr_t base_va,
-								size_t size, unsigned int attr)
+static inline void qti_align_mem_region(uintptr_t addr, size_t size,
+				uintptr_t *aligned_addr, size_t *aligned_size)
 {
-	base_pa = qti_page_align(base_pa, DOWN);
-	base_va = qti_page_align(base_va, DOWN);
-	size = qti_page_align(size, UP);
+	*aligned_addr = qti_page_align(addr, DOWN);
+	*aligned_size = qti_page_align(addr - *aligned_addr + size,UP);
+}
+
+int qti_mmap_add_dynamic_region(uintptr_t base_pa, uintptr_t base_va,
+				size_t size, unsigned int attr)
+{
+	uintptr_t aligned_pa,aligned_va;
+	size_t aligned_size;
+	qti_align_mem_region(base_pa, size, &aligned_pa, &aligned_size);
+	qti_align_mem_region(base_va, size, &aligned_va, &aligned_size);
+	assert(base_pa - aligned_pa == base_va - aligned_va);
 
 	if(qti_is_overlap_atf_rg(base_pa, size))
 	{
@@ -143,12 +152,11 @@ int qti_mmap_add_dynamic_region(unsigned long long base_pa, uintptr_t base_va,
 		return -EPERM;
 	}
 
-	return mmap_add_dynamic_region(base_pa, base_va, size, attr);
+	return mmap_add_dynamic_region(aligned_pa, aligned_va, aligned_size, attr);
 }
 
 int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
 {
-	base_va = qti_page_align(base_va, DOWN);
-	size = qti_page_align(size, UP);
+	qti_align_mem_region(base_va, size, &base_va, &size);
 	return mmap_remove_dynamic_region(base_va, size);
 }

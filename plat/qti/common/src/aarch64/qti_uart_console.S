@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018,2020 The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -17,10 +17,10 @@
 	.globl qti_console_uart_register
 
 	/* -----------------------------------------------
-	 * int qti_console_uart_register(qti_console_uart_t *console,
+	 * int qti_console_uart_register(console_t *console,
 	 *				 uintptr_t uart_base_addr)
 	 * Registers uart console instance.
-	 * In:  x0 - pointer to empty qti_console_uart_t struct
+	 * In:  x0 - pointer to empty console_t struct
 	 *      x1 - start address of uart block.
 	 * Out: x0 - 1 to indicate success
 	 * Clobber list: x0, x1, x14
@@ -32,11 +32,11 @@ func qti_console_uart_register
 endfunc qti_console_uart_register
 
 	/* -----------------------------------------------
-	 * int qti_console_uart_puts(int c, qti_console_uart_t *console)
+	 * int qti_console_uart_puts(int c, console_t *console)
 	 * Writes a character to the UART console.
 	 * The character must be preserved in x0.
 	 * In: x0 - character to be stored
-	 *     x1 - pointer to qti_console_uart_t struct
+	 *     x1 - pointer to console_t struct
 	 * Clobber list: x1, x2
 	 * -----------------------------------------------
 	 */
@@ -80,8 +80,8 @@ func console_uart_putc
 endfunc	console_uart_putc
 
 	/* -----------------------------------------------
-	 * int qti_console_uart_flush(qti_console_uart_t *console)
-	 * In:  x0 - pointer to qti_console_uart_t struct
+	 * int qti_console_uart_flush(console_t *console)
+	 * In:  x0 - pointer to console_t struct
 	 * Out: x0 - 0 for success
 	 * Clobber list: x0, x1
 	 * -----------------------------------------------

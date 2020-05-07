@@ -9,7 +9,9 @@
 #include <qtiseclib_defs.h>
 #include "qtiseclib_interface.h"
 /*----------------------------------------------------------------------------
- * QTISECLIB Published API's.
+ * This file contains dummy implementation of QTISECLIB Published API's.
+ * which will be used to compile PLATFORM successfully when
+ * qtiseclib is not available
  * -------------------------------------------------------------------------*/
 
 /*
@@ -20,25 +22,6 @@
  * Clobbers: x0 - x17, x30
  */
 void qtiseclib_cpuss_reset_asm(uint32_t bl31_cold_boot_state)
-{
-}
-/*
- * Execute CPU (Kryo3 gold) specific reset handler / system initialization.
- * This takes care of executing required CPU errata's.
- *
- * Clobbers: x0 - x16
- */
-void qtiseclib_kryo3_gold_reset_asm(void)
-{
-}
-
-/*
- * Execute CPU (Kryo3 silver) specific reset handler / system initialization.
- * This takes care of executing required CPU errata's.
- *
- * Clobbers: x0 - x16
- */
-void qtiseclib_kryo3_silver_reset_asm(void)
 {
 }
 
@@ -91,9 +74,6 @@ int qtiseclib_mem_assign(const memprot_info_t * mem_info,
  return 0;
 }
 
-void qtiseclib_oem_register_wifi_interrupt(int irq){}
-void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t *cbuf){}
-void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t *cbuf){}
 int qtiseclib_psci_init(void)
 {
  return 0;
@@ -107,7 +87,6 @@ void qtiseclib_psci_cpu_standby(uint8_t pwr_state){}
 void qtiseclib_psci_node_power_off(const uint8_t * states){}
 void qtiseclib_psci_node_suspend(const uint8_t * states){}
 void qtiseclib_psci_node_suspend_finish(const uint8_t * states){}
-void qtiseclib_save_dev_data_addr( void* data){}
 void qtiseclib_psci_system_off(void)
 {
 	while(1);

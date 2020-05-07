@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -29,7 +29,7 @@ static entry_point_info_t bl33_image_ep_info;
 /*
  * Variable to hold counter frequency for the CPU's generic timer. In this
  * platform coreboot image configure counter frequency for boot core before
- * reaching ATF.
+ * reaching ATF. 
  */
 static uint64_t g_qti_cpu_cntfrq;
 
@@ -39,15 +39,10 @@ static uint64_t g_qti_cpu_cntfrq;
 spinlock_t g_qti_cpuss_boot_lock __attribute__((section("tzfw_coherent_mem"), aligned(CACHE_WRITEBACK_GRANULE))) = {0x0};
 
 /*
- * Variable to hold bl31 clod boot status. Default value 0x0 means yet to boot.
+ * Variable to hold bl31 cold boot status. Default value 0x0 means yet to boot.
  * Any other value means cold booted.
  */
 uint32_t g_qti_bl31_cold_booted __attribute__((section("tzfw_coherent_mem"))) = 0x0;
-
-static void params_early_setup(u_register_t plat_param_from_bl2)
-{
-	bl_aux_params_parse(plat_param_from_bl2, NULL);
-}
 
 /*******************************************************************************
  * Perform any BL31 early platform setup common to ARM standard platforms.
@@ -63,11 +58,11 @@ void bl31_early_platform_setup(u_register_t from_bl2,
 
 	g_qti_cpu_cntfrq = read_cntfrq_el0();
 
-	params_early_setup(plat_params_from_bl2);
+	bl_aux_params_parse(plat_params_from_bl2, NULL);
 
 #if COREBOOT
 	if (coreboot_serial.baseaddr) {
-		static qti_console_uart_t g_qti_console_uart;
+		static console_t g_qti_console_uart;
 		qti_console_uart_register(&g_qti_console_uart,
 					  coreboot_serial.baseaddr);
 	}
@@ -78,7 +73,6 @@ void bl31_early_platform_setup(u_register_t from_bl2,
 	 * is located and the entry state information
 	*/
 	bl31_params_parse_helper(from_bl2, NULL, &bl33_image_ep_info);
-	SET_SECURITY_STATE(bl33_image_ep_info.h.attr, NON_SECURE);
 }
 
 void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
@@ -131,8 +125,9 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 	/* QTI platform don't have BL32 implementation. */
 	assert(NON_SECURE == type);
 	assert(bl33_image_ep_info.h.type == PARAM_EP);
+	assert(bl33_image_ep_info.h.attr == NON_SECURE);
 	/*
-	 * None of the images on the ARM development platforms can have 0x0
+	 * None of the images on the platforms can have 0x0
 	 * as the entrypoint.
 	 */
 	if (bl33_image_ep_info.pc)
@@ -144,9 +139,10 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 /*******************************************************************************
  * This function is used by the architecture setup code to retrieve the counter
  * frequency for the CPU's generic timer. This value will be programmed into the
- * CNTFRQ_EL0 register. In ARM standard platforms, it returns the base frequency
- * of the system counter, which is retrieved from the first entry in the
- * frequency modes table.
+ * CNTFRQ_EL0 register. In Arm standard platforms, it returns the base frequency 
+ * of the system counter, which is retrieved from the first entry in the 
+ * frequency modes table. This will be used later in warm boot (psci_arch_setup)
+ * of cpus to set when cpu frequency.
  ******************************************************************************/
 unsigned int plat_get_syscnt_freq2()
 {

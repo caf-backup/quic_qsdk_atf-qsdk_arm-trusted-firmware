@@ -160,13 +160,6 @@
  * Put BL31 at DDR as per memory map. BL31_BASE is calculated using the
  * current BL31 debug size plus a little space for growth.
  */
-#define QTI_TRUSTED_MAILBOX_SIZE				0x1000
-#define BL31_LIMIT						(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)
-
-/*----------------------------------------------------------------------------*/
-/* Mailbox base address */
-/*----------------------------------------------------------------------------*/
-#define QTI_TRUSTED_MAILBOX_BASE		(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)
-/*----------------------------------------------------------------------------*/
+#define BL31_LIMIT						(BL31_BASE + BL31_SIZE)
 
 #endif /* __PLATFORM_DEF_H__ */
