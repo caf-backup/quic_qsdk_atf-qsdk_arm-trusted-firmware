@@ -544,7 +544,7 @@ It then replaces the exception vectors populated by BL1 with its own. BL31
 exception vectors implement more elaborate support for handling SMCs since this
 is the only mechanism to access the runtime services implemented by BL31 (PSCI
 for example). BL31 checks each SMC for validity as specified by the
-`SMC Calling Convention PDD`_ before passing control to the required SMC
+`SMC Calling Convention`_ before passing control to the required SMC
 handler routine.
 
 BL31 programs the ``CNTFRQ_EL0`` register with the clock frequency of the system
@@ -2711,7 +2711,7 @@ kernel at boot time. These can be found in the ``fdts`` directory.
 
 -  `Power State Coordination Interface PDD`_
 
--  `SMC Calling Convention PDD`_
+-  `SMC Calling Convention`_
 
 -  :ref:`Interrupt Management Framework`
 
@@ -2720,11 +2720,11 @@ kernel at boot time. These can be found in the ``fdts`` directory.
 *Copyright (c) 2013-2020, Arm Limited and Contributors. All rights reserved.*
 
 .. _Power State Coordination Interface PDD: http://infocenter.arm.com/help/topic/com.arm.doc.den0022d/Power_State_Coordination_Interface_PDD_v1_1_DEN0022D.pdf
-.. _SMCCC: http://infocenter.arm.com/help/topic/com.arm.doc.den0028b/ARM_DEN0028B_SMC_Calling_Convention.pdf
+.. _SMCCC: https://developer.arm.com/docs/den0028/latest
 .. _PSCI: http://infocenter.arm.com/help/topic/com.arm.doc.den0022d/Power_State_Coordination_Interface_PDD_v1_1_DEN0022D.pdf
 .. _Power State Coordination Interface PDD: http://infocenter.arm.com/help/topic/com.arm.doc.den0022d/Power_State_Coordination_Interface_PDD_v1_1_DEN0022D.pdf
 .. _Arm ARM: https://developer.arm.com/docs/ddi0487/latest
-.. _SMC Calling Convention PDD: http://infocenter.arm.com/help/topic/com.arm.doc.den0028b/ARM_DEN0028B_SMC_Calling_Convention.pdf
+.. _SMC Calling Convention: https://developer.arm.com/docs/den0028/latest
 .. _Trusted Board Boot Requirements CLIENT (TBBR-CLIENT) Armv8-A (ARM DEN0006D): https://developer.arm.com/docs/den0006/latest/trusted-board-boot-requirements-client-tbbr-client-armv8-a
 
 .. |Image 1| image:: ../resources/diagrams/rt-svc-descs-layout.png

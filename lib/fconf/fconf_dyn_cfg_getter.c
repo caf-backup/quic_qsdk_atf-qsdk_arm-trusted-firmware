@@ -48,8 +48,8 @@ int fconf_populate_dtb_registry(uintptr_t config)
 	/* As libfdt use void *, we can't avoid this cast */
 	const void *dtb = (void *)config;
 
-	/* Find the node offset point to "arm,dyn_cfg-dtb_registry" compatible property */
-	const char *compatible_str = "arm,dyn_cfg-dtb_registry";
+	/* Find the node offset point to "fconf,dyn_cfg-dtb_registry" compatible property */
+	const char *compatible_str = "fconf,dyn_cfg-dtb_registry";
 	node = fdt_node_offset_by_compatible(dtb, -1, compatible_str);
 	if (node < 0) {
 		ERROR("FCONF: Can't find %s compatible in dtb\n", compatible_str);
@@ -57,26 +57,32 @@ int fconf_populate_dtb_registry(uintptr_t config)
 	}
 
 	fdt_for_each_subnode(child, dtb, node) {
+		uint32_t val32;
+		uint64_t val64;
+
 		dtb_info = pool_alloc(&dtb_info_pool);
 
 		/* Read configuration dtb information */
-		rc = fdtw_read_cells(dtb, child, "load-address", 2, &dtb_info->config_addr);
+		rc = fdt_read_uint64(dtb, child, "load-address", &val64);
 		if (rc < 0) {
 			ERROR("FCONF: Incomplete configuration property in dtb-registry.\n");
 			return rc;
 		}
+		dtb_info->config_addr = (uintptr_t)val64;
 
-		rc = fdtw_read_cells(dtb, child, "max-size", 1, &dtb_info->config_max_size);
+		rc = fdt_read_uint32(dtb, child, "max-size", &val32);
 		if (rc < 0) {
 			ERROR("FCONF: Incomplete configuration property in dtb-registry.\n");
 			return rc;
 		}
+		dtb_info->config_max_size = val32;
 
-		rc = fdtw_read_cells(dtb, child, "id", 1, &dtb_info->config_id);
+		rc = fdt_read_uint32(dtb, child, "id", &val32);
 		if (rc < 0) {
 			ERROR("FCONF: Incomplete configuration property in dtb-registry.\n");
 			return rc;
 		}
+		dtb_info->config_id = val32;
 
 		VERBOSE("FCONF: dyn_cfg.dtb_registry cell found with:\n");
 		VERBOSE("\tload-address = %lx\n", dtb_info->config_addr);

@@ -8,7 +8,7 @@
 # Trusted Firmware Version
 #
 VERSION_MAJOR			:= 2
-VERSION_MINOR			:= 2
+VERSION_MINOR			:= 3
 
 # Default goal is build all images
 .DEFAULT_GOAL			:= all
@@ -93,12 +93,6 @@ ifneq ($(findstring s,$(filter-out --%,$(MAKEFLAGS))),)
 endif
 
 export Q ECHO
-
-# Default build string (git branch and commit)
-ifeq (${BUILD_STRING},)
-        BUILD_STRING	:=	$(shell git describe --always --dirty --tags 2> /dev/null)
-endif
-VERSION_STRING		:=	v${VERSION_MAJOR}.${VERSION_MINOR}(${BUILD_TYPE}):${BUILD_STRING}
 
 # The cert_create tool cannot generate certificates individually, so we use the
 # target 'certificates' to create them all
@@ -280,6 +274,12 @@ else
         # Use LOG_LEVEL_NOTICE by default for release builds
         LOG_LEVEL	:=	20
 endif
+
+# Default build string (git branch and commit)
+ifeq (${BUILD_STRING},)
+        BUILD_STRING  :=  $(shell git describe --always --dirty --tags 2> /dev/null)
+endif
+VERSION_STRING    :=  v${VERSION_MAJOR}.${VERSION_MINOR}(${BUILD_TYPE}):${BUILD_STRING}
 
 ifeq (${AARCH32_INSTRUCTION_SET},A32)
 TF_CFLAGS_aarch32	+=	-marm

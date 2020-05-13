@@ -12,6 +12,7 @@
 #include <platform_def.h>
 
 #include <common/debug.h>
+#include <common/fdt_wrappers.h>
 #include <drivers/st/stm32_gpio.h>
 #include <drivers/st/stm32mp1_ddr.h>
 #include <drivers/st/stm32mp1_ram.h>
@@ -135,145 +136,6 @@ static int fdt_get_node_parent_size_cells(int node)
 #endif
 
 /*******************************************************************************
- * This function reads a value of a node property (generic use of fdt
- * library).
- * Returns value if success, and a default value if property not found.
- * Default value is passed as parameter.
- ******************************************************************************/
-uint32_t fdt_read_uint32_default(int node, const char *prop_name,
-				 uint32_t dflt_value)
-{
-	const fdt32_t *cuint;
-	int lenp;
-
-	cuint = fdt_getprop(fdt, node, prop_name, &lenp);
-	if (cuint == NULL) {
-		return dflt_value;
-	}
-
-	return fdt32_to_cpu(*cuint);
-}
-
-/*******************************************************************************
- * This function reads a series of parameters in a node property
- * (generic use of fdt library).
- * It reads the values inside the device tree, from property name and node.
- * The number of parameters is also indicated as entry parameter.
- * Returns 0 on success and a negative FDT error code on failure.
- * If success, values are stored at the third parameter address.
- ******************************************************************************/
-int fdt_read_uint32_array(int node, const char *prop_name, uint32_t *array,
-			  uint32_t count)
-{
-	const fdt32_t *cuint;
-	int len;
-	uint32_t i;
-
-	cuint = fdt_getprop(fdt, node, prop_name, &len);
-	if (cuint == NULL) {
-		return -FDT_ERR_NOTFOUND;
-	}
-
-	if ((uint32_t)len != (count * sizeof(uint32_t))) {
-		return -FDT_ERR_BADLAYOUT;
-	}
-
-	for (i = 0; i < ((uint32_t)len / sizeof(uint32_t)); i++) {
-		*array = fdt32_to_cpu(*cuint);
-		array++;
-		cuint++;
-	}
-
-	return 0;
-}
-
-/*******************************************************************************
- * This function fills reg node info (base & size) with an index found by
- * checking the reg-names node.
- * Returns 0 on success and a negative FDT error code on failure.
- ******************************************************************************/
-int fdt_get_reg_props_by_name(int node, const char *name, uintptr_t *base,
-			      size_t *size)
-{
-	const fdt32_t *cuint;
-	int index, len;
-
-	assert((fdt_get_node_parent_address_cells(node) == 1) &&
-	       (fdt_get_node_parent_size_cells(node) == 1));
-
-	index = fdt_stringlist_search(fdt, node, "reg-names", name);
-	if (index < 0) {
-		return index;
-	}
-
-	cuint = fdt_getprop(fdt, node, "reg", &len);
-	if (cuint == NULL) {
-		return -FDT_ERR_NOTFOUND;
-	}
-
-	if ((index * (int)sizeof(uint32_t)) > len) {
-		return -FDT_ERR_BADVALUE;
-	}
-
-	cuint += index << 1;
-	if (base != NULL) {
-		*base = fdt32_to_cpu(*cuint);
-	}
-	cuint++;
-	if (size != NULL) {
-		*size = fdt32_to_cpu(*cuint);
-	}
-
-	return 0;
-}
-
-/*******************************************************************************
- * This function gets the stdout path node.
- * It reads the value indicated inside the device tree.
- * Returns node offset on success and a negative FDT error code on failure.
- ******************************************************************************/
-static int dt_get_stdout_node_offset(void)
-{
-	int node;
-	const char *cchar;
-
-	node = fdt_path_offset(fdt, "/secure-chosen");
-	if (node < 0) {
-		node = fdt_path_offset(fdt, "/chosen");
-		if (node < 0) {
-			return -FDT_ERR_NOTFOUND;
-		}
-	}
-
-	cchar = fdt_getprop(fdt, node, "stdout-path", NULL);
-	if (cchar == NULL) {
-		return -FDT_ERR_NOTFOUND;
-	}
-
-	node = -FDT_ERR_NOTFOUND;
-	if (strchr(cchar, (int)':') != NULL) {
-		const char *name;
-		char *str = (char *)cchar;
-		int len = 0;
-
-		while (strncmp(":", str, 1)) {
-			len++;
-			str++;
-		}
-
-		name = fdt_get_alias_namelen(fdt, cchar, len);
-
-		if (name != NULL) {
-			node = fdt_path_offset(fdt, name);
-		}
-	} else {
-		node = fdt_path_offset(fdt, cchar);
-	}
-
-	return node;
-}
-
-/*******************************************************************************
  * This function gets the stdout pin configuration information from the DT.
  * And then calls the sub-function to treat it and set GPIO registers.
  * Returns 0 on success and a negative FDT error code on failure.
@@ -282,7 +144,7 @@ int dt_set_stdout_pinctrl(void)
 {
 	int node;
 
-	node = dt_get_stdout_node_offset();
+	node = fdt_get_stdout_node_offset(fdt);
 	if (node < 0) {
 		return -FDT_ERR_NOTFOUND;
 	}
@@ -351,7 +213,7 @@ int dt_get_stdout_uart_info(struct dt_node_info *info)
 {
 	int node;
 
-	node = dt_get_stdout_node_offset();
+	node = fdt_get_stdout_node_offset(fdt);
 	if (node < 0) {
 		return -FDT_ERR_NOTFOUND;
 	}
@@ -375,7 +237,7 @@ uint32_t dt_get_ddr_size(void)
 		return 0;
 	}
 
-	return fdt_read_uint32_default(node, "st,mem-size", 0);
+	return fdt_read_uint32_default(fdt, node, "st,mem-size", 0);
 }
 
 /*******************************************************************************
@@ -396,7 +258,7 @@ uintptr_t dt_get_ddrctrl_base(void)
 	assert((fdt_get_node_parent_address_cells(node) == 1) &&
 	       (fdt_get_node_parent_size_cells(node) == 1));
 
-	if (fdt_read_uint32_array(node, "reg", array, 4) < 0) {
+	if (fdt_read_uint32_array(fdt, node, "reg", 4, array) < 0) {
 		return 0;
 	}
 
@@ -421,7 +283,7 @@ uintptr_t dt_get_ddrphyc_base(void)
 	assert((fdt_get_node_parent_address_cells(node) == 1) &&
 	       (fdt_get_node_parent_size_cells(node) == 1));
 
-	if (fdt_read_uint32_array(node, "reg", array, 4) < 0) {
+	if (fdt_read_uint32_array(fdt, node, "reg", 4, array) < 0) {
 		return 0;
 	}
 
