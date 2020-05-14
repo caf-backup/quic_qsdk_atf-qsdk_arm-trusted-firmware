@@ -252,7 +252,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			if ((QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID == x1) &&
 			    qti_is_secure_io_access_allowed(x2)) {
 				*((volatile uint32_t *)x2) = x3;
-				SMC_RET1(handle, SMC_OK);
+				SMC_RET2(handle, SMC_OK, SMC_OK);
 			}
 			SMC_RET1(handle, SMC_UNK);
 		}
