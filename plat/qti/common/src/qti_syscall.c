@@ -5,21 +5,22 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <stdint.h>
+#include <common/debug.h>
+#include <common/runtime_svc.h>
+#include <context.h>
+#include <lib/coreboot.h>
+#include <lib/utils_def.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
+#include <smccc_helpers.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
-#include <common/debug.h>
-#include <context.h>
-#include <lib/xlat_tables/xlat_tables_v2.h>
-#include <common/runtime_svc.h>
 #include <tools_share/uuid.h>
-#include <smccc_helpers.h>
-#include <lib/utils_def.h>
-#include <lib/coreboot.h>
-#include <qti_plat.h>
-#include <qti_secure_io_cfg.h>
-#include <qtiseclib_interface.h>
+
+#include "qti_plat.h"
+#include "qti_secure_io_cfg.h"
+#include "qtiseclib_interface.h"
 
 /*----------------------------------------------------------------------------
  * SIP service - SMC function IDs for SiP Service queries
@@ -56,13 +57,13 @@
 #define QTI_VM_MAX_LIST_SIZE			U(0x20)
 
 #define	FUNCID_OEN_NUM_MASK	((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
-				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT ))
+				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT))
 
 enum {
-        QTI_SIP_SUCCESS = 0,
-        QTI_SIP_NOT_SUPPORTED = -1,
+	QTI_SIP_SUCCESS = 0,
+	QTI_SIP_NOT_SUPPORTED = -1,
 	QTI_SIP_PREEMPTED = -2,
-        QTI_SIP_INVALID_PARAM = -3,
+	QTI_SIP_INVALID_PARAM = -3,
 };
 
 /* QTI SiP Service UUID */
@@ -83,16 +84,17 @@ static bool qti_is_secure_io_access_allowed(u_register_t addr)
 	return false;
 }
 
-bool qti_mem_assign_validate_param(memprot_info_t * mem_info,
+bool qti_mem_assign_validate_param(memprot_info_t *mem_info,
 				   u_register_t u_num_mappings,
-				   uint32_t * source_vm_list,
+				   uint32_t *source_vm_list,
 				   u_register_t src_vm_list_cnt,
-				   memprot_dst_vm_perm_info_t * dest_vm_list,
+				   memprot_dst_vm_perm_info_t *dest_vm_list,
 				   u_register_t dst_vm_list_cnt)
 {
 	int i;
 
-	if (!source_vm_list || !dest_vm_list || !mem_info || (src_vm_list_cnt == 0)
+	if (!source_vm_list || !dest_vm_list || !mem_info
+	    || (src_vm_list_cnt == 0)
 	    || (src_vm_list_cnt >= QTI_VM_LAST) || (dst_vm_list_cnt == 0)
 	    || (dst_vm_list_cnt >= QTI_VM_LAST) || (u_num_mappings == 0)
 	    || u_num_mappings > QTI_VM_MAX_LIST_SIZE) {
@@ -136,11 +138,10 @@ bool qti_mem_assign_validate_param(memprot_info_t * mem_info,
 static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 				    u_register_t x1,
 				    u_register_t x2,
-				    u_register_t x3,
-				    u_register_t x4)
+				    u_register_t x3, u_register_t x4)
 {
-	uintptr_t dyn_map_start=0, dyn_map_end=0;
-	size_t dyn_map_size=0;
+	uintptr_t dyn_map_start = 0, dyn_map_end = 0;
+	size_t dyn_map_size = 0;
 	u_register_t x6, x7;
 	int ret = QTI_SIP_NOT_SUPPORTED;
 	u_register_t x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
@@ -161,7 +162,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		if (0 !=
 		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
 						dyn_map_size,
-						(MT_NS | MT_RO_DATA ))) {
+						(MT_NS | MT_RO_DATA))) {
 			break;
 		}
 		/* Retrieve indirect args. */
@@ -184,7 +185,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		/* Map NS Buffers.
 		   arg0,2,4 points to buffers & arg1,3,5 hold sizes.
 		   MAP api's fail to map if it's already mapped. Let's
-		   find lowest start & highest end address, then map once. 
+		   find lowest start & highest end address, then map once.
 		 */
 		dyn_map_start = MIN(x2, x4);
 		dyn_map_start = MIN(dyn_map_start, x6);
@@ -195,19 +196,23 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		if (0 !=
 		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
 						dyn_map_size,
-						(MT_NS | MT_RO_DATA ))) {
+						(MT_NS | MT_RO_DATA))) {
 			break;
 		}
 		memprot_info_t *mem_info_p = (memprot_info_t *) x2;
 		uint32_t u_num_mappings = x3 / sizeof(memprot_info_t);
 		uint32_t *source_vm_list_p = (uint32_t *) x4;
 		uint32_t src_vm_list_cnt = x5 / sizeof(uint32_t);
-		memprot_dst_vm_perm_info_t *dest_vm_list_p = (memprot_dst_vm_perm_info_t *) x6;
-		uint32_t dst_vm_list_cnt = x7 / sizeof(memprot_dst_vm_perm_info_t);
+		memprot_dst_vm_perm_info_t *dest_vm_list_p =
+		    (memprot_dst_vm_perm_info_t *) x6;
+		uint32_t dst_vm_list_cnt =
+		    x7 / sizeof(memprot_dst_vm_perm_info_t);
 		if (true !=
 		    qti_mem_assign_validate_param(mem_info_p, u_num_mappings,
-						  source_vm_list_p, src_vm_list_cnt,
-						  dest_vm_list_p, dst_vm_list_cnt)) {
+						  source_vm_list_p,
+						  src_vm_list_cnt,
+						  dest_vm_list_p,
+						  dst_vm_list_cnt)) {
 			break;
 		}
 
@@ -221,7 +226,8 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		memprot_dst_vm_perm_info_t dest_vm_list[QTI_VM_LAST];
 		for (int i = 0; i < dst_vm_list_cnt; i++) {
 			dest_vm_list[i].dst_vm = dest_vm_list_p[i].dst_vm;
-			dest_vm_list[i].dst_vm_perm = dest_vm_list_p[i].dst_vm_perm;
+			dest_vm_list[i].dst_vm_perm =
+			    dest_vm_list_p[i].dst_vm_perm;
 			dest_vm_list[i].ctx = dest_vm_list_p[i].ctx;
 			dest_vm_list[i].ctx_size = dest_vm_list_p[i].ctx_size;
 		}
@@ -238,10 +244,9 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		}
 		/* Invoke API lib api. */
 		ret =
-		    qtiseclib_mem_assign(mem_info, u_num_mappings, source_vm_list,
-					 src_vm_list_cnt, dest_vm_list,
-					 dst_vm_list_cnt);
-
+		    qtiseclib_mem_assign(mem_info, u_num_mappings,
+					 source_vm_list, src_vm_list_cnt,
+					 dest_vm_list, dst_vm_list_cnt);
 
 		if (0 == ret) {
 			SMC_RET2(handle, QTI_SIP_SUCCESS, ret);
@@ -249,8 +254,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 
 	} while (0);
 	/* Un-Map NS Buffers if mapped */
-        if(dyn_map_start && dyn_map_size)
-	{
+	if (dyn_map_start && dyn_map_size) {
 		qti_mmap_remove_dynamic_region(dyn_map_start, dyn_map_size);
 	}
 

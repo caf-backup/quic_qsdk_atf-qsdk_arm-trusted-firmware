@@ -29,13 +29,11 @@ typedef uintptr_t u_register_t;
 #define QTISECLIB_INT_ID_RESET_SGI			(0xf)
 #define QTISECLIB_INT_ID_CPU_WAKEUP_SGI			(0x8)
 
-
 #define	QTISECLIB_INT_INVALID_INT_NUM			(0xFFFFFFFFU)
 
 #ifdef QTI_DEBUG_BUILD
 /* External CPU Dump Structure - 64 bit EL */
-typedef struct
-{
+typedef struct {
 	uint64_t x0;
 	uint64_t x1;
 	uint64_t x2;
@@ -100,4 +98,4 @@ typedef enum qtiseclib_mmap_attr_s {
 	QTISECLIB_MAP_RW_XN_DATA = 3,
 } qtiseclib_mmap_attr_t;
 
-#endif /* __QTISECLIB_DEFS_H__ */
+#endif				/* __QTISECLIB_DEFS_H__ */

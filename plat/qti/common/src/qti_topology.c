@@ -6,8 +6,9 @@
  */
 
 #include <arch.h>
-#include <qti_plat.h>
 #include <platform_def.h>
+
+#include "qti_plat.h"
 
 /* The QTI power domain tree descriptor */
 const unsigned char qti_power_domain_tree_desc[] = {

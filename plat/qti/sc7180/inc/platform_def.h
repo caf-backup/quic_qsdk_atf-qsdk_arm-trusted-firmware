@@ -10,9 +10,10 @@
 /* Enable the dynamic translation tables library. */
 #define PLAT_XLAT_TABLES_DYNAMIC	1
 
-#include <qti_board_def.h>
 #include <common_def.h>
-#include <qtiseclib_defs_plat.h>
+
+#include "qti_board_def.h"
+#include "qtiseclib_defs_plat.h"
 
 /*----------------------------------------------------------------------------*/
 
@@ -162,4 +163,4 @@
  */
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE)
 
-#endif /* __PLATFORM_DEF_H__ */
+#endif				/* __PLATFORM_DEF_H__ */

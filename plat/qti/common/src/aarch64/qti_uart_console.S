@@ -7,8 +7,9 @@
 
 #include <asm_macros.S>
 #include <console_macros.S>
-#include <qti_uart_console.h>
 #include <platform_def.h>
+
+#include "qti_uart_console.h"
 
 /*
  * This driver implements console logging into a ring buffer.

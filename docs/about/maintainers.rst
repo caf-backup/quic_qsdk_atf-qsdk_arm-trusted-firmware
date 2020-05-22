@@ -335,6 +335,7 @@ Xilinx platform port
 .. _remi-triplefault: https://github.com/repk
 .. _rockchip-linux: https://github.com/rockchip-linux
 .. _sandrine-bailleux-arm: https://github.com/sandrine-bailleux-arm
+.. _sgorecha: https://github.com/sgorecha
 .. _shawnguo2: https://github.com/shawnguo2
 .. _sivadur: https://github.com/sivadur
 .. _smaeul: https://github.com/smaeul

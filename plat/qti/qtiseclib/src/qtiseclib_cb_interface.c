@@ -4,24 +4,25 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-#include <assert.h>
-#include <lib/spinlock.h>
-#include <platform.h>
-#include <qti_plat.h>
-#include <bl31/bl31.h>
-#include <lib/xlat_tables/xlat_tables_v2.h>
-#include <qtiseclib_cb_interface.h>
-#include <drivers/arm/gicv3.h>
-#include <lib/el3_runtime/context_mgmt.h>
-#include <context.h>
 #include <arch.h>
 #include <arch_helpers.h>
-#include <lib/coreboot.h>
+#include <assert.h>
+#include <bl31/bl31.h>
+#include <context.h>
+#include <drivers/arm/gicv3.h>
 #include <drivers/delay_timer.h>
+#include <lib/coreboot.h>
+#include <lib/el3_runtime/context_mgmt.h>
+#include <lib/spinlock.h>
+#include <lib/xlat_tables/xlat_tables_v2.h>
+#include <platform.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "qti_plat.h"
+#include "qtiseclib_cb_interface.h"
 
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {
@@ -31,16 +32,16 @@ void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 /* Printing logs below or equal LOG_LEVEL from QTISECLIB. */
 void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 {
-	if(loglvl <= LOG_LEVEL)
-	{
+	if (loglvl <= LOG_LEVEL) {
 		va_list argp;
 		static spinlock_t qti_log_lock;
 		uint64_t uptime = read_cntpct_el0();
 		va_start(argp, fmt);
 
 		spin_lock(&qti_log_lock);
-		printf("QTISECLIB [%x%08x]",(uint32_t)((uptime>>32)&0xFFFFFFFF),
-		      (uint32_t)(uptime&0xFFFFFFFF));
+		printf("QTISECLIB [%x%08x]",
+		       (uint32_t) ((uptime >> 32) & 0xFFFFFFFF),
+		       (uint32_t) (uptime & 0xFFFFFFFF));
 		vprintf(fmt, argp);
 		putchar('\n');
 		spin_unlock(&qti_log_lock);
@@ -49,12 +50,12 @@ void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 	}
 }
 
-void qtiseclib_cb_spin_lock(qtiseclib_cb_spinlock_t * lock)
+void qtiseclib_cb_spin_lock(qtiseclib_cb_spinlock_t *lock)
 {
 	spin_lock((spinlock_t *) lock);
 }
 
-void qtiseclib_cb_spin_unlock(qtiseclib_cb_spinlock_t * lock)
+void qtiseclib_cb_spin_unlock(qtiseclib_cb_spinlock_t *lock)
 {
 	spin_unlock((spinlock_t *) lock);
 }
@@ -92,8 +93,7 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
 		l_attr = MT_RW | MT_EXECUTE_NEVER;
 	}
-	return qti_mmap_add_dynamic_region(base_pa, base_va,
-				       size, l_attr);
+	return qti_mmap_add_dynamic_region(base_pa, base_va, size, l_attr);
 }
 
 #ifdef QTI_DEBUG_BUILD
@@ -103,11 +103,14 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 	void *ctx;
 	ctx = cm_get_context(NON_SECURE);
 
-	qti_ns_ctx->spsr_el3 = read_ctx_reg(get_el3state_ctx(ctx), CTX_SPSR_EL3);
-	qti_ns_ctx->elr_el3  = read_ctx_reg(get_el3state_ctx(ctx), CTX_ELR_EL3);
+	qti_ns_ctx->spsr_el3 =
+	    read_ctx_reg(get_el3state_ctx(ctx), CTX_SPSR_EL3);
+	qti_ns_ctx->elr_el3 = read_ctx_reg(get_el3state_ctx(ctx), CTX_ELR_EL3);
 
-	qti_ns_ctx->spsr_el1 = read_ctx_reg(get_el1_sysregs_ctx(ctx), CTX_SPSR_EL1);
-	qti_ns_ctx->elr_el1 = read_ctx_reg(get_el1_sysregs_ctx(ctx), CTX_ELR_EL1);
+	qti_ns_ctx->spsr_el1 =
+	    read_ctx_reg(get_el1_sysregs_ctx(ctx), CTX_SPSR_EL1);
+	qti_ns_ctx->elr_el1 =
+	    read_ctx_reg(get_el1_sysregs_ctx(ctx), CTX_ELR_EL1);
 	qti_ns_ctx->sp_el1 = read_ctx_reg(get_el1_sysregs_ctx(ctx), CTX_SP_EL1);
 
 	qti_ns_ctx->x0 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_X0);
@@ -141,9 +144,9 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 	qti_ns_ctx->x28 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_X28);
 	qti_ns_ctx->x29 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_X29);
 	qti_ns_ctx->x30 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_LR);
-	qti_ns_ctx->sp_el0 = read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_SP_EL0);
+	qti_ns_ctx->sp_el0 =
+	    read_ctx_reg(get_gpregs_ctx(ctx), CTX_GPREG_SP_EL0);
 }
-
 
 void qtiseclib_cb_flush_dcache_all(void)
 {
@@ -175,7 +178,9 @@ void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target)
 {
 	plat_ic_raise_el3_sgi(sgi_num, target);
 }
-void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm, u_register_t target)
+
+void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm,
+				  u_register_t target)
 {
 	assert(QTI_GICV3_IRM_PE == GICV3_IRM_PE);
 	assert(QTI_GICV3_IRM_ANY == GICV3_IRM_ANY);
@@ -183,9 +188,9 @@ void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm, u_register_
 }
 
 /* Crash reporting api's wrappers */
-void qtiseclib_cb_switch_console_to_crash_state()
+void qtiseclib_cb_switch_console_to_crash_state(void)
 {
-        console_switch_state(CONSOLE_FLAG_CRASH);
+	console_switch_state(CONSOLE_FLAG_CRASH);
 }
 
 void qtiseclib_cb_udelay(uint32_t usec)

@@ -30,7 +30,9 @@ The build command looks like
 
     make CROSS_COMPILE=aarch64-linux-gnu- PLAT=sc7180 COREBOOT=1
 
-the CROSS_COMPILE argument with you cross-compilation toolchain.
+update value of CROSS_COMPILE argument with your cross-compilation toolchain.
 
-Additional QTISECLIB_PATH=<path to qtiseclib> can be passed. if not passed
-build usage stub implementation of lib which doesn't boot on device.
+Additional QTISECLIB_PATH=<path to qtiseclib> can be added in build command.
+if QTISECLIB_PATH is not added in build command stub implementation of qtiseclib
+is picked. qtiseclib with stub implementation doesn't boot device. This was
+added to satisfy compilation.

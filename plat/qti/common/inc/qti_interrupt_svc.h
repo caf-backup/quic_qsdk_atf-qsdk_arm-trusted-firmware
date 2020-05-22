@@ -9,4 +9,4 @@
 
 int qti_interrupt_svc_init(void);
 
-#endif /* __QTI_INTERRUPT_SVC_H__ */
+#endif				/* __QTI_INTERRUPT_SVC_H__ */

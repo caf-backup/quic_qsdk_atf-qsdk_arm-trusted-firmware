@@ -26,4 +26,4 @@
  */
 #define MAX_XLAT_TABLES	12
 
-#endif /* __QTI_BOARD_DEF_H__ */
+#endif				/* __QTI_BOARD_DEF_H__ */

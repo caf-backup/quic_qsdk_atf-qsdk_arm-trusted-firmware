@@ -4,14 +4,15 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include <stdbool.h>
-#include <common/debug.h>
 #include <assert.h>
+#include <common/debug.h>
 #include <errno.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <qti_plat.h>
 #include <platform_def.h>
-#include <qtiseclib_interface.h>
+#include <stdbool.h>
+
+#include "qti_plat.h"
+#include "qtiseclib_interface.h"
 
 /*
  * Table of regions for various BL stages to map using the MMU.
@@ -27,13 +28,13 @@ const mmap_region_t plat_qti_mmap[] = {
 
 CASSERT(ARRAY_SIZE(plat_qti_mmap) <= MAX_MMAP_REGIONS, assert_max_mmap_regions);
 
-/* Adding it till 64 bit address support will be merged to arm tf.
+/* Adding it till 64 bit address support will be merged to TF-A.
    PAGE_SIZE defined as U instead of ULL. */
 static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
 {
 	/* Round up the limit to the next page boundary */
 	if (value & (PAGE_SIZE - 1)) {
-		value &= ~((uintptr_t)PAGE_SIZE - 1);
+		value &= ~((uintptr_t) PAGE_SIZE - 1);
 		if (dir == UP)
 			value += PAGE_SIZE;
 	}
@@ -43,7 +44,8 @@ static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
 
 bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size)
 {
-	if (addr > addr + size || (BL31_BASE < addr + size && BL31_LIMIT > addr))
+	if (addr > addr + size
+	    || (BL31_BASE < addr + size && BL31_LIMIT > addr))
 		return true;
 	return false;
 }
@@ -115,14 +117,6 @@ void qti_setup_page_tables(uintptr_t total_base,
 	mmap_add_region(coh_start, coh_start,
 			coh_limit - coh_start, MT_DEVICE | MT_RW | MT_SECURE);
 
-#if ENABLE_SPM && defined(IMAGE_BL31)
-	/* The address of the following region is calculated by the linker. */
-	mmap_add_region(SP_IMAGE_XLAT_TABLES_START,
-			SP_IMAGE_XLAT_TABLES_START,
-			SP_IMAGE_XLAT_TABLES_SIZE,
-			MT_MEMORY | MT_RW | MT_SECURE);
-#endif
-
 	/* Now (re-)map the platform-specific memory regions */
 	mmap_add(plat_qti_mmap);
 
@@ -131,28 +125,29 @@ void qti_setup_page_tables(uintptr_t total_base,
 }
 
 static inline void qti_align_mem_region(uintptr_t addr, size_t size,
-				uintptr_t *aligned_addr, size_t *aligned_size)
+					uintptr_t *aligned_addr,
+					size_t *aligned_size)
 {
 	*aligned_addr = qti_page_align(addr, DOWN);
-	*aligned_size = qti_page_align(addr - *aligned_addr + size,UP);
+	*aligned_size = qti_page_align(addr - *aligned_addr + size, UP);
 }
 
 int qti_mmap_add_dynamic_region(uintptr_t base_pa, uintptr_t base_va,
 				size_t size, unsigned int attr)
 {
-	uintptr_t aligned_pa,aligned_va;
+	uintptr_t aligned_pa, aligned_va;
 	size_t aligned_size;
 	qti_align_mem_region(base_pa, size, &aligned_pa, &aligned_size);
 	qti_align_mem_region(base_va, size, &aligned_va, &aligned_size);
 	assert(base_pa - aligned_pa == base_va - aligned_va);
 
-	if(qti_is_overlap_atf_rg(base_pa, size))
-	{
-		/* Memory shouldn't overlap with ATF range.*/
+	if (qti_is_overlap_atf_rg(base_pa, size)) {
+		/* Memory shouldn't overlap with TF-A range. */
 		return -EPERM;
 	}
 
-	return mmap_add_dynamic_region(aligned_pa, aligned_va, aligned_size, attr);
+	return mmap_add_dynamic_region(aligned_pa, aligned_va, aligned_size,
+				       attr);
 }
 
 int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)

@@ -11,14 +11,14 @@
 #include <common/bl_common.h>
 #include <lib/cassert.h>
 #include <lib/el3_runtime/cpu_data.h>
-#include <stdint.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
+#include <stdint.h>
 
 /*
  * Utility functions common to QTI platforms
  */
 int qti_mmap_add_dynamic_region(uintptr_t base_pa, uintptr_t base_va,
-			    size_t size, unsigned int attr);
+				size_t size, unsigned int attr);
 int qti_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
 
 /*
@@ -47,7 +47,6 @@ void plat_qti_gic_pcpu_init(void);
 unsigned int plat_qti_core_pos_by_mpidr(u_register_t mpidr);
 unsigned int plat_qti_my_cluster_pos(void);
 
-void gic_set_spi_routing(unsigned int id, unsigned int irm,
-               u_register_t mpidr);
+void gic_set_spi_routing(unsigned int id, unsigned int irm, u_register_t mpidr);
 
-#endif /* __QTI_PLAT_H__ */
+#endif				/* __QTI_PLAT_H__ */

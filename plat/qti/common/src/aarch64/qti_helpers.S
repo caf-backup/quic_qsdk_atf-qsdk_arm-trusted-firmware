@@ -9,8 +9,8 @@
 #include <asm_macros.S>
 #include <drivers/arm/gicv2.h>
 #include <drivers/arm/gicv3.h>
-#include <platform_def.h>
 #include <drivers/console.h>
+#include <platform_def.h>
 
 	.globl	plat_my_core_pos
 	.globl	plat_qti_core_pos_by_mpidr
@@ -68,14 +68,16 @@ func plat_my_core_pos
 endfunc plat_my_core_pos
 
 func plat_reset_handler
-	mov	x18, x30						/* save the lr */
+	/* save the lr */
+	mov	x18, x30
 
 	/* Serialize CPUSS boot setup. Multi core enter simultaneously. */
 	ldr	x0, =g_qti_cpuss_boot_lock
 	bl	spin_lock
 
+	/* pass cold boot status. */
+	ldr	w0, g_qti_bl31_cold_booted
 	/* Execuete CPUSS boot set up on every core. */
-	ldr	w0, g_qti_bl31_cold_booted		/* pass cold boot status. */
 	bl	qtiseclib_cpuss_reset_asm
 
 	ldr	x0, =g_qti_cpuss_boot_lock

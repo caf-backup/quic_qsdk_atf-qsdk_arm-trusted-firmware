@@ -5,15 +5,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <stdint.h>
-#include <assert.h>
-#include <platform.h>
 #include <arch_helpers.h>
-#include <drivers/arm/gic_common.h>
+#include <assert.h>
 #include <bl31/interrupt_mgmt.h>
+#include <drivers/arm/gic_common.h>
 #include <lib/el3_runtime/context_mgmt.h>
-#include <qti_interrupt_svc.h>
-#include <qtiseclib_interface.h>
+#include <platform.h>
+#include <stdint.h>
+
+#include "qti_interrupt_svc.h"
+#include "qtiseclib_interface.h"
 
 #define QTI_INTR_INVALID_INT_NUM		0xFFFFFFFFU
 
