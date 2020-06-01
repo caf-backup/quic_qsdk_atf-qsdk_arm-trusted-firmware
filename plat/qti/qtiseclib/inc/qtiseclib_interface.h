@@ -62,6 +62,7 @@ int qtiseclib_mem_assign( u_register_t	IPAinfo_hyp,
 						  u_register_t	spare);
 
 void qtiseclib_oem_register_wifi_interrupt(int irq);
+void qtiseclib_Clock_Init(void);
 #if !QTI_6018_PLATFORM && !QTI_5018_PLATFORM
 void qtiseclib_oem_command_read(qtiseclib_oem_cmd_buf_t *cbuf);
 void qtiseclib_oem_command_write(qtiseclib_oem_cmd_buf_t *cbuf);
@@ -84,4 +85,7 @@ int qtiseclib_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, u
 int qtiseclib_clear_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, uint32_t size, uint32_t auth_key);
 int qtiseclib_get_diag(char* buf, size_t buf_size);
 uint64_t qtiseclib_get_ddr_size();
+#if QTI_5018_PLATFORM
+int qtiseclib_bt_fuse_copy(void);
+#endif
 #endif /* __QTISECLIB_INTERFACE_H__ */
