@@ -17,6 +17,7 @@
 #include <arch.h>
 #include <arch_helpers.h>
 
+extern bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size);
 /*Adding it till 64 bit address support will be merged to arm tf*/
 uintptr_t qti_page_align(uintptr_t value, unsigned dir)
 {
@@ -34,7 +35,10 @@ void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {
 	return memcpy(dst, src, len);
 }
-
+bool qtiseclib_is_overlap_atf_rg(unsigned long long addr, size_t size)
+{
+	return qti_is_overlap_atf_rg(addr, size);
+}
 /* Log Level not used right now. Printing all log from QTISECLIB. */
 void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 {

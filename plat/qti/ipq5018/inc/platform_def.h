@@ -143,7 +143,8 @@
  * current BL31 debug size plus a little space for growth.
  */
 #define BL31_BASE						0x4AC00000
-#define BL31_SIZE						0x300000
+/* Restricting Size to 256KB*/
+#define BL31_SIZE						0x40000
 #define QTI_TRUSTED_MAILBOX_SIZE				0x1000
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)
 

@@ -87,5 +87,6 @@ int qtiseclib_get_diag(char* buf, size_t buf_size);
 uint64_t qtiseclib_get_ddr_size();
 #if QTI_5018_PLATFORM
 int qtiseclib_bt_fuse_copy(void);
+int qtiseclib_qfprom_fuse_secdat(uint32_t *);
 #endif
 #endif /* __QTISECLIB_INTERFACE_H__ */

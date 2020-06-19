@@ -44,6 +44,10 @@
 #define QTI_SIP_DO_HLOS_MODE_SWITCH             U(0x0200010F)
 #define QTI_SIP_PROTECT_MEM_SUBSYS_ID           U(0x0200020C)
 #define QTI_SIP_CLEAR_MEM_SUBSYS_ID             U(0x0200020D)
+
+#ifdef QTI_5018_PLATFORM
+#define QTI_SIP_BLOW_FUSE_SEC_DAT_ID		U(0x02000820)
+#endif
 /*
  * Syscall's to assigns a list of intermediate PAs from a
  * source Virtual Machine (VM) to a destination VM.
@@ -317,8 +321,13 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			}
 			SMC_RET1(handle, SMC_UNK);
 		}
-
-
+#ifdef QTI_5018_PLATFORM
+	case QTI_SIP_BLOW_FUSE_SEC_DAT_ID:
+		{
+			ret = qtiseclib_qfprom_fuse_secdat((uint32_t *)x2);
+			SMC_RET2(handle, SMC_OK, ret);
+		}
+#endif
  	default:
 		{
 			SMC_RET1(handle, SMC_UNK);
