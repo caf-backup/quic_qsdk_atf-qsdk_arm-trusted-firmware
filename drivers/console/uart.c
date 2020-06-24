@@ -36,47 +36,6 @@
 #include <lib/mmio.h>
 #include <stdint.h>
 
-struct baud_map {
-        uint16_t     divisor;
-        uint8_t      code;
-};
-
-void set_baud_rate(unsigned int reg_base, unsigned int baud, unsigned int clk_rate)
-{
-	unsigned int divisor;
-	const struct baud_map *entry, *end;
-	static const struct baud_map table[] = {
-		{    1, 0xff },
-		{    2, 0xee },
-		{    3, 0xdd },
-		{    4, 0xcc },
-		{    6, 0xbb },
-		{    8, 0xaa },
-		{   12, 0x99 },
-		{   16, 0x88 },
-		{   24, 0x77 },
-		{   32, 0x66 },
-		{   48, 0x55 },
-		{   96, 0x44 },
-		{  192, 0x33 },
-		{  384, 0x22 },
-		{  768, 0x11 },
-		{ 1536, 0x00 },
-	};
-
-	divisor = clk_rate / baud / 16;
-	end = table + ARRAY_SIZE(table);
-	entry = table;
-	while (entry < end) {
-		if (entry->divisor == divisor) {
-			mmio_write_32(UART_DM_CSR(reg_base), entry->code);
-			break;
-		}
-		entry++;
-	}
-
-}
-
 /**
  * uart_dm_init_rx_transfer - Init Rx transfer
  * @uart_dm_base: UART controller base address
@@ -119,14 +78,8 @@ static unsigned int uart_dm_reset(unsigned long base)
  * uart_dm_init - initilaizes UART controller
  * @uart_dm_base: UART controller base address
  */
-static unsigned int uart_dm_init(unsigned long uart_dm_base, unsigned int clk_rate, unsigned int baud_rate)
+static unsigned int uart_dm_init(unsigned long uart_dm_base)
 {
-	/*Reset clock*/
-	mmio_write_32(UART_DM_CSR(uart_dm_base), 0xFF);
-
-	/*set baudrate */
-	set_baud_rate(uart_dm_base, clk_rate, baud_rate);
-
 	/* Configure UART mode registers MR1 and MR2 */
 	/* Hardware flow control isn't supported */
 	mmio_write_32(UART_DM_MR1(uart_dm_base), 0x0);
@@ -295,9 +248,9 @@ int uart_putc(const char ch)
 		return uart_dm_write(&ch, 1, uart_base);
 	}
 
-int uart_init(unsigned long base_addr, unsigned int uart_clk, unsigned int baud_rate)
+int uart_init(unsigned long base_addr)
 	 {
 		 uart_base = base_addr;
-		 uart_dm_init(base_addr, uart_clk, baud_rate);
+		 uart_dm_init(base_addr);
 		 return 0;
 	 }

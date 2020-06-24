@@ -51,6 +51,11 @@
 #define	QTI_SIP_SVC_MEM_ASSIGN_ID			U(0x02000C16)
 #define	QTI_SIP_SVC_RESET_DEBUG_ID				U(0x02000109)
 
+/*
+ * Syscall to copy BT Fuse Region to BTRAM
+ */
+#define QTI_SIP_SVC_BT_FUSE_COPY_ID				U(0x02000215)
+
 #define	QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID		U(0x1)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_RESET_DEBUG_PARAM_ID	U(0x2)
@@ -222,6 +227,14 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 	}
 
 	switch (l_smc_fid) {
+	case QTI_SIP_SVC_BT_FUSE_COPY_ID:
+		{
+#if QTI_5018_PLATFORM
+			SMC_RET2(handle, SMC_OK, qtiseclib_bt_fuse_copy());
+#else
+			SMC_RET1(handle, SMC_UNK);
+#endif
+		}
 	case QTI_SIP_SVC_CALL_COUNT_ID:
 		{
 			SMC_RET1(handle, QTI_SIP_SVC_CALL_COUNT);
@@ -252,7 +265,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			if ((QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID == x1) &&
 			    qti_is_secure_io_access_allowed(x2)) {
 				*((volatile uint32_t *)x2) = x3;
-				SMC_RET1(handle, SMC_OK);
+				SMC_RET2(handle, SMC_OK, SMC_OK);
 			}
 			SMC_RET1(handle, SMC_UNK);
 		}

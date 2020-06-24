@@ -15,6 +15,7 @@
 
 static const uintptr_t qti_secure_io_allowed_regs[] = {
 	0x193d100,
+	0x193D204
 };
 
 #endif /* __QTI_SECURE_IO_CFG_H__ */

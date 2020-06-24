@@ -37,7 +37,7 @@
 
 #include <stdio.h>
 
-int uart_init(unsigned long base_addr, unsigned int uart_clk, unsigned int baud_rate);
+int uart_init(unsigned long base_addr);
 int uart_putc(const char ch);
 
 #define UART_DM_EXTR_BITS(value, start_pos, end_pos) \
