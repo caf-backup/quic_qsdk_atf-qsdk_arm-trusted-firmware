@@ -105,6 +105,11 @@ uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void)
 	return (uintptr_t) bl31_warm_entrypoint;
 }
 
+uintptr_t qtiseclib_cb_get_entry_addr(void)
+{
+    return (uintptr_t) bl31_entrypoint;
+}
+
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 uintptr_t base_va, size_t size,
 					 qtiseclib_mmap_attr_t attr)

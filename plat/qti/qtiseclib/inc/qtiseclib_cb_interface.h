@@ -32,6 +32,7 @@ unsigned int qtiseclib_cb_plat_my_cluster_pos(void);
 void qtiseclib_cb_clear_interrupt_pending(unsigned int id);
 void qtiseclib_cb_set_interrupt_pending(unsigned int irq);
 uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void);
+uintptr_t qtiseclib_cb_get_entry_addr(void);
 
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 uintptr_t base_va, size_t size,
