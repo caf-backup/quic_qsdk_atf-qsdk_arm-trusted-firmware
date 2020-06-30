@@ -13,4 +13,4 @@
 /* KRYO-4xx Silver MIDR */
 #define QTI_KRYO4_SILVER_MIDR	0x517F805D
 
-#endif				/* __QTI_CPU_H__ */
+#endif /* __QTI_CPU_H__ */

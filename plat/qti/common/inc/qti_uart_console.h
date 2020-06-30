@@ -10,12 +10,10 @@
 
 #include <drivers/console.h>
 
-#define QTI_CONSOLE_T_UART_BASE_OFF		(CONSOLE_T_BASE)
-
 #ifndef __ASSEMBLER__
 
 int qti_console_uart_register(console_t *console, uintptr_t uart_base_addr);
 
-#endif				/* __ASSEMBLER__ */
+#endif /* __ASSEMBLER__ */
 
-#endif				/* __QTI_UART_CONSOLE_H__ */
+#endif /* __QTI_UART_CONSOLE_H__ */

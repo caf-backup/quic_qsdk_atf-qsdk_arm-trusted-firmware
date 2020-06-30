@@ -34,7 +34,7 @@ unsigned int qtiseclib_cb_plat_my_cluster_pos(void);
 uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void);
 
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
-					 uintptr_t base_va, size_t size,
+					 size_t size,
 					 qtiseclib_mmap_attr_t attr);
 
 void qtiseclib_cb_flush_dcache_all(void);
@@ -56,4 +56,4 @@ void qtiseclib_cb_switch_console_to_crash_state(void);
 
 void qtiseclib_cb_udelay(uint32_t usec);
 
-#endif				/* __QTISECLIB_CB_INTERFACE_H__ */
+#endif /* __QTISECLIB_CB_INTERFACE_H__ */

@@ -37,17 +37,14 @@ static uint64_t g_qti_cpu_cntfrq;
 /*
  * Lock variable to serialize cpuss reset execution.
  */
-spinlock_t g_qti_cpuss_boot_lock
-    __attribute__ ((section("tzfw_coherent_mem"),
-		    aligned(CACHE_WRITEBACK_GRANULE))) = {
-0x0};
+spinlock_t g_qti_cpuss_boot_lock __attribute__ ((section("tzfw_coherent_mem"),
+		    aligned(CACHE_WRITEBACK_GRANULE))) = {0x0};
 
 /*
  * Variable to hold bl31 cold boot status. Default value 0x0 means yet to boot.
  * Any other value means cold booted.
  */
-uint32_t g_qti_bl31_cold_booted __attribute__ ((section("tzfw_coherent_mem"))) =
-    0x0;
+uint32_t g_qti_bl31_cold_booted __attribute__ ((section("tzfw_coherent_mem"))) = 0x0;
 
 /*******************************************************************************
  * Perform any BL31 early platform setup common to ARM standard platforms.

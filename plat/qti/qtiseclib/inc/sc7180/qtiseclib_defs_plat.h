@@ -32,4 +32,4 @@
 #define QTISECLIB_INT_ID_SYSTEM_NOC_ERROR		(0xC6)
 #define QTISECLIB_INT_ID_MMSS_NOC_ERROR			(0xBA)
 
-#endif				/* __QTISECLIB_DEFS_PLAT_H__ */
+#endif /* __QTISECLIB_DEFS_PLAT_H__ */

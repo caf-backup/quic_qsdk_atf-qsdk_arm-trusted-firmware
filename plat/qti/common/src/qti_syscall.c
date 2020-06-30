@@ -160,8 +160,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		    (SMC_32 ==
 		     smc_cc) ? (sizeof(uint32_t) * 4) : (sizeof(uint64_t) * 4);
 		if (0 !=
-		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
-						dyn_map_size,
+		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
 						(MT_NS | MT_RO_DATA))) {
 			break;
 		}
@@ -194,8 +193,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 		dyn_map_size = dyn_map_end - dyn_map_start;
 
 		if (0 !=
-		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_start,
-						dyn_map_size,
+		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
 						(MT_NS | MT_RO_DATA))) {
 			break;
 		}

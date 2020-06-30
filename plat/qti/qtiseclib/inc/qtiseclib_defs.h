@@ -98,4 +98,4 @@ typedef enum qtiseclib_mmap_attr_s {
 	QTISECLIB_MAP_RW_XN_DATA = 3,
 } qtiseclib_mmap_attr_t;
 
-#endif				/* __QTISECLIB_DEFS_H__ */
+#endif /* __QTISECLIB_DEFS_H__ */

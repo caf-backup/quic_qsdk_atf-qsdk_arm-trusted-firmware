@@ -28,19 +28,6 @@ const mmap_region_t plat_qti_mmap[] = {
 
 CASSERT(ARRAY_SIZE(plat_qti_mmap) <= MAX_MMAP_REGIONS, assert_max_mmap_regions);
 
-/* Adding it till 64 bit address support will be merged to TF-A.
-   PAGE_SIZE defined as U instead of ULL. */
-static uintptr_t qti_page_align(uintptr_t value, unsigned dir)
-{
-	/* Round up the limit to the next page boundary */
-	if (value & (PAGE_SIZE - 1)) {
-		value &= ~((uintptr_t) PAGE_SIZE - 1);
-		if (dir == UP)
-			value += PAGE_SIZE;
-	}
-
-	return value;
-}
 
 bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size)
 {
@@ -128,25 +115,23 @@ static inline void qti_align_mem_region(uintptr_t addr, size_t size,
 					uintptr_t *aligned_addr,
 					size_t *aligned_size)
 {
-	*aligned_addr = qti_page_align(addr, DOWN);
-	*aligned_size = qti_page_align(addr - *aligned_addr + size, UP);
+	*aligned_addr = round_down(addr, PAGE_SIZE);
+	*aligned_size = round_up(addr - *aligned_addr + size, PAGE_SIZE);
 }
 
-int qti_mmap_add_dynamic_region(uintptr_t base_pa, uintptr_t base_va,
-				size_t size, unsigned int attr)
+int qti_mmap_add_dynamic_region(uintptr_t base_pa, size_t size,
+				unsigned int attr)
 {
-	uintptr_t aligned_pa, aligned_va;
+	uintptr_t aligned_pa;
 	size_t aligned_size;
 	qti_align_mem_region(base_pa, size, &aligned_pa, &aligned_size);
-	qti_align_mem_region(base_va, size, &aligned_va, &aligned_size);
-	assert(base_pa - aligned_pa == base_va - aligned_va);
 
 	if (qti_is_overlap_atf_rg(base_pa, size)) {
 		/* Memory shouldn't overlap with TF-A range. */
 		return -EPERM;
 	}
 
-	return mmap_add_dynamic_region(aligned_pa, aligned_va, aligned_size,
+	return mmap_add_dynamic_region(aligned_pa, aligned_pa, aligned_size,
 				       attr);
 }
 

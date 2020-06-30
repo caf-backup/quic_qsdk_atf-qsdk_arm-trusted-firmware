@@ -163,4 +163,4 @@
  */
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE)
 
-#endif				/* __PLATFORM_DEF_H__ */
+#endif /* __PLATFORM_DEF_H__ */

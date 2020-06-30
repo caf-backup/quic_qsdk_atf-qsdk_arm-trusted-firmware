@@ -83,7 +83,5 @@ void qtiseclib_psci_system_off(void);
 __attribute__ ((noreturn))
 void qtiseclib_psci_system_reset(void);
 void qtiseclib_disable_cluster_coherency(uint8_t state);
-int qtiseclib_psci_validate_power_state(unsigned int pwr_state,
-					uint8_t *req_state);
 
-#endif				/* __QTISECLIB_INTERFACE_H__ */
+#endif /* __QTISECLIB_INTERFACE_H__ */

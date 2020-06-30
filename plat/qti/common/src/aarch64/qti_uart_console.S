@@ -28,7 +28,7 @@
 	 * -----------------------------------------------
 	 */
 func qti_console_uart_register
-	str	x1, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]		/* Save UART base. */
+	str	x1, [x0, #CONSOLE_T_BASE]	/* Save UART base. */
 	finish_console_register uart putc=1, flush=1
 endfunc qti_console_uart_register
 
@@ -43,7 +43,7 @@ endfunc qti_console_uart_register
 	 */
 func console_uart_putc
 	/* set x1 = UART base. */
-	ldr	x1, [x1, #QTI_CONSOLE_T_UART_BASE_OFF]
+	ldr	x1, [x1, #CONSOLE_T_BASE]
 
 	/* Loop until M_GENI_CMD_ACTIVE bit not clear. */
 1:	ldr	w2, [x1, #GENI_STATUS_REG]
@@ -89,7 +89,7 @@ endfunc	console_uart_putc
 	 */
 func console_uart_flush
 	/* set x0 = UART base. */
-	ldr	x0, [x0, #QTI_CONSOLE_T_UART_BASE_OFF]
+	ldr	x0, [x0, #CONSOLE_T_BASE]
 
 	/* Loop until M_GENI_CMD_ACTIVE bit not clear. */
 1:	ldr	w1, [x0, #GENI_STATUS_REG]

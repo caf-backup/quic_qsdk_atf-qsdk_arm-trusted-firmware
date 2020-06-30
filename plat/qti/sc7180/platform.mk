@@ -30,7 +30,9 @@ RESET_TO_BL31			:=	0
 MULTI_CONSOLE_API		:=	1
 
 ifeq (${DEBUG},1)
-$(eval $(call add_define,QTI_DEBUG_BUILD))
+QTI_DEBUG_BUILD := 1
+ $(eval $(call assert_boolean,QTI_DEBUG_BUILD))
+ $(eval $(call add_define,QTI_DEBUG_BUILD))
 endif
 
 #disable CTX_INCLUDE_AARCH32_REGS to support sc7180 gold cores
@@ -106,6 +108,7 @@ QTISECLIB_PATH ?=
 ifeq ($(QTISECLIB_PATH),)
 # if No lib then use stub implementation for qtiseclib interface
 $(warning QTISECLIB_PATH is not provided while building, using stub implementation. \
+		Please refer docs/plat/qti.rst for more details \
 		THIS FIRMWARE WILL NOT BOOT!)
 BL31_SOURCES	+=	plat/qti/qtiseclib/src/qtiseclib_interface_stub.c
 else

@@ -27,4 +27,4 @@ static const uintptr_t qti_secure_io_allowed_regs[] = {
 	APPS_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
 };
 
-#endif				/* __QTI_SECURE_IO_CFG_H__ */
+#endif /* __QTI_SECURE_IO_CFG_H__ */

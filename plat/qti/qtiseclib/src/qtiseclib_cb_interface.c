@@ -81,7 +81,7 @@ uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void)
 }
 
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
-					 uintptr_t base_va, size_t size,
+					 size_t size,
 					 qtiseclib_mmap_attr_t attr)
 {
 	unsigned int l_attr = 0;
@@ -93,7 +93,7 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
 		l_attr = MT_RW | MT_EXECUTE_NEVER;
 	}
-	return qti_mmap_add_dynamic_region(base_pa, base_va, size, l_attr);
+	return qti_mmap_add_dynamic_region(base_pa, size, l_attr);
 }
 
 #ifdef QTI_DEBUG_BUILD

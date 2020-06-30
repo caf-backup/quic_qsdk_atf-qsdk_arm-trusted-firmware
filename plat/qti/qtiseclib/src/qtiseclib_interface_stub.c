@@ -122,8 +122,3 @@ void qtiseclib_disable_cluster_coherency(uint8_t state)
 {
 }
 
-int
-qtiseclib_psci_validate_power_state(unsigned int pwr_state, uint8_t *req_state)
-{
-	return 0;
-}
