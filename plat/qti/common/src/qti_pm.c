@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <bl31/bl31.h>
 #include <common/debug.h>
 #include <lib/psci/psci.h>
 #include <platform.h>
@@ -241,7 +242,7 @@ int plat_setup_psci_ops(uintptr_t sec_entrypoint,
 {
 	int err;
 
-	err = qtiseclib_psci_init();
+	err = qtiseclib_psci_init((uintptr_t) bl31_warm_entrypoint);
 	if (err == PSCI_E_SUCCESS) {
 		*psci_ops = &plat_qti_psci_pm_ops;
 	}

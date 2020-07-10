@@ -71,7 +71,7 @@ int qtiseclib_mem_assign(const memprot_info_t *mem_info,
 			 const memprot_dst_vm_perm_info_t *dest_vm_list,
 			 uint32_t dst_vm_list_cnt);
 
-int qtiseclib_psci_init(void);
+int qtiseclib_psci_init(uintptr_t warmboot_entry);
 int qtiseclib_psci_node_power_on(u_register_t mpidr);
 void qtiseclib_psci_node_on_finish(const uint8_t *states);
 void qtiseclib_psci_cpu_standby(uint8_t pwr_state);

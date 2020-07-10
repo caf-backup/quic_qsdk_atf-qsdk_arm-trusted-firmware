@@ -74,11 +74,6 @@ unsigned int qtiseclib_cb_plat_my_cluster_pos(void)
 	return plat_qti_my_cluster_pos();
 }
 
-uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void)
-{
-	return (uintptr_t) bl31_warm_entrypoint;
-}
-
 /* GIC platform functions */
 void qtiseclib_cb_gic_pcpu_init(void)
 {

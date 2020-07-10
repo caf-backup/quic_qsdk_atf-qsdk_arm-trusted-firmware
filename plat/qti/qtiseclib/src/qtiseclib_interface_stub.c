@@ -76,7 +76,7 @@ qtiseclib_mem_assign(const memprot_info_t *mem_info,
 	return 0;
 }
 
-int qtiseclib_psci_init(void)
+int qtiseclib_psci_init(uintptr_t warmboot_entry)
 {
 	return 0;
 }

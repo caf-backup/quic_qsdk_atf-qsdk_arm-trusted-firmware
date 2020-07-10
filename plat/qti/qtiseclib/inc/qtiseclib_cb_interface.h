@@ -31,8 +31,6 @@ unsigned int qtiseclib_cb_plat_my_core_pos(void);
 int qtiseclib_cb_plat_core_pos_by_mpidr(u_register_t mpidr);
 unsigned int qtiseclib_cb_plat_my_cluster_pos(void);
 
-uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void);
-
 /* GIC platform wrappers */
 void qtiseclib_cb_gic_pcpu_init(void);
 void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target);
