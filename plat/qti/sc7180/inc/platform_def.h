@@ -29,7 +29,7 @@
 #define QTI_PWR_LVL1		MPIDR_AFFLVL1
 #define QTI_PWR_LVL2		MPIDR_AFFLVL2
 #define QTI_PWR_LVL3		MPIDR_AFFLVL3
-#define CORE_PWRDN_EN_MASK	U(0x1)
+
 /*
  *  Macros for local power states encoded by State-ID field
  *  within the power-state parameter.

@@ -5,11 +5,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include <arch_helpers.h>
 #include <assert.h>
 #include <bl31/bl31.h>
 #include <common/debug.h>
 #include <lib/psci/psci.h>
 #include <platform.h>
+#include <platform_def.h>
 #include <qti_cpu.h>
 #include <qti_plat.h>
 #include <qtiseclib_cb_interface.h>
@@ -37,6 +39,13 @@
 #define qti_make_pwrstate_lvl3(lvl3_state, lvl2_state, lvl1_state, lvl0_state, type) \
 		(((lvl3_state) << (QTI_LOCAL_PSTATE_WIDTH * 3)) | \
 		qti_make_pwrstate_lvl2(lvl2_state, lvl1_state, lvl0_state, type))
+
+/* QTI_CORE_PWRDN_EN_MASK happens to be same across all CPUs */
+#define QTI_CORE_PWRDN_EN_MASK		1
+
+/* cpu power control happens to be same across all CPUs */
+_DEFINE_SYSREG_WRITE_FUNC(cpu_pwrctrl_val, S3_0_C15_C2_7)
+_DEFINE_SYSREG_READ_FUNC(cpu_pwrctrl_val, S3_0_C15_C2_7)
 
 const unsigned int qti_pm_idle_states[] = {
 	qti_make_pwrstate_lvl0(QTI_LOCAL_STATE_OFF,
@@ -102,26 +111,14 @@ int qti_validate_power_state(unsigned int power_state,
  * PLATFORM FUNCTIONS
  ******************************************************************************/
 
-void qti_set_cpupwrctlr_val(const psci_power_state_t *target_state, bool enter)
+static void qti_set_cpupwrctlr_val()
 {
 	unsigned long val;
 
-	__asm__ volatile ("mrs %[res], S3_0_C15_C2_7":[res] "=r"(val));
+	val = read_cpu_pwrctrl_val();
+	val |= QTI_CORE_PWRDN_EN_MASK;
+	write_cpu_pwrctrl_val(val);
 
-	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-	     QTI_LOCAL_STATE_OFF)
-	    || (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_DEEPOFF)) {
-		if (enter) {
-			val |= CORE_PWRDN_EN_MASK;
-			plat_qti_gic_cpuif_disable();
-		} else {
-			val &= ~CORE_PWRDN_EN_MASK;
-			plat_qti_gic_cpuif_enable();
-		}
-	}
-
-	__asm__ volatile ("msr S3_0_C15_C2_7, %[res]"::[res] "r"(val));
 	isb();
 }
 
@@ -146,7 +143,12 @@ static void qti_cpu_power_on_finish(const psci_power_state_t *target_state)
 	const uint8_t *pwr_states =
 	    (const uint8_t *)target_state->pwr_domain_state;
 	qtiseclib_psci_node_on_finish(pwr_states);
-	qti_set_cpupwrctlr_val(target_state, false);
+
+	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_OFF) ||
+	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_DEEPOFF))
+		plat_qti_gic_cpuif_enable();
 }
 
 static void qti_cpu_standby(plat_local_state_t cpu_state)
@@ -157,14 +159,26 @@ static void qti_node_power_off(const psci_power_state_t *target_state)
 {
 	qtiseclib_psci_node_power_off((const uint8_t *)
 				      target_state->pwr_domain_state);
-	qti_set_cpupwrctlr_val(target_state, true);
+	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_OFF) ||
+	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_DEEPOFF)) {
+		plat_qti_gic_cpuif_disable();
+		qti_set_cpupwrctlr_val();
+	}
 }
 
 static void qti_node_suspend(const psci_power_state_t *target_state)
 {
 	qtiseclib_psci_node_suspend((const uint8_t *)target_state->
 				    pwr_domain_state);
-	qti_set_cpupwrctlr_val(target_state, true);
+	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_OFF) ||
+	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_DEEPOFF)) {
+		plat_qti_gic_cpuif_disable();
+		qti_set_cpupwrctlr_val();
+	}
 }
 
 static void qti_node_suspend_finish(const psci_power_state_t *target_state)
@@ -172,17 +186,17 @@ static void qti_node_suspend_finish(const psci_power_state_t *target_state)
 	const uint8_t *pwr_states =
 	    (const uint8_t *)target_state->pwr_domain_state;
 	qtiseclib_psci_node_suspend_finish(pwr_states);
-	qti_set_cpupwrctlr_val(target_state, false);
+	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_OFF) ||
+	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+		QTI_LOCAL_STATE_DEEPOFF))
+		plat_qti_gic_cpuif_enable();
 }
 
 __dead2 void qti_domain_power_down_wfi(const psci_power_state_t *target_state)
 {
 
 	/* For now just do WFI - add any target specific handling if needed */
-#ifdef ENABLE_CLUSTER_COHERENCY
-	qtiseclib_disable_cluster_coherency(target_state->pwr_domain_state[1]);
-#endif
-
 	psci_power_down_wfi();
 	/* We should never reach here */
 }
@@ -203,7 +217,11 @@ void qti_get_sys_suspend_power_state(psci_power_state_t *req_state)
 	unsigned int state_id, power_state;
 	int size = ARRAY_SIZE(qti_pm_idle_states);
 
-	/* Find deepest state */
+	/*
+	 * Find deepest state.
+	 * The arm_pm_idle_states[] array has last element by default 0,
+	 * so the real deepest state is second last element of that array.
+	 */
 	power_state = qti_pm_idle_states[size - 2];
 	state_id = psci_get_pstate_id(power_state);
 
