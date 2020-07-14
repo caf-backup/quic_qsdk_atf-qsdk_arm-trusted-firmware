@@ -16,13 +16,12 @@
 #include <lib/spinlock.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
 #include <platform.h>
+#include <qti_plat.h>
+#include <qtiseclib_cb_interface.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "qti_plat.h"
-#include "qtiseclib_cb_interface.h"
 
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {
@@ -96,8 +95,37 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 	return qti_mmap_add_dynamic_region(base_pa, size, l_attr);
 }
 
-#ifdef QTI_DEBUG_BUILD
+/* GIC platform functions */
+void qtiseclib_cb_gic_pcpu_init(void)
+{
+	plat_qti_gic_pcpu_init();
+}
 
+void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target)
+{
+	plat_ic_raise_el3_sgi(sgi_num, target);
+}
+
+void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm,
+				  u_register_t target)
+{
+	assert(QTI_GICV3_IRM_PE == GICV3_IRM_PE);
+	assert(QTI_GICV3_IRM_ANY == GICV3_IRM_ANY);
+	gic_set_spi_routing(id, irm, target);
+}
+
+/* Crash reporting api's wrappers */
+void qtiseclib_cb_switch_console_to_crash_state(void)
+{
+	console_switch_state(CONSOLE_FLAG_CRASH);
+}
+
+void qtiseclib_cb_udelay(uint32_t usec)
+{
+	udelay(usec);
+}
+
+#if QTI_SDI_BUILD
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 {
 	void *ctx;
@@ -158,42 +186,4 @@ int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
 	return qti_mmap_remove_dynamic_region(base_va, size);
 }
 #endif
-/* GIC platform functions */
-void qtiseclib_cb_gic_pcpu_init(void)
-{
-	plat_qti_gic_pcpu_init();
-}
 
-void qtiseclib_cb_gic_cpuif_enable(void)
-{
-	plat_qti_gic_cpuif_enable();
-}
-
-void qtiseclib_cb_gic_cpuif_disable(void)
-{
-	plat_qti_gic_cpuif_disable();
-}
-
-void qtiseclib_cb_ic_raise_sgi(int sgi_num, u_register_t target)
-{
-	plat_ic_raise_el3_sgi(sgi_num, target);
-}
-
-void qtiseclib_cb_set_spi_routing(unsigned int id, unsigned int irm,
-				  u_register_t target)
-{
-	assert(QTI_GICV3_IRM_PE == GICV3_IRM_PE);
-	assert(QTI_GICV3_IRM_ANY == GICV3_IRM_ANY);
-	gic_set_spi_routing(id, irm, target);
-}
-
-/* Crash reporting api's wrappers */
-void qtiseclib_cb_switch_console_to_crash_state(void)
-{
-	console_switch_state(CONSOLE_FLAG_CRASH);
-}
-
-void qtiseclib_cb_udelay(uint32_t usec)
-{
-	udelay(usec);
-}

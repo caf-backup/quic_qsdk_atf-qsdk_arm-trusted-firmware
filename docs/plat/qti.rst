@@ -36,3 +36,6 @@ Additional QTISECLIB_PATH=<path to qtiseclib> can be added in build command.
 if QTISECLIB_PATH is not added in build command stub implementation of qtiseclib
 is picked. qtiseclib with stub implementation doesn't boot device. This was
 added to satisfy compilation.
+
+QTISELIB for SC7180 is available at
+`link <https://review.coreboot.org/cgit/qc_blobs.git/plain/sc7180/qtiseclib/libqtisec.a>`__

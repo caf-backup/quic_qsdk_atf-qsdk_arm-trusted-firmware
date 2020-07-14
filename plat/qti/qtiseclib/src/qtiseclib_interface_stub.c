@@ -5,11 +5,10 @@
  */
 
 #include <common/debug.h>
+#include <qtiseclib_defs.h>
+#include <qtiseclib_interface.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-#include "qtiseclib_defs.h"
-#include "qtiseclib_interface.h"
 
 /*----------------------------------------------------------------------------
  * This file contains dummy implementation of QTISECLIB Published API's.
@@ -54,6 +53,7 @@ void qtiseclib_kryo4_silver_reset_asm(void)
 void qtiseclib_bl31_platform_setup(void)
 {
 	ERROR("Please use QTISECLIB_PATH while building TF-A\n");
+	ERROR("Please refer docs/plat/qti.rst for more details.\n");
 	panic();
 }
 

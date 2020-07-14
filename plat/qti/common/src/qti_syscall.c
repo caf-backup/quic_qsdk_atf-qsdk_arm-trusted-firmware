@@ -11,16 +11,15 @@
 #include <lib/coreboot.h>
 #include <lib/utils_def.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
+#include <qti_plat.h>
+#include <qti_secure_io_cfg.h>
+#include <qtiseclib_interface.h>
 #include <smccc_helpers.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 #include <tools_share/uuid.h>
-
-#include "qti_plat.h"
-#include "qti_secure_io_cfg.h"
-#include "qtiseclib_interface.h"
 
 /*----------------------------------------------------------------------------
  * SIP service - SMC function IDs for SiP Service queries
@@ -145,112 +144,101 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 	u_register_t x6, x7;
 	int ret = QTI_SIP_NOT_SUPPORTED;
 	u_register_t x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
-	do {
-		if (SMC_32 == smc_cc) {
-			x5 = (uint32_t) x5;
-		}
-		/* Validate input arg count & retrieve arg3-6 from NS Buffer. */
-		if ((QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID != x1) || (0x0 == x5)) {
-			break;
-		}
+	if (SMC_32 == smc_cc) {
+		x5 = (uint32_t) x5;
+	}
+	/* Validate input arg count & retrieve arg3-6 from NS Buffer. */
+	if ((QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID != x1) || (0x0 == x5)) {
+		goto UNMAP_RETURN;
+	}
 
-		/* Map NS Buffer. */
-		dyn_map_start = x5;
-		dyn_map_size =
-		    (SMC_32 ==
-		     smc_cc) ? (sizeof(uint32_t) * 4) : (sizeof(uint64_t) * 4);
-		if (0 !=
-		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
-						(MT_NS | MT_RO_DATA))) {
-			break;
-		}
-		/* Retrieve indirect args. */
-		if (SMC_32 == smc_cc) {
-			x6 = *((uint32_t *) x5 + 1);
-			x7 = *((uint32_t *) x5 + 2);
-			x5 = *(uint32_t *) x5;
-		} else {
-			x6 = *((uint64_t *) x5 + 1);
-			x7 = *((uint64_t *) x5 + 2);
-			x5 = *(uint64_t *) x5;
-		}
-		/* Un-Map NS Buffer. */
-		if (0 !=
-		    qti_mmap_remove_dynamic_region(dyn_map_start,
-						   dyn_map_size)) {
-			break;
-		}
+	/* Map NS Buffer. */
+	dyn_map_start = x5;
+	dyn_map_size =
+		(SMC_32 ==
+		 smc_cc) ? (sizeof(uint32_t) * 4) : (sizeof(uint64_t) * 4);
+	if (0 != qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
+				(MT_NS | MT_RO_DATA))) {
+		goto UNMAP_RETURN;
+	}
+	/* Retrieve indirect args. */
+	if (SMC_32 == smc_cc) {
+		x6 = *((uint32_t *) x5 + 1);
+		x7 = *((uint32_t *) x5 + 2);
+		x5 = *(uint32_t *) x5;
+	} else {
+		x6 = *((uint64_t *) x5 + 1);
+		x7 = *((uint64_t *) x5 + 2);
+		x5 = *(uint64_t *) x5;
+	}
+	/* Un-Map NS Buffer. */
+	if (0 != qti_mmap_remove_dynamic_region(dyn_map_start, dyn_map_size)) {
+		goto UNMAP_RETURN;
+	}
 
-		/* Map NS Buffers.
-		   arg0,2,4 points to buffers & arg1,3,5 hold sizes.
-		   MAP api's fail to map if it's already mapped. Let's
-		   find lowest start & highest end address, then map once.
-		 */
-		dyn_map_start = MIN(x2, x4);
-		dyn_map_start = MIN(dyn_map_start, x6);
-		dyn_map_end = MAX((x2 + x3), (x4 + x5));
-		dyn_map_end = MAX(dyn_map_end, (x6 + x7));
-		dyn_map_size = dyn_map_end - dyn_map_start;
+	/* Map NS Buffers.
+	   arg0,2,4 points to buffers & arg1,3,5 hold sizes.
+	   MAP api's fail to map if it's already mapped. Let's
+	   find lowest start & highest end address, then map once.
+	 */
+	dyn_map_start = MIN(x2, x4);
+	dyn_map_start = MIN(dyn_map_start, x6);
+	dyn_map_end = MAX((x2 + x3), (x4 + x5));
+	dyn_map_end = MAX(dyn_map_end, (x6 + x7));
+	dyn_map_size = dyn_map_end - dyn_map_start;
 
-		if (0 !=
-		    qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
-						(MT_NS | MT_RO_DATA))) {
-			break;
-		}
-		memprot_info_t *mem_info_p = (memprot_info_t *) x2;
-		uint32_t u_num_mappings = x3 / sizeof(memprot_info_t);
-		uint32_t *source_vm_list_p = (uint32_t *) x4;
-		uint32_t src_vm_list_cnt = x5 / sizeof(uint32_t);
-		memprot_dst_vm_perm_info_t *dest_vm_list_p =
-		    (memprot_dst_vm_perm_info_t *) x6;
-		uint32_t dst_vm_list_cnt =
-		    x7 / sizeof(memprot_dst_vm_perm_info_t);
-		if (true !=
-		    qti_mem_assign_validate_param(mem_info_p, u_num_mappings,
-						  source_vm_list_p,
-						  src_vm_list_cnt,
-						  dest_vm_list_p,
-						  dst_vm_list_cnt)) {
-			break;
-		}
+	if (0 != qti_mmap_add_dynamic_region(dyn_map_start, dyn_map_size,
+					     (MT_NS | MT_RO_DATA))) {
+		goto UNMAP_RETURN;
+	}
+	memprot_info_t *mem_info_p = (memprot_info_t *) x2;
+	uint32_t u_num_mappings = x3 / sizeof(memprot_info_t);
+	uint32_t *source_vm_list_p = (uint32_t *) x4;
+	uint32_t src_vm_list_cnt = x5 / sizeof(uint32_t);
+	memprot_dst_vm_perm_info_t *dest_vm_list_p =
+		(memprot_dst_vm_perm_info_t *) x6;
+	uint32_t dst_vm_list_cnt =
+		x7 / sizeof(memprot_dst_vm_perm_info_t);
+	if (true != qti_mem_assign_validate_param(mem_info_p, u_num_mappings,
+				source_vm_list_p, src_vm_list_cnt,
+				dest_vm_list_p,	dst_vm_list_cnt)) {
+		goto UNMAP_RETURN;
+	}
 
-		memprot_info_t mem_info[QTI_VM_MAX_LIST_SIZE];
-		/* Populating the arguments */
-		for (int i = 0; i < u_num_mappings; i++) {
-			mem_info[i].mem_addr = mem_info_p[i].mem_addr;
-			mem_info[i].mem_size = mem_info_p[i].mem_size;
-		}
+	memprot_info_t mem_info[QTI_VM_MAX_LIST_SIZE];
+	/* Populating the arguments */
+	for (int i = 0; i < u_num_mappings; i++) {
+		mem_info[i].mem_addr = mem_info_p[i].mem_addr;
+		mem_info[i].mem_size = mem_info_p[i].mem_size;
+	}
 
-		memprot_dst_vm_perm_info_t dest_vm_list[QTI_VM_LAST];
-		for (int i = 0; i < dst_vm_list_cnt; i++) {
-			dest_vm_list[i].dst_vm = dest_vm_list_p[i].dst_vm;
-			dest_vm_list[i].dst_vm_perm =
-			    dest_vm_list_p[i].dst_vm_perm;
-			dest_vm_list[i].ctx = dest_vm_list_p[i].ctx;
-			dest_vm_list[i].ctx_size = dest_vm_list_p[i].ctx_size;
-		}
+	memprot_dst_vm_perm_info_t dest_vm_list[QTI_VM_LAST];
+	for (int i = 0; i < dst_vm_list_cnt; i++) {
+		dest_vm_list[i].dst_vm = dest_vm_list_p[i].dst_vm;
+		dest_vm_list[i].dst_vm_perm =
+			dest_vm_list_p[i].dst_vm_perm;
+		dest_vm_list[i].ctx = dest_vm_list_p[i].ctx;
+		dest_vm_list[i].ctx_size = dest_vm_list_p[i].ctx_size;
+	}
 
-		uint32_t source_vm_list[QTI_VM_LAST];
-		for (int i = 0; i < src_vm_list_cnt; i++) {
-			source_vm_list[i] = source_vm_list_p[i];
-		}
-		/* Un-Map NS Buffers. */
-		if (0 !=
-		    qti_mmap_remove_dynamic_region(dyn_map_start,
-						   dyn_map_size)) {
-			break;
-		}
-		/* Invoke API lib api. */
-		ret =
-		    qtiseclib_mem_assign(mem_info, u_num_mappings,
-					 source_vm_list, src_vm_list_cnt,
-					 dest_vm_list, dst_vm_list_cnt);
+	uint32_t source_vm_list[QTI_VM_LAST];
+	for (int i = 0; i < src_vm_list_cnt; i++) {
+		source_vm_list[i] = source_vm_list_p[i];
+	}
+	/* Un-Map NS Buffers. */
+	if (0 != qti_mmap_remove_dynamic_region(dyn_map_start,
+				dyn_map_size)) {
+		goto UNMAP_RETURN;
+	}
+	/* Invoke API lib api. */
+	ret = qtiseclib_mem_assign(mem_info, u_num_mappings,
+			source_vm_list, src_vm_list_cnt,
+			dest_vm_list, dst_vm_list_cnt);
 
-		if (0 == ret) {
-			SMC_RET2(handle, QTI_SIP_SUCCESS, ret);
-		}
-
-	} while (0);
+	if (0 == ret) {
+		SMC_RET2(handle, QTI_SIP_SUCCESS, ret);
+	}
+UNMAP_RETURN:
 	/* Un-Map NS Buffers if mapped */
 	if (dyn_map_start && dyn_map_size) {
 		qti_mmap_remove_dynamic_region(dyn_map_start, dyn_map_size);

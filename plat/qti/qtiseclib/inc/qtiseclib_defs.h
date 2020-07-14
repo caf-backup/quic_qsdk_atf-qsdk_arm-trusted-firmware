@@ -31,7 +31,7 @@ typedef uintptr_t u_register_t;
 
 #define	QTISECLIB_INT_INVALID_INT_NUM			(0xFFFFFFFFU)
 
-#ifdef QTI_DEBUG_BUILD
+#if QTI_SDI_BUILD
 /* External CPU Dump Structure - 64 bit EL */
 typedef struct {
 	uint64_t x0;

@@ -9,11 +9,11 @@
 #include <common/debug.h>
 #include <lib/psci/psci.h>
 #include <platform.h>
-
-#include "qti_cpu.h"
-#include "qtiseclib_cb_interface.h"
-#include "qtiseclib_defs_plat.h"
-#include "qtiseclib_interface.h"
+#include <qti_cpu.h>
+#include <qti_plat.h>
+#include <qtiseclib_cb_interface.h>
+#include <qtiseclib_defs_plat.h>
+#include <qtiseclib_interface.h>
 
 #define QTI_LOCAL_PSTATE_WIDTH		4
 #define QTI_LOCAL_PSTATE_MASK		((1 << QTI_LOCAL_PSTATE_WIDTH) - 1)
@@ -113,10 +113,10 @@ void qti_set_cpupwrctlr_val(const psci_power_state_t *target_state, bool enter)
 		QTI_LOCAL_STATE_DEEPOFF)) {
 		if (enter) {
 			val |= CORE_PWRDN_EN_MASK;
-			qtiseclib_cb_gic_cpuif_disable();
+			plat_qti_gic_cpuif_disable();
 		} else {
 			val &= ~CORE_PWRDN_EN_MASK;
-			qtiseclib_cb_gic_cpuif_enable();
+			plat_qti_gic_cpuif_enable();
 		}
 	}
 

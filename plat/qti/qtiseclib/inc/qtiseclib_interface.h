@@ -7,10 +7,10 @@
 #ifndef __QTISECLIB_INTERFACE_H__
 #define __QTISECLIB_INTERFACE_H__
 
+#include <qtiseclib_defs.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "qtiseclib_defs.h"
 
 typedef struct memprot_ipa_info_s {
 	uint64_t mem_addr;

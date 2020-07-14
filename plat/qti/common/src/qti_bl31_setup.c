@@ -15,11 +15,10 @@
 #include <lib/coreboot.h>
 #include <lib/spinlock.h>
 #include <platform.h>
-
-#include "qti_interrupt_svc.h"
-#include "qti_plat.h"
-#include "qti_uart_console.h"
-#include "qtiseclib_interface.h"
+#include <qti_interrupt_svc.h>
+#include <qti_plat.h>
+#include <qti_uart_console.h>
+#include <qtiseclib_interface.h>
 
 /*
  * Placeholder variables for copying the arguments that have been passed to
