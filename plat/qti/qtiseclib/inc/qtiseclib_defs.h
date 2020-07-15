@@ -31,6 +31,10 @@ typedef uintptr_t u_register_t;
 
 #define	QTISECLIB_INT_INVALID_INT_NUM			(0xFFFFFFFFU)
 
+typedef struct qtiseclib_cb_spinlock {
+	volatile uint32_t lock;
+} qtiseclib_cb_spinlock_t;
+
 #if QTI_SDI_BUILD
 /* External CPU Dump Structure - 64 bit EL */
 typedef struct {
@@ -86,16 +90,13 @@ typedef struct {
 	uint64_t __reserved7;
 	uint64_t __reserved8;
 } qtiseclib_dbg_a64_ctxt_regs_type;
-#endif
-
-typedef struct qtiseclib_cb_spinlock {
-	volatile uint32_t lock;
-} qtiseclib_cb_spinlock_t;
 
 typedef enum qtiseclib_mmap_attr_s {
 	QTISECLIB_MAP_NS_RO_XN_DATA = 1,
 	QTISECLIB_MAP_RW_XN_NC_DATA = 2,
 	QTISECLIB_MAP_RW_XN_DATA = 3,
 } qtiseclib_mmap_attr_t;
+
+#endif /* QTI_SDI_BUILD */
 
 #endif /* __QTISECLIB_DEFS_H__ */

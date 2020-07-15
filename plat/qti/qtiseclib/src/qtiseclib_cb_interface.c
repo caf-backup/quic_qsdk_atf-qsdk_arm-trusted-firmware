@@ -79,22 +79,6 @@ uintptr_t qtiseclib_cb_get_warmboot_entry_addr(void)
 	return (uintptr_t) bl31_warm_entrypoint;
 }
 
-int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
-					 size_t size,
-					 qtiseclib_mmap_attr_t attr)
-{
-	unsigned int l_attr = 0;
-
-	if (QTISECLIB_MAP_NS_RO_XN_DATA == attr) {
-		l_attr = MT_NS | MT_RO | MT_EXECUTE_NEVER;
-	} else if (QTISECLIB_MAP_RW_XN_NC_DATA == attr) {
-		l_attr = MT_RW | MT_NON_CACHEABLE | MT_EXECUTE_NEVER;
-	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
-		l_attr = MT_RW | MT_EXECUTE_NEVER;
-	}
-	return qti_mmap_add_dynamic_region(base_pa, size, l_attr);
-}
-
 /* GIC platform functions */
 void qtiseclib_cb_gic_pcpu_init(void)
 {
@@ -179,6 +163,22 @@ void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 void qtiseclib_cb_flush_dcache_all(void)
 {
 	dcsw_op_all(DCCISW);
+}
+
+int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
+					 size_t size,
+					 qtiseclib_mmap_attr_t attr)
+{
+	unsigned int l_attr = 0;
+
+	if (QTISECLIB_MAP_NS_RO_XN_DATA == attr) {
+		l_attr = MT_NS | MT_RO | MT_EXECUTE_NEVER;
+	} else if (QTISECLIB_MAP_RW_XN_NC_DATA == attr) {
+		l_attr = MT_RW | MT_NON_CACHEABLE | MT_EXECUTE_NEVER;
+	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
+		l_attr = MT_RW | MT_EXECUTE_NEVER;
+	}
+	return qti_mmap_add_dynamic_region(base_pa, size, l_attr);
 }
 
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size)
