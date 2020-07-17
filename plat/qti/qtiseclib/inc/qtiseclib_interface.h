@@ -87,6 +87,10 @@ int qtiseclib_get_diag(char* buf, size_t buf_size);
 uint64_t qtiseclib_get_ddr_size();
 #if QTI_5018_PLATFORM
 int qtiseclib_bt_fuse_copy(void);
+int qtiseclib_pil_init_image_ns(uint32_t proc, void * elf_hdr);
+int qtiseclib_pil_auth_reset_ns(uint32_t proc);
+int qtiseclib_pil_unlock_xpu(uint32_t proc);
+int pil_wcss_break_start(bool dbg);
 int qtiseclib_qfprom_fuse_secdat(uint32_t *);
 #endif
 #endif /* __QTISECLIB_INTERFACE_H__ */

@@ -60,6 +60,14 @@
  */
 #define QTI_SIP_SVC_BT_FUSE_COPY_ID				U(0x02000215)
 
+/*
+ * Syscall for PIL
+ */
+#define QTI_SIP_SVC_PIL_INIT_ID             U(0x02000201)
+#define QTI_SIP_SVC_PIL_AUTH_RESET_ID       U(0x02000205)
+#define QTI_SIP_SVC_PIL_UNLOCK_XPU_ID       U(0x02000206)
+#define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID U(0x02000214)
+
 #define	QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID		U(0x1)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_RESET_DEBUG_PARAM_ID	U(0x2)
@@ -70,7 +78,10 @@
 #define QTI_SIP_SVC_VERSION_MAJOR		U(0x0)
 #define	QTI_SIP_SVC_VERSION_MINOR		U(0x0)
 #define SMC_ARMV8                             ULL(0x1)
-
+#define QTI_SIP_SVC_PIL_INIT_PARAM_ID             U(0x82)
+#define QTI_SIP_SVC_PIL_AUTH_RESET_PARAM_ID       U(0x1)
+#define QTI_SIP_SVC_PIL_UNLOCK_XPU_PARAM_ID       U(0x1)
+#define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_PARAM_ID U(0x1)
 
 #define	FUNCID_OEN_NUM_MASK  ((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
 				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT) )
@@ -231,14 +242,50 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 	}
 
 	switch (l_smc_fid) {
+
+#if QTI_5018_PLATFORM
 	case QTI_SIP_SVC_BT_FUSE_COPY_ID:
 		{
-#if QTI_5018_PLATFORM
 			SMC_RET2(handle, SMC_OK, qtiseclib_bt_fuse_copy());
-#else
-			SMC_RET1(handle, SMC_UNK);
-#endif
 		}
+
+	case QTI_SIP_SVC_PIL_INIT_ID:
+		{
+		if(QTI_SIP_SVC_PIL_INIT_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_init_image_ns(x2, (void *)x3));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+
+	case QTI_SIP_SVC_PIL_UNLOCK_XPU_ID:
+	  {
+		if(QTI_SIP_SVC_PIL_UNLOCK_XPU_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_unlock_xpu(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+	  }
+
+	case QTI_SIP_SVC_PIL_AUTH_RESET_ID:
+		{
+		if(QTI_SIP_SVC_PIL_AUTH_RESET_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_auth_reset_ns(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+
+	case QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID:
+		{
+		if(QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, pil_wcss_break_start(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+#endif
+
 	case QTI_SIP_SVC_CALL_COUNT_ID:
 		{
 			SMC_RET1(handle, QTI_SIP_SVC_CALL_COUNT);

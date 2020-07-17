@@ -332,8 +332,16 @@ SECTIONS
       . = . + QTI_DIAG_RG_SIZE;
      __DIAG_REGION_END__ = .;
     } >RAM
-
 #endif
+
+#if QTI_5018_PLATFORM
+    pil . : {
+     __PIL_REGION_START__ = .;
+      . = . + QTI_PIL_RG_SIZE;
+     __PIL_REGION_END__ = .;
+    } >RAM
+#endif
+
     /*
      * Define a linker symbol to mark end of the RW memory area for this
      * image.
