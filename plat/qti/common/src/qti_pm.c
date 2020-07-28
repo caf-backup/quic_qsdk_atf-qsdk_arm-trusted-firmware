@@ -138,17 +138,27 @@ static int qti_cpu_power_on(u_register_t mpidr)
 	return qtiseclib_psci_node_power_on(mpidr);
 }
 
+static bool is_cpu_off(const psci_power_state_t *target_state)
+{
+	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+	     QTI_LOCAL_STATE_OFF) ||
+	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
+	     QTI_LOCAL_STATE_DEEPOFF)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 static void qti_cpu_power_on_finish(const psci_power_state_t *target_state)
 {
 	const uint8_t *pwr_states =
 	    (const uint8_t *)target_state->pwr_domain_state;
 	qtiseclib_psci_node_on_finish(pwr_states);
 
-	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_OFF) ||
-	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_DEEPOFF))
+	if (is_cpu_off(target_state)) {
 		plat_qti_gic_cpuif_enable();
+	}
 }
 
 static void qti_cpu_standby(plat_local_state_t cpu_state)
@@ -159,10 +169,7 @@ static void qti_node_power_off(const psci_power_state_t *target_state)
 {
 	qtiseclib_psci_node_power_off((const uint8_t *)
 				      target_state->pwr_domain_state);
-	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_OFF) ||
-	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_DEEPOFF)) {
+	if (is_cpu_off(target_state)) {
 		plat_qti_gic_cpuif_disable();
 		qti_set_cpupwrctlr_val();
 	}
@@ -172,10 +179,7 @@ static void qti_node_suspend(const psci_power_state_t *target_state)
 {
 	qtiseclib_psci_node_suspend((const uint8_t *)target_state->
 				    pwr_domain_state);
-	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_OFF) ||
-	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_DEEPOFF)) {
+	if (is_cpu_off(target_state)) {
 		plat_qti_gic_cpuif_disable();
 		qti_set_cpupwrctlr_val();
 	}
@@ -186,11 +190,9 @@ static void qti_node_suspend_finish(const psci_power_state_t *target_state)
 	const uint8_t *pwr_states =
 	    (const uint8_t *)target_state->pwr_domain_state;
 	qtiseclib_psci_node_suspend_finish(pwr_states);
-	if ((target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_OFF) ||
-	    (target_state->pwr_domain_state[QTI_PWR_LVL0] ==
-		QTI_LOCAL_STATE_DEEPOFF))
+	if (is_cpu_off(target_state)) {
 		plat_qti_gic_cpuif_enable();
+	}
 }
 
 __dead2 void qti_domain_power_down_wfi(const psci_power_state_t *target_state)
@@ -260,7 +262,7 @@ int plat_setup_psci_ops(uintptr_t sec_entrypoint,
 {
 	int err;
 
-	err = qtiseclib_psci_init((uintptr_t) bl31_warm_entrypoint);
+	err = qtiseclib_psci_init((uintptr_t)bl31_warm_entrypoint);
 	if (err == PSCI_E_SUCCESS) {
 		*psci_ops = &plat_qti_psci_pm_ops;
 	}
