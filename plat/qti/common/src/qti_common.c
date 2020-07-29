@@ -4,14 +4,17 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+
 #include <assert.h>
-#include <common/debug.h>
 #include <errno.h>
+#include <stdbool.h>
+
+#include <common/debug.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <platform_def.h>
 #include <qti_plat.h>
 #include <qtiseclib_interface.h>
-#include <stdbool.h>
+
+#include <platform_def.h>
 
 /*
  * Table of regions for various BL stages to map using the MMU.
@@ -33,22 +36,23 @@ CASSERT(ARRAY_SIZE(plat_qti_mmap) <= MAX_MMAP_REGIONS, assert_max_mmap_regions);
 bool qti_is_overlap_atf_rg(unsigned long long addr, size_t size)
 {
 	if (addr > addr + size
-	    || (BL31_BASE < addr + size && BL31_LIMIT > addr))
+			|| (BL31_BASE < addr + size && BL31_LIMIT > addr)) {
 		return true;
+	}
 	return false;
 }
 
-/*----------------------------------------------------------------------------
+/*
  *  unsigned int plat_qti_my_cluster_pos(void)
  *  definition to get the cluster index of the calling CPU.
  *  - In ARM v8   (MPIDR_EL1[24]=0)
  *    ClusterId = MPIDR_EL1[15:8]
  *  - In ARM v8.1 & Later version (MPIDR_EL1[24]=1)
  *    ClusterId = MPIDR_EL1[23:15]
- * -------------------------------------------------------------------------*/
+ */
 unsigned int plat_qti_my_cluster_pos(void)
 {
-	unsigned long mpidr, cluster_id;
+	unsigned int mpidr, cluster_id;
 
 	mpidr = read_mpidr_el1();
 	if ((mpidr & MPIDR_MT_MASK) == 0) {	/* MT not supported */
@@ -125,6 +129,7 @@ int qti_mmap_add_dynamic_region(uintptr_t base_pa, size_t size,
 {
 	uintptr_t aligned_pa;
 	size_t aligned_size;
+
 	qti_align_mem_region(base_pa, size, &aligned_pa, &aligned_size);
 
 	if (qti_is_overlap_atf_rg(base_pa, size)) {

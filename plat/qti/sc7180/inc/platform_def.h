@@ -4,23 +4,26 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef __PLATFORM_DEF_H__
-#define __PLATFORM_DEF_H__
+#ifndef PLATFORM_DEF_H
+#define PLATFORM_DEF_H
 
 /* Enable the dynamic translation tables library. */
 #define PLAT_XLAT_TABLES_DYNAMIC	1
 
 #include <common_def.h>
+
 #include <qti_board_def.h>
 #include <qtiseclib_defs_plat.h>
 
 /*----------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------*/
-/* MPIDR_PRIMARY_CPU
+/*
+ * MPIDR_PRIMARY_CPU
  * You just need to have the correct core_affinity_val i.e. [7:0]
  * and cluster_affinity_val i.e. [15:8]
- * the other bits will be ignored */
+ * the other bits will be ignored
+ */
 /*----------------------------------------------------------------------------*/
 #define MPIDR_PRIMARY_CPU	0x0000
 /*----------------------------------------------------------------------------*/
@@ -36,17 +39,25 @@
  */
 /* Local power state for power domains in Run state. */
 #define QTI_LOCAL_STATE_RUN	0
-/* Local power state for clock-gating. Valid only for CPU and not cluster power
-   domains */
+/*
+ * Local power state for clock-gating. Valid only for CPU and not cluster power
+ * domains
+ */
 #define QTI_LOCAL_STATE_STB	1
-/* Local power state for retention. Valid for CPU and cluster power
-   domains */
+/*
+ * Local power state for retention. Valid for CPU and cluster power
+ * domains
+ */
 #define QTI_LOCAL_STATE_RET	2
-/* Local power state for OFF/power down. Valid for CPU, cluster, RSC and PDC
- * power domains */
+/*
+ * Local power state for OFF/power down. Valid for CPU, cluster, RSC and PDC
+ * power domains
+ */
 #define QTI_LOCAL_STATE_OFF	3
-/* Local power state for DEEPOFF/power rail down. Valid for CPU, cluster and RSC
-   power domains */
+/*
+ * Local power state for DEEPOFF/power rail down. Valid for CPU, cluster and RSC
+ * power domains
+ */
 #define QTI_LOCAL_STATE_DEEPOFF	4
 
 /*
@@ -160,6 +171,6 @@
  * Put BL31 at DDR as per memory map. BL31_BASE is calculated using the
  * current BL31 debug size plus a little space for growth.
  */
-#define BL31_LIMIT						(BL31_BASE + BL31_SIZE)
+#define BL31_LIMIT				(BL31_BASE + BL31_SIZE)
 
-#endif /* __PLATFORM_DEF_H__ */
+#endif /* PLATFORM_DEF_H */

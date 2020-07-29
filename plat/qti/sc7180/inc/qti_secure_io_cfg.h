@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#ifndef __QTI_SECURE_IO_CFG_H__
-#define __QTI_SECURE_IO_CFG_H__
+#ifndef QTI_SECURE_IO_CFG_H
+#define QTI_SECURE_IO_CFG_H
 
 #include <stdint.h>
 
@@ -27,4 +27,4 @@ static const uintptr_t qti_secure_io_allowed_regs[] = {
 	APPS_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
 };
 
-#endif /* __QTI_SECURE_IO_CFG_H__ */
+#endif /* QTI_SECURE_IO_CFG_H */

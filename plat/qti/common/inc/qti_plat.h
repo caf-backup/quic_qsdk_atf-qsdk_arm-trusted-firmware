@@ -5,14 +5,15 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTI_PLAT_H__
-#define __QTI_PLAT_H__
+#ifndef QTI_PLAT_H
+#define QTI_PLAT_H
+
+#include <stdint.h>
 
 #include <common/bl_common.h>
 #include <lib/cassert.h>
 #include <lib/el3_runtime/cpu_data.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <stdint.h>
 
 /*
  * Utility functions common to QTI platforms
@@ -49,4 +50,4 @@ unsigned int plat_qti_my_cluster_pos(void);
 
 void gic_set_spi_routing(unsigned int id, unsigned int irm, u_register_t mpidr);
 
-#endif /* __QTI_PLAT_H__ */
+#endif /* QTI_PLAT_H */

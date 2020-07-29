@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTISECLIB_INTERFACE_H__
-#define __QTISECLIB_INTERFACE_H__
+#ifndef QTISECLIB_INTERFACE_H
+#define QTISECLIB_INTERFACE_H
 
-#include <qtiseclib_defs.h>
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <qtiseclib_defs.h>
 
 typedef struct memprot_ipa_info_s {
 	uint64_t mem_addr;
@@ -24,13 +24,13 @@ typedef struct memprot_dst_vm_perm_info_s {
 	uint32_t ctx_size;
 } memprot_dst_vm_perm_info_t;
 
-/*----------------------------------------------------------------------------
+/*
  * QTISECLIB Published API's.
- * -------------------------------------------------------------------------*/
+ */
 
-/*----------------------------------------------------------------------------
+/*
  * Assembly API's
- * -------------------------------------------------------------------------*/
+ */
 
 /*
  * CPUSS common reset handler for all CPU wake up (both cold & warm boot).
@@ -57,9 +57,9 @@ void qtiseclib_kryo4_gold_reset_asm(void);
  */
 void qtiseclib_kryo4_silver_reset_asm(void);
 
-/*----------------------------------------------------------------------------
+/*
  * C Api's
- * -------------------------------------------------------------------------*/
+ */
 void qtiseclib_bl31_platform_setup(void);
 void qtiseclib_invoke_isr(uint32_t irq, void *handle);
 void qtiseclib_panic(void);
@@ -84,4 +84,4 @@ __attribute__ ((noreturn))
 void qtiseclib_psci_system_reset(void);
 void qtiseclib_disable_cluster_coherency(uint8_t state);
 
-#endif /* __QTISECLIB_INTERFACE_H__ */
+#endif /* QTISECLIB_INTERFACE_H */

@@ -31,7 +31,7 @@ MULTI_CONSOLE_API		:=	1
 
 QTI_SDI_BUILD := 0
 $(eval $(call assert_boolean,QTI_SDI_BUILD))
-$(eval $(call add_define_val,QTI_SDI_BUILD,$(QTI_SDI_BUILD)))
+$(eval $(call add_define,QTI_SDI_BUILD))
 
 #disable CTX_INCLUDE_AARCH32_REGS to support sc7180 gold cores
 override CTX_INCLUDE_AARCH32_REGS	:=	0

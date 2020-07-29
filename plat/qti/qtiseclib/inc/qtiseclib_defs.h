@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTISECLIB_DEFS_H__
-#define __QTISECLIB_DEFS_H__
+#ifndef QTISECLIB_DEFS_H
+#define QTISECLIB_DEFS_H
 
 #include <stdint.h>
 
@@ -13,8 +13,10 @@
 typedef uintptr_t u_register_t;
 #endif
 
-/* Different Log Level supported in qtiseclib.
-   TODO: Currently no filtering done on QTISECLIB logs. */
+/*
+ * Different Log Level supported in qtiseclib.
+ * TODO: Currently no filtering done on QTISECLIB logs.
+ */
 #define QTISECLIB_LOG_LEVEL_NONE	0
 #define QTISECLIB_LOG_LEVEL_ERROR	10
 #define QTISECLIB_LOG_LEVEL_NOTICE	20
@@ -99,4 +101,4 @@ typedef enum qtiseclib_mmap_attr_s {
 
 #endif /* QTI_SDI_BUILD */
 
-#endif /* __QTISECLIB_DEFS_H__ */
+#endif /* QTISECLIB_DEFS_H */

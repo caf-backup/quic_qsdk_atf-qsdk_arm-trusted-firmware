@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018,2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -83,6 +83,5 @@ func plat_reset_handler
 	ldr	x0, =g_qti_cpuss_boot_lock
 	bl	spin_unlock
 
-	mov	x30, x18
-	ret
+	ret	x18
 endfunc plat_reset_handler

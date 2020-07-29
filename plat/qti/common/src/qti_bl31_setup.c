@@ -14,12 +14,13 @@
 #include <lib/bl_aux_params/bl_aux_params.h>
 #include <lib/coreboot.h>
 #include <lib/spinlock.h>
-#include <platform.h>
+
 #include <qti_interrupt_svc.h>
 #include <qti_plat.h>
 #include <qti_uart_console.h>
 #include <qtiseclib_interface.h>
 
+#include <platform.h>
 /*
  * Placeholder variables for copying the arguments that have been passed to
  * BL31 from BL2.
@@ -62,8 +63,9 @@ void bl31_early_platform_setup(u_register_t from_bl2,
 	bl_aux_params_parse(plat_params_from_bl2, NULL);
 
 #if COREBOOT
-	if (coreboot_serial.baseaddr) {
+	if (coreboot_serial.baseaddr != 0) {
 		static console_t g_qti_console_uart;
+
 		qti_console_uart_register(&g_qti_console_uart,
 					  coreboot_serial.baseaddr);
 	}
@@ -84,7 +86,7 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 
 /*******************************************************************************
  * Perform the very early platform specific architectural setup here. At the
- * moment this is only intializes the mmu in a quick and dirty way.
+ * moment this only intializes the mmu in a quick and dirty way.
  ******************************************************************************/
 void bl31_plat_arch_setup(void)
 {
@@ -104,7 +106,7 @@ void bl31_plat_arch_setup(void)
 void bl31_platform_setup(void)
 {
 	generic_delay_timer_init();
-	/* Initialize the GIC driver, cpu and distributor interfaces */
+	/* Initialize the GIC driver, CPU and distributor interfaces */
 	plat_qti_gic_driver_init();
 	plat_qti_gic_init();
 	qti_interrupt_svc_init();
@@ -123,17 +125,18 @@ void bl31_platform_setup(void)
 entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
 {
 	/* QTI platform don't have BL32 implementation. */
-	assert(NON_SECURE == type);
+	assert(type == NON_SECURE);
 	assert(bl33_image_ep_info.h.type == PARAM_EP);
 	assert(bl33_image_ep_info.h.attr == NON_SECURE);
 	/*
 	 * None of the images on the platforms can have 0x0
 	 * as the entrypoint.
 	 */
-	if (bl33_image_ep_info.pc)
+	if (bl33_image_ep_info.pc) {
 		return &bl33_image_ep_info;
-	else
+	} else {
 		return NULL;
+	}
 }
 
 /*******************************************************************************
@@ -142,10 +145,10 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(uint32_t type)
  * CNTFRQ_EL0 register. In Arm standard platforms, it returns the base frequency
  * of the system counter, which is retrieved from the first entry in the
  * frequency modes table. This will be used later in warm boot (psci_arch_setup)
- * of cpus to set when cpu frequency.
+ * of CPUs to set when CPU frequency.
  ******************************************************************************/
 unsigned int plat_get_syscnt_freq2(void)
 {
-	assert(0 != g_qti_cpu_cntfrq);
+	assert(g_qti_cpu_cntfrq != 0);
 	return g_qti_cpu_cntfrq;
 }

@@ -1,12 +1,16 @@
 /*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include <assert.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <arch.h>
 #include <arch_helpers.h>
-#include <assert.h>
 #include <bl31/bl31.h>
 #include <context.h>
 #include <drivers/arm/gicv3.h>
@@ -15,13 +19,10 @@
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/spinlock.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <platform.h>
 #include <qti_plat.h>
 #include <qtiseclib_cb_interface.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+
+#include <platform.h>
 
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {
@@ -35,6 +36,7 @@ void qtiseclib_cb_log(unsigned int loglvl, const char *fmt, ...)
 		va_list argp;
 		static spinlock_t qti_log_lock;
 		uint64_t uptime = read_cntpct_el0();
+
 		va_start(argp, fmt);
 
 		spin_lock(&qti_log_lock);
@@ -108,6 +110,7 @@ void qtiseclib_cb_udelay(uint32_t usec)
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 {
 	void *ctx;
+
 	ctx = cm_get_context(NON_SECURE);
 
 	qti_ns_ctx->spsr_el3 =
@@ -166,11 +169,11 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 {
 	unsigned int l_attr = 0;
 
-	if (QTISECLIB_MAP_NS_RO_XN_DATA == attr) {
+	if (attr == QTISECLIB_MAP_NS_RO_XN_DATA) {
 		l_attr = MT_NS | MT_RO | MT_EXECUTE_NEVER;
-	} else if (QTISECLIB_MAP_RW_XN_NC_DATA == attr) {
+	} else if (attr == QTISECLIB_MAP_RW_XN_NC_DATA) {
 		l_attr = MT_RW | MT_NON_CACHEABLE | MT_EXECUTE_NEVER;
-	} else if (QTISECLIB_MAP_RW_XN_DATA == attr) {
+	} else if (attr == QTISECLIB_MAP_RW_XN_DATA) {
 		l_attr = MT_RW | MT_EXECUTE_NEVER;
 	}
 	return qti_mmap_add_dynamic_region(base_pa, size, l_attr);

@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTISECLIB_CB_INTERFACE_H__
-#define __QTISECLIB_CB_INTERFACE_H__
+#ifndef QTISECLIB_CB_INTERFACE_H
+#define QTISECLIB_CB_INTERFACE_H
 
-#include <qtiseclib_defs.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <qtiseclib_defs.h>
 
 /* Standard Library API's */
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len);
@@ -48,7 +48,7 @@ int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
 					 qtiseclib_mmap_attr_t attr);
 
 void qtiseclib_cb_flush_dcache_all(void);
-void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type * ns_ctx);
+void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *ns_ctx);
 #endif
 
-#endif /* __QTISECLIB_CB_INTERFACE_H__ */
+#endif /* QTISECLIB_CB_INTERFACE_H */

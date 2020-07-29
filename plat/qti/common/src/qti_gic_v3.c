@@ -1,17 +1,18 @@
 /*
  * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include <common/bl_common.h>
 #include <drivers/arm/gicv3.h>
-#include <platform.h>
-#include <platform_def.h>
 #include <qti_plat.h>
 #include <qtiseclib_defs.h>
 #include <qtiseclib_defs_plat.h>
+
+#include <platform.h>
+#include <platform_def.h>
 
 /* The GICv3 driver only needs to be initialized in EL3 */
 static uintptr_t rdistif_base_addrs[PLATFORM_CORE_COUNT];
@@ -108,6 +109,7 @@ void plat_qti_gic_init(void)
 	/* Route secure spi interrupt to ANY. */
 	for (i = 0; i < ARRAY_SIZE(qti_interrupt_props); i++) {
 		unsigned int int_id = qti_interrupt_props[i].intr_num;
+
 		if (plat_ic_is_spi(int_id)) {
 			gicv3_set_spi_routing(int_id, GICV3_IRM_ANY, 0x0);
 		}
@@ -136,7 +138,7 @@ void plat_qti_gic_cpuif_disable(void)
 }
 
 /******************************************************************************
- * ARM common helper to initialize the per-cpu redistributor interface in GICv3
+ * ARM common helper to initialize the per-CPU redistributor interface in GICv3
  *****************************************************************************/
 void plat_qti_gic_pcpu_init(void)
 {

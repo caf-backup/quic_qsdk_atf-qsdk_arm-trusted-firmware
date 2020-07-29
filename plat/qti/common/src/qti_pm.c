@@ -4,19 +4,20 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+#include <assert.h>
 
 #include <arch_helpers.h>
-#include <assert.h>
 #include <bl31/bl31.h>
 #include <common/debug.h>
 #include <lib/psci/psci.h>
-#include <platform.h>
-#include <platform_def.h>
 #include <qti_cpu.h>
 #include <qti_plat.h>
 #include <qtiseclib_cb_interface.h>
 #include <qtiseclib_defs_plat.h>
 #include <qtiseclib_interface.h>
+
+#include <platform.h>
+#include <platform_def.h>
 
 #define QTI_LOCAL_PSTATE_WIDTH		4
 #define QTI_LOCAL_PSTATE_MASK		((1 << QTI_LOCAL_PSTATE_WIDTH) - 1)
@@ -111,7 +112,7 @@ int qti_validate_power_state(unsigned int power_state,
  * PLATFORM FUNCTIONS
  ******************************************************************************/
 
-static void qti_set_cpupwrctlr_val()
+static void qti_set_cpupwrctlr_val(void)
 {
 	unsigned long val;
 
@@ -235,8 +236,10 @@ void qti_get_sys_suspend_power_state(psci_power_state_t *req_state)
 	}
 }
 
-/* Structure containing platform specific PSCI operations. Common
- * PSCI layer will use this. */
+/*
+ * Structure containing platform specific PSCI operations. Common
+ * PSCI layer will use this.
+ */
 const plat_psci_ops_t plat_qti_psci_pm_ops = {
 	.pwr_domain_on = qti_cpu_power_on,
 	.pwr_domain_on_finish = qti_cpu_power_on_finish,

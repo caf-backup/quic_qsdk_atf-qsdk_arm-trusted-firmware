@@ -5,8 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTI_UART_CONSOLE_H__
-#define __QTI_UART_CONSOLE_H__
+#ifndef QTI_UART_CONSOLE_H
+#define QTI_UART_CONSOLE_H
 
 #include <drivers/console.h>
 
@@ -16,4 +16,4 @@ int qti_console_uart_register(console_t *console, uintptr_t uart_base_addr);
 
 #endif /* __ASSEMBLER__ */
 
-#endif /* __QTI_UART_CONSOLE_H__ */
+#endif /* QTI_UART_CONSOLE_H */

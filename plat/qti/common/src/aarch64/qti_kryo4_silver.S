@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -57,13 +57,13 @@ endfunc qti_kryo4_silver_errata_report
  * This function provides kryo4_silver specific
  * register information for crash reporting.
  * It needs to return with x6 pointing to
- * a list of register names in ascii and
+ * a list of register names in ASCII and
  * x8 - x15 having values of registers to be
  * reported.
  * ---------------------------------------------
  */
 .section .rodata.qti_kryo4_silver_regs, "aS"
-qti_kryo4_silver_regs:  /* The ascii list of register names to be reported */
+qti_kryo4_silver_regs:  /* The ASCII list of register names to be reported */
 	.asciz	""
 
 func qti_kryo4_silver_cpu_reg_dump

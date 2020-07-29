@@ -3,10 +3,11 @@
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
-#include <lib/mmio.h>
-#include <qti_rng_io.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include <lib/mmio.h>
+#include <qti_rng_io.h>
 
 int qti_rng_get_data(uint8_t *out, uint32_t out_len)
 {
@@ -18,9 +19,10 @@ int qti_rng_get_data(uint8_t *out, uint32_t out_len)
 		return -1;
 	}
 
-	/* RNG HW initialized at previous boot image.
+	/*
+	 * RNG HW initialized at previous boot image.
 	 * RNG clocks are expected to be ON.
-	*/
+	 */
 
 	do {
 		/* There is no data to read */

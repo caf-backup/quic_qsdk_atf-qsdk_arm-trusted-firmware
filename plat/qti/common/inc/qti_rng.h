@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef __QTI_RNG_H__
-#define __QTI_RNG_H__
+#ifndef QTI_RNG_H
+#define QTI_RNG_H
 
 int qti_rng_get_data(uint8_t *out, uint32_t out_len);
 
-#endif /* __QTI_RNG_H__ */
+#endif /* QTI_RNG_H */

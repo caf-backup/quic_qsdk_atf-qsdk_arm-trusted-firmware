@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <common/debug.h>
-#include <qtiseclib_defs.h>
-#include <qtiseclib_interface.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-/*----------------------------------------------------------------------------
+#include <common/debug.h>
+#include <qtiseclib_defs.h>
+#include <qtiseclib_interface.h>
+
+/*
  * This file contains dummy implementation of QTISECLIB Published API's.
  * which will be used to compile PLATFORM successfully when
  * qtiseclib is not available
- * -------------------------------------------------------------------------*/
+ */
 
 /*
  * CPUSS common reset handler for all CPU wake up (both cold & warm boot).
@@ -47,9 +48,9 @@ void qtiseclib_kryo4_silver_reset_asm(void)
 {
 }
 
-/*----------------------------------------------------------------------------
+/*
  * C Api's
- * -------------------------------------------------------------------------*/
+ */
 void qtiseclib_bl31_platform_setup(void)
 {
 	ERROR("Please use QTISECLIB_PATH while building TF-A\n");
