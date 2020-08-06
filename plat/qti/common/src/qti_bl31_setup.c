@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+
 #include <bl31/bl31.h>
 #include <common/debug.h>
 #include <common/desc_image_load.h>
@@ -15,12 +16,12 @@
 #include <lib/coreboot.h>
 #include <lib/spinlock.h>
 
+#include <platform.h>
 #include <qti_interrupt_svc.h>
 #include <qti_plat.h>
 #include <qti_uart_console.h>
 #include <qtiseclib_interface.h>
 
-#include <platform.h>
 /*
  * Placeholder variables for copying the arguments that have been passed to
  * BL31 from BL2.

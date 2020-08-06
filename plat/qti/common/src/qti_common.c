@@ -8,13 +8,14 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include <common/debug.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <qti_plat.h>
-#include <qtiseclib_interface.h>
 
 #include <platform_def.h>
+#include <qti_plat.h>
+#include <qtiseclib_interface.h>
 
 /*
  * Table of regions for various BL stages to map using the MMU.

@@ -11,10 +11,10 @@
 #include <bl31/interrupt_mgmt.h>
 #include <drivers/arm/gic_common.h>
 #include <lib/el3_runtime/context_mgmt.h>
-#include <qti_interrupt_svc.h>
-#include <qtiseclib_interface.h>
 
 #include <platform.h>
+#include <qti_interrupt_svc.h>
+#include <qtiseclib_interface.h>
 
 #define QTI_INTR_INVALID_INT_NUM		0xFFFFFFFFU
 

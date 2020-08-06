@@ -7,12 +7,12 @@
 
 #include <common/bl_common.h>
 #include <drivers/arm/gicv3.h>
-#include <qti_plat.h>
-#include <qtiseclib_defs.h>
-#include <qtiseclib_defs_plat.h>
 
 #include <platform.h>
 #include <platform_def.h>
+#include <qti_plat.h>
+#include <qtiseclib_defs.h>
+#include <qtiseclib_defs_plat.h>
 
 /* The GICv3 driver only needs to be initialized in EL3 */
 static uintptr_t rdistif_base_addrs[PLATFORM_CORE_COUNT];

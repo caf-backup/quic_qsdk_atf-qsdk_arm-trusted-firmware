@@ -10,6 +10,7 @@
 #include <drivers/arm/gicv2.h>
 #include <drivers/arm/gicv3.h>
 #include <drivers/console.h>
+
 #include <platform_def.h>
 
 	.globl	plat_my_core_pos

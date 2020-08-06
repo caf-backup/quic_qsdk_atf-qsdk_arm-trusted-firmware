@@ -19,10 +19,10 @@
 #include <lib/el3_runtime/context_mgmt.h>
 #include <lib/spinlock.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <qti_plat.h>
-#include <qtiseclib_cb_interface.h>
 
 #include <platform.h>
+#include <qti_plat.h>
+#include <qtiseclib_cb_interface.h>
 
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 {

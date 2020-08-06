@@ -15,19 +15,19 @@
 #include <lib/coreboot.h>
 #include <lib/utils_def.h>
 #include <lib/xlat_tables/xlat_tables_v2.h>
-#include <qti_plat.h>
-#include <qti_secure_io_cfg.h>
-#include <qtiseclib_interface.h>
 #include <smccc_helpers.h>
 #include <tools_share/uuid.h>
 
+#include <qti_plat.h>
+#include <qti_secure_io_cfg.h>
+#include <qtiseclib_interface.h>
 /*
  * SIP service - SMC function IDs for SiP Service queries
  *
  */
 #define	QTI_SIP_SVC_CALL_COUNT_ID			U(0x0200ff00)
 #define	QTI_SIP_SVC_UID_ID				U(0x0200ff01)
-//							0x8200ff02 is reserved
+/*							0x8200ff02 is reserved */
 #define	QTI_SIP_SVC_VERSION_ID				U(0x0200ff03)
 
 /*

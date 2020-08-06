@@ -11,6 +11,7 @@
 #include <drivers/arm/gic_common.h>
 #include <drivers/arm/gicv2.h>
 #include <drivers/arm/gicv3.h>
+
 #include <platform_def.h>
 
 .section .rodata.gic_reg_name, "aS"

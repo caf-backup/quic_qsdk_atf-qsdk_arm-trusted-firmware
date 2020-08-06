@@ -10,14 +10,14 @@
 #include <bl31/bl31.h>
 #include <common/debug.h>
 #include <lib/psci/psci.h>
+
+#include <platform.h>
+#include <platform_def.h>
 #include <qti_cpu.h>
 #include <qti_plat.h>
 #include <qtiseclib_cb_interface.h>
 #include <qtiseclib_defs_plat.h>
 #include <qtiseclib_interface.h>
-
-#include <platform.h>
-#include <platform_def.h>
 
 #define QTI_LOCAL_PSTATE_WIDTH		4
 #define QTI_LOCAL_PSTATE_MASK		((1 << QTI_LOCAL_PSTATE_WIDTH) - 1)

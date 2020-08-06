@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <common/debug.h>
+
 #include <qtiseclib_defs.h>
 #include <qtiseclib_interface.h>
 

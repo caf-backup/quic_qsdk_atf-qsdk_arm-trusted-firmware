@@ -8,6 +8,7 @@
 #include <arch.h>
 #include <asm_macros.S>
 #include <cpu_macros.S>
+
 #include <plat_macros.S>
 #include <qti_cpu.h>
 
