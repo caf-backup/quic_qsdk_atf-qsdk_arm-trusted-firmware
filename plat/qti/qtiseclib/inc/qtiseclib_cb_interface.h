@@ -16,6 +16,9 @@
 
 /* Standard Library API's */
 void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len);
+int qtiseclib_cb_strcmp(const char *s1, const char *s2);
+void *qtiseclib_cb_memset(void *s, int c, size_t n);
+void *qtiseclib_cb_memmove(void *dest, const void *src, size_t n);
 
 #define QTISECLIB_CB_ERROR(...)		qtiseclib_cb_log(QTISECLIB_LOG_LEVEL_ERROR, __VA_ARGS__)
 #define QTISECLIB_CB_NOTICE(...)	qtiseclib_cb_log(QTISECLIB_LOG_LEVEL_NOTICE, __VA_ARGS__)
