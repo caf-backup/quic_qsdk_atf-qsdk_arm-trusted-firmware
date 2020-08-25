@@ -106,6 +106,11 @@ void qtiseclib_cb_udelay(uint32_t usec)
 	udelay(usec);
 }
 
+int qtiseclib_cb_console_flush(void)
+{
+	return console_flush();
+}
+
 #if QTI_SDI_BUILD
 void qtiseclib_cb_get_ns_ctx(qtiseclib_dbg_a64_ctxt_regs_type *qti_ns_ctx)
 {

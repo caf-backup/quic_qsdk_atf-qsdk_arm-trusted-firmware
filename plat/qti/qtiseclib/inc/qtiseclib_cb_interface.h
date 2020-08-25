@@ -41,6 +41,8 @@ void qtiseclib_cb_switch_console_to_crash_state(void);
 
 void qtiseclib_cb_udelay(uint32_t usec);
 
+int qtiseclib_cb_console_flush(void);
+
 #if QTI_SDI_BUILD
 int qtiseclib_cb_mmap_remove_dynamic_region(uintptr_t base_va, size_t size);
 int qtiseclib_cb_mmap_add_dynamic_region(unsigned long long base_pa,
