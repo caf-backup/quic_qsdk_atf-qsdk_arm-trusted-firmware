@@ -263,6 +263,9 @@ endif
 
 ifeq (${SDEI_SUPPORT},1)
 BL31_SOURCES		+=	plat/arm/common/aarch64/arm_sdei.c
+ifeq (${SDEI_IN_FCONF},1)
+BL31_SOURCES		+=	plat/arm/common/fconf/fconf_sdei_getter.c
+endif
 endif
 
 # RAS sources
@@ -294,7 +297,9 @@ ifneq (${TRUSTED_BOARD_BOOT},0)
 
     # Include the selected chain of trust sources.
     ifeq (${COT},tbbr)
-        AUTH_SOURCES	+=	drivers/auth/tbbr/tbbr_cot.c
+        AUTH_SOURCES	+=	drivers/auth/tbbr/tbbr_cot_common.c
+	BL1_SOURCES     +=      drivers/auth/tbbr/tbbr_cot_bl1.c
+	BL2_SOURCES     +=      drivers/auth/tbbr/tbbr_cot_bl2.c
     else ifeq (${COT},dualroot)
         AUTH_SOURCES	+=	drivers/auth/dualroot/cot.c
     else
@@ -331,4 +336,10 @@ ifeq (${RECLAIM_INIT_CODE}, 1)
     ifeq (${ARM_XLAT_TABLES_LIB_V1}, 1)
         $(error "To reclaim init code xlat tables v2 must be used")
     endif
+endif
+
+ifeq (${MEASURED_BOOT},1)
+    MEASURED_BOOT_MK := drivers/measured_boot/measured_boot.mk
+    $(info Including ${MEASURED_BOOT_MK})
+    include ${MEASURED_BOOT_MK}
 endif

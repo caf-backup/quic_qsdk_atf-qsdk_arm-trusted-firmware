@@ -25,6 +25,7 @@ const io_block_spec_t fip_block_spec = {
 const io_uuid_spec_t arm_uuid_spec[MAX_NUMBER_IDS] = {
 	[BL2_IMAGE_ID] = {UUID_TRUSTED_BOOT_FIRMWARE_BL2},
 	[TB_FW_CONFIG_ID] = {UUID_TB_FW_CONFIG},
+	[FW_CONFIG_ID] = {UUID_FW_CONFIG},
 #if !ARM_IO_IN_DTB
 	[SCP_BL2_IMAGE_ID] = {UUID_SCP_FIRMWARE_SCP_BL2},
 	[BL31_IMAGE_ID] = {UUID_EL3_RUNTIME_FIRMWARE_BL31},
@@ -49,6 +50,10 @@ const io_uuid_spec_t arm_uuid_spec[MAX_NUMBER_IDS] = {
 	[SOC_FW_CONTENT_CERT_ID] = {UUID_SOC_FW_CONTENT_CERT},
 	[TRUSTED_OS_FW_CONTENT_CERT_ID] = {UUID_TRUSTED_OS_FW_CONTENT_CERT},
 	[NON_TRUSTED_FW_CONTENT_CERT_ID] = {UUID_NON_TRUSTED_FW_CONTENT_CERT},
+#if defined(SPD_spmd)
+	[SIP_SP_CONTENT_CERT_ID] = {UUID_SIP_SECURE_PARTITION_CONTENT_CERT},
+	[PLAT_SP_CONTENT_CERT_ID] = {UUID_PLAT_SECURE_PARTITION_CONTENT_CERT},
+#endif
 #endif /* ARM_IO_IN_DTB */
 #endif /* TRUSTED_BOARD_BOOT */
 };
@@ -68,6 +73,11 @@ struct plat_io_policy policies[MAX_NUMBER_IDS] = {
 	[TB_FW_CONFIG_ID] = {
 		&fip_dev_handle,
 		(uintptr_t)&arm_uuid_spec[TB_FW_CONFIG_ID],
+		open_fip
+	},
+	[FW_CONFIG_ID] = {
+		&fip_dev_handle,
+		(uintptr_t)&arm_uuid_spec[FW_CONFIG_ID],
 		open_fip
 	},
 #if !ARM_IO_IN_DTB
@@ -174,6 +184,18 @@ struct plat_io_policy policies[MAX_NUMBER_IDS] = {
 		(uintptr_t)&arm_uuid_spec[NON_TRUSTED_FW_CONTENT_CERT_ID],
 		open_fip
 	},
+#if defined(SPD_spmd)
+	[SIP_SP_CONTENT_CERT_ID] = {
+		&fip_dev_handle,
+		(uintptr_t)&arm_uuid_spec[SIP_SP_CONTENT_CERT_ID],
+		open_fip
+	},
+	[PLAT_SP_CONTENT_CERT_ID] = {
+		&fip_dev_handle,
+		(uintptr_t)&arm_uuid_spec[PLAT_SP_CONTENT_CERT_ID],
+		open_fip
+	},
+#endif
 #endif /* ARM_IO_IN_DTB */
 #endif /* TRUSTED_BOARD_BOOT */
 };
@@ -181,7 +203,7 @@ struct plat_io_policy policies[MAX_NUMBER_IDS] = {
 #ifdef IMAGE_BL2
 
 #if TRUSTED_BOARD_BOOT
-#define FCONF_ARM_IO_UUID_NUMBER	U(19)
+#define FCONF_ARM_IO_UUID_NUMBER	U(21)
 #else
 #define FCONF_ARM_IO_UUID_NUMBER	U(10)
 #endif
@@ -216,6 +238,10 @@ static const struct policies_load_info load_info[FCONF_ARM_IO_UUID_NUMBER] = {
 	{SOC_FW_CONTENT_CERT_ID, "soc_fw_content_cert_uuid"},
 	{TRUSTED_OS_FW_CONTENT_CERT_ID, "tos_fw_content_cert_uuid"},
 	{NON_TRUSTED_FW_CONTENT_CERT_ID, "nt_fw_content_cert_uuid"},
+#if defined(SPD_spmd)
+	{SIP_SP_CONTENT_CERT_ID, "sip_sp_content_cert_uuid"},
+	{PLAT_SP_CONTENT_CERT_ID, "plat_sp_content_cert_uuid"},
+#endif
 #endif /* TRUSTED_BOARD_BOOT */
 };
 

@@ -4,9 +4,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 
-JUNO_GIC_SOURCES	:=	drivers/arm/gic/common/gic_common.c	\
-				drivers/arm/gic/v2/gicv2_main.c		\
-				drivers/arm/gic/v2/gicv2_helpers.c	\
+# Include GICv2 driver files
+include drivers/arm/gic/v2/gicv2.mk
+
+JUNO_GIC_SOURCES	:=	${GICV2_SOURCES}			\
 				plat/common/plat_gicv2.c		\
 				plat/arm/common/arm_gicv2.c
 
@@ -164,9 +165,14 @@ ifeq (${ALLOW_RO_XLAT_TABLES}, 1)
 endif
 
 # Add the FDT_SOURCES and options for Dynamic Config
-FDT_SOURCES		+=	plat/arm/board/juno/fdts/${PLAT}_fw_config.dts
-TB_FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_fw_config.dtb
+FDT_SOURCES		+=	plat/arm/board/juno/fdts/${PLAT}_fw_config.dts	\
+				plat/arm/board/juno/fdts/${PLAT}_tb_fw_config.dts
 
+FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_fw_config.dtb
+TB_FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_tb_fw_config.dtb
+
+# Add the FW_CONFIG to FIP and specify the same to certtool
+$(eval $(call TOOL_ADD_PAYLOAD,${FW_CONFIG},--fw-config))
 # Add the TB_FW_CONFIG to FIP and specify the same to certtool
 $(eval $(call TOOL_ADD_PAYLOAD,${TB_FW_CONFIG},--tb-fw-config))
 

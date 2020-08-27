@@ -59,7 +59,6 @@ unsigned int plat_qti_my_cluster_pos(void)
 	if ((mpidr & MPIDR_MT_MASK) == 0) {	/* MT not supported */
 		cluster_id = (mpidr >> MPIDR_AFF1_SHIFT) & MPIDR_AFFLVL_MASK;
 	} else {		/* MT supported */
-
 		cluster_id = (mpidr >> MPIDR_AFF2_SHIFT) & MPIDR_AFFLVL_MASK;
 	}
 	assert(cluster_id < PLAT_CLUSTER_COUNT);

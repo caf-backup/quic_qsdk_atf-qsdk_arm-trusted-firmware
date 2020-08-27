@@ -32,13 +32,22 @@ BL31_SOURCES		+=	${SGI_CPU_SOURCES}			\
 				lib/utils/mem_region.c			\
 				plat/arm/common/arm_nor_psci_mem_protect.c
 
+ifeq (${TRUSTED_BOARD_BOOT}, 1)
+BL1_SOURCES		+=	${RDDANIELXLR_BASE}/rddanielxlr_trusted_boot.c
+BL2_SOURCES		+=	${RDDANIELXLR_BASE}/rddanielxlr_trusted_boot.c
+endif
+
 # Enable dynamic addition of MMAP regions in BL31
 BL31_CFLAGS		+=	-DPLAT_XLAT_TABLES_DYNAMIC
 
 # Add the FDT_SOURCES and options for Dynamic Config
-FDT_SOURCES		+=	${RDDANIELXLR_BASE}/fdts/${PLAT}_fw_config.dts
-TB_FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_fw_config.dtb
+FDT_SOURCES		+=	${RDDANIELXLR_BASE}/fdts/${PLAT}_fw_config.dts	\
+				${RDDANIELXLR_BASE}/fdts/${PLAT}_tb_fw_config.dts
+FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_fw_config.dtb
+TB_FW_CONFIG		:=	${BUILD_PLAT}/fdts/${PLAT}_tb_fw_config.dtb
 
+# Add the FW_CONFIG to FIP and specify the same to certtool
+$(eval $(call TOOL_ADD_PAYLOAD,${FW_CONFIG},--fw-config))
 # Add the TB_FW_CONFIG to FIP and specify the same to certtool
 $(eval $(call TOOL_ADD_PAYLOAD,${TB_FW_CONFIG},--tb-fw-config))
 

@@ -276,21 +276,21 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 	case QTI_SIP_SVC_CALL_COUNT_ID:
 		{
 			SMC_RET1(handle, QTI_SIP_SVC_CALL_COUNT);
+			break;
 		}
-		break;
 	case QTI_SIP_SVC_UID_ID:
 		{
 			/* Return UID to the caller */
 			SMC_UUID_RET(handle, qti_sip_svc_uid);
+			break;
 		}
-		break;
 	case QTI_SIP_SVC_VERSION_ID:
 		{
 			/* Return the version of current implementation */
 			SMC_RET2(handle, QTI_SIP_SVC_VERSION_MAJOR,
 				 QTI_SIP_SVC_VERSION_MINOR);
+			break;
 		}
-		break;
 	case QTI_SIP_SVC_SECURE_IO_READ_ID:
 		{
 			if ((x1 == QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID) &&
@@ -299,8 +299,8 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 					 *((volatile uint32_t *)x2));
 			}
 			SMC_RET1(handle, QTI_SIP_INVALID_PARAM);
+			break;
 		}
-		break;
 	case QTI_SIP_SVC_SECURE_IO_WRITE_ID:
 		{
 			if ((x1 == QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID) &&
@@ -309,14 +309,14 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 				SMC_RET1(handle, QTI_SIP_SUCCESS);
 			}
 			SMC_RET1(handle, QTI_SIP_INVALID_PARAM);
+			break;
 		}
-		break;
 	case QTI_SIP_SVC_MEM_ASSIGN_ID:
 		{
 			return qti_sip_mem_assign(handle, GET_SMC_CC(smc_fid),
 						  x1, x2, x3, x4);
+			break;
 		}
-		break;
 	default:
 		{
 			SMC_RET1(handle, QTI_SIP_NOT_SUPPORTED);

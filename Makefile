@@ -121,6 +121,10 @@ else ifeq (${BRANCH_PROTECTION},3)
 	# Extend the signing to include leaf functions
 	BP_OPTION := pac-ret+leaf
 	ENABLE_PAUTH := 1
+else ifeq (${BRANCH_PROTECTION},4)
+	# Turn on branch target identification mechanism
+	BP_OPTION := bti
+	ENABLE_BTI := 1
 else
         $(error Unknown BRANCH_PROTECTION value ${BRANCH_PROTECTION})
 endif
@@ -193,10 +197,8 @@ endif
 
 # Memory tagging is supported in architecture Armv8.5-A AArch64 and onwards
 ifeq ($(ARCH), aarch64)
-ifeq ($(shell test $(ARM_ARCH_MAJOR) -gt 8; echo $$?),0)
-mem_tag_arch_support	= 	yes
-else ifeq ($(shell test $(ARM_ARCH_MAJOR) -eq 8 -a $(ARM_ARCH_MINOR) -ge 5; \
-	   echo $$?),0)
+# Check if revision is greater than or equal to 8.5
+ifeq "8.5" "$(word 1, $(sort 8.5 $(ARM_ARCH_MAJOR).$(ARM_ARCH_MINOR)))"
 mem_tag_arch_support	= 	yes
 endif
 endif
@@ -449,8 +451,10 @@ include common/backtrace/backtrace.mk
 
 include ${MAKE_HELPERS_DIRECTORY}plat_helpers.mk
 
-BUILD_BASE		:=	./build
-BUILD_PLAT		:=	${BUILD_BASE}/${PLAT}/${BUILD_TYPE}
+ifeq (${BUILD_BASE},)
+     BUILD_BASE		:=	./build
+endif
+BUILD_PLAT		:=	$(abspath ${BUILD_BASE})/${PLAT}/${BUILD_TYPE}
 
 SPDS			:=	$(sort $(filter-out none, $(patsubst services/spd/%,%,$(wildcard services/spd/*))))
 
@@ -481,6 +485,10 @@ ifneq (${SPD},none)
             ifeq ($(CTX_INCLUDE_EL2_REGS),0)
                 $(error SPMD with SPM at S-EL2 requires CTX_INCLUDE_EL2_REGS option)
             endif
+        endif
+
+        ifeq ($(findstring optee_sp,$(ARM_SPMC_MANIFEST_DTS)),optee_sp)
+            DTC_CPPFLAGS	+=	-DOPTEE_SP_FW_CONFIG
         endif
     else
         # All other SPDs in spd directory
@@ -649,6 +657,16 @@ ifeq ($(DYN_DISABLE_AUTH), 1)
     ifeq (${TRUSTED_BOARD_BOOT}, 0)
         $(error "TRUSTED_BOARD_BOOT must be enabled for DYN_DISABLE_AUTH to be set.")
     endif
+endif
+
+# SDEI_IN_FCONF is only supported when SDEI_SUPPORT is enabled.
+ifeq ($(SDEI_SUPPORT)-$(SDEI_IN_FCONF),0-1)
+$(error "SDEI_IN_FCONF is an experimental feature and is only supported when \
+	SDEI_SUPPORT is enabled")
+endif
+
+ifeq ($(COT_DESC_IN_DTB),1)
+    $(info CoT in device tree is an experimental feature)
 endif
 
 # If pointer authentication is used in the firmware, make sure that all the
@@ -882,6 +900,8 @@ $(eval $(call assert_boolean,TRUSTED_BOARD_BOOT))
 $(eval $(call assert_boolean,USE_COHERENT_MEM))
 $(eval $(call assert_boolean,USE_DEBUGFS))
 $(eval $(call assert_boolean,ARM_IO_IN_DTB))
+$(eval $(call assert_boolean,SDEI_IN_FCONF))
+$(eval $(call assert_boolean,SEC_INT_DESC_IN_FCONF))
 $(eval $(call assert_boolean,USE_ROMLIB))
 $(eval $(call assert_boolean,USE_TBBR_DEFS))
 $(eval $(call assert_boolean,WARMBOOT_ENABLE_DCACHE_EARLY))
@@ -891,6 +911,10 @@ $(eval $(call assert_boolean,BL2_INV_DCACHE))
 $(eval $(call assert_boolean,USE_SPINLOCK_CAS))
 $(eval $(call assert_boolean,ENCRYPT_BL31))
 $(eval $(call assert_boolean,ENCRYPT_BL32))
+$(eval $(call assert_boolean,ERRATA_SPECULATIVE_AT))
+$(eval $(call assert_boolean,RAS_TRAP_LOWER_EL_ERR_ACCESS))
+$(eval $(call assert_boolean,COT_DESC_IN_DTB))
+$(eval $(call assert_boolean,USE_SP804_TIMER))
 
 $(eval $(call assert_numeric,ARM_ARCH_MAJOR))
 $(eval $(call assert_numeric,ARM_ARCH_MINOR))
@@ -960,6 +984,8 @@ $(eval $(call add_define,TRUSTED_BOARD_BOOT))
 $(eval $(call add_define,USE_COHERENT_MEM))
 $(eval $(call add_define,USE_DEBUGFS))
 $(eval $(call add_define,ARM_IO_IN_DTB))
+$(eval $(call add_define,SDEI_IN_FCONF))
+$(eval $(call add_define,SEC_INT_DESC_IN_FCONF))
 $(eval $(call add_define,USE_ROMLIB))
 $(eval $(call add_define,USE_TBBR_DEFS))
 $(eval $(call add_define,WARMBOOT_ENABLE_DCACHE_EARLY))
@@ -967,6 +993,10 @@ $(eval $(call add_define,BL2_AT_EL3))
 $(eval $(call add_define,BL2_IN_XIP_MEM))
 $(eval $(call add_define,BL2_INV_DCACHE))
 $(eval $(call add_define,USE_SPINLOCK_CAS))
+$(eval $(call add_define,ERRATA_SPECULATIVE_AT))
+$(eval $(call add_define,RAS_TRAP_LOWER_EL_ERR_ACCESS))
+$(eval $(call add_define,COT_DESC_IN_DTB))
+$(eval $(call add_define,USE_SP804_TIMER))
 
 ifeq (${SANITIZE_UB},trap)
         $(eval $(call add_define,MONITOR_TRAPS))
@@ -1000,6 +1030,7 @@ ifdef SP_LAYOUT_FILE
         endif
         -include $(BUILD_PLAT)/sp_gen.mk
         FIP_DEPS += sp
+        CRT_DEPS += sp
         NEED_SP_PKG := yes
 else
         ifeq (${SPMD_SPM_AT_SEL2},1)
@@ -1106,7 +1137,7 @@ endif
 # Add Secure Partition packages
 ifeq (${NEED_SP_PKG},yes)
 $(BUILD_PLAT)/sp_gen.mk: ${SP_MK_GEN} ${SP_LAYOUT_FILE} | ${BUILD_PLAT}
-	${Q}${PYTHON} "$<" "$@" $(filter-out $<,$^) $(BUILD_PLAT)
+	${Q}${PYTHON} "$<" "$@" $(filter-out $<,$^) $(BUILD_PLAT) ${COT}
 sp: $(SPTOOL) $(DTBS) $(BUILD_PLAT)/sp_gen.mk
 	${Q}$(SPTOOL) $(SPTOOL_ARGS)
 	@${ECHO_BLANK_LINE}
@@ -1178,7 +1209,7 @@ certtool: ${CRTTOOL}
 
 .PHONY: ${CRTTOOL}
 ${CRTTOOL}:
-	${Q}${MAKE} PLAT=${PLAT} USE_TBBR_DEFS=${USE_TBBR_DEFS} COT=${COT} --no-print-directory -C ${CRTTOOLPATH}
+	${Q}${MAKE} PLAT=${PLAT} USE_TBBR_DEFS=${USE_TBBR_DEFS} COT=${COT} OPENSSL_DIR=${OPENSSL_DIR} CRTTOOL=${CRTTOOL} --no-print-directory -C ${CRTTOOLPATH}
 	@${ECHO_BLANK_LINE}
 	@echo "Built $@ successfully"
 	@${ECHO_BLANK_LINE}
@@ -1221,12 +1252,12 @@ fwu_fip: ${BUILD_PLAT}/${FWU_FIP_NAME}
 
 .PHONY: ${FIPTOOL}
 ${FIPTOOL}:
-	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" --no-print-directory -C ${FIPTOOLPATH}
+	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" FIPTOOL=${FIPTOOL} --no-print-directory -C ${FIPTOOLPATH}
 
 sptool: ${SPTOOL}
 .PHONY: ${SPTOOL}
 ${SPTOOL}:
-	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" --no-print-directory -C ${SPTOOLPATH}
+	${Q}${MAKE} CPPFLAGS="-DVERSION='\"${VERSION_STRING}\"'" SPTOOL=${SPTOOL} --no-print-directory -C ${SPTOOLPATH}
 
 .PHONY: libraries
 romlib.bin: libraries
@@ -1244,7 +1275,7 @@ enctool: ${ENCTOOL}
 
 .PHONY: ${ENCTOOL}
 ${ENCTOOL}:
-	${Q}${MAKE} PLAT=${PLAT} BUILD_INFO=0 --no-print-directory -C ${ENCTOOLPATH}
+	${Q}${MAKE} PLAT=${PLAT} BUILD_INFO=0 OPENSSL_DIR=${OPENSSL_DIR} ENCTOOL=${ENCTOOL} --no-print-directory -C ${ENCTOOLPATH}
 	@${ECHO_BLANK_LINE}
 	@echo "Built $@ successfully"
 	@${ECHO_BLANK_LINE}

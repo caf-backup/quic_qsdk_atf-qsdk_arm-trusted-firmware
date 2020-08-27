@@ -99,3 +99,11 @@ ifneq (${COT},dualroot)
     $(eval $(call TOOL_ADD_PAYLOAD,${BUILD_PLAT}/nt_fw_key.crt,--nt-fw-key-cert))
 endif
 endif
+
+# Add SiP owned Secure Partitions CoT (image cert)
+ifneq (${SP_LAYOUT_FILE},)
+    $(eval $(call TOOL_ADD_PAYLOAD,${BUILD_PLAT}/sip_sp_content.crt,--sip-sp-cert))
+ifeq (${COT},dualroot)
+    $(eval $(call TOOL_ADD_PAYLOAD,${BUILD_PLAT}/plat_sp_content.crt,--plat-sp-cert))
+endif
+endif

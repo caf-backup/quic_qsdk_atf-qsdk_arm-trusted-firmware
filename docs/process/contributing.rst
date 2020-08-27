@@ -4,17 +4,22 @@ Contributor's Guide
 Getting Started
 ---------------
 
--  Make sure you have a Github account and you are logged on
-   `developer.trustedfirmware.org`_.
--  Create an `issue`_ for your work if one does not already exist. This gives
-   everyone visibility of whether others are working on something similar.
+-  Make sure you have a Github account and you are logged on both
+   `developer.trustedfirmware.org`_ and `review.trustedfirmware.org`_.
 
-   -  If you intend to include Third Party IP in your contribution, please
-      raise a separate `issue`_ for this and ensure that the changes that
-      include Third Party IP are made on a separate topic branch.
+-  If you plan to contribute a major piece of work, it is usually a good idea to
+   start a discussion around it on the mailing list. This gives everyone
+   visibility of what is coming up, you might learn that somebody else is
+   already working on something similar or the community might be able to
+   provide some early input to help shaping the design of the feature.
+
+   If you intend to include Third Party IP in your contribution, please mention
+   it explicitly in the email thread and ensure that the changes that include
+   Third Party IP are made in a separate patch (or patch series).
 
 -  Clone `Trusted Firmware-A`_ on your own machine as described in
    :ref:`prerequisites_get_source`.
+
 -  Create a local topic branch based on the `Trusted Firmware-A`_ ``master``
    branch.
 
@@ -23,44 +28,51 @@ Making Changes
 
 -  Make commits of logical units. See these general `Git guidelines`_ for
    contributing to a project.
+
 -  Follow the :ref:`Coding Style` and :ref:`Coding Guidelines`.
 
    -  Use the checkpatch.pl script provided with the Linux source tree. A
       Makefile target is provided for convenience.
 
 -  Keep the commits on topic. If you need to fix another bug or make another
-   enhancement, please create a separate `issue`_ and address it on a separate
-   topic branch.
+   enhancement, please address it on a separate topic branch.
+
 -  Avoid long commit series. If you do have a long series, consider whether
    some commits should be squashed together or addressed in a separate topic.
+
 -  Make sure your commit messages are in the proper format. If a commit fixes
    an `issue`_, include a reference.
+
 -  Where appropriate, please update the documentation.
 
-   -  Consider whether the :ref:`Porting Guide`,
-      :ref:`Firmware Design` document or other in-source documentation needs
-      updating.
-   -  Ensure that each changed file has the correct copyright and license
-      information. Files that entirely consist of contributions to this
-      project should have a copyright notice and BSD-3-Clause SPDX license
-      identifier of the form as shown in :ref:`license`. Files that contain
-      changes to imported Third Party IP files should retain their original
-      copyright and license notices. For significant contributions you may
-      add your own copyright notice in following format:
+   -  Consider whether the :ref:`Porting Guide`, :ref:`Firmware Design` document
+      or other in-source documentation needs updating.
 
-      ::
+   -  If you are submitting new files that you intend to be the code owner for
+      (for example, a new platform port), then also update the
+      :ref:`code owners` file.
 
-          Portions copyright (c) [XXXX-]YYYY, <OWNER>. All rights reserved.
+   -  For topics with multiple commits, you should make all documentation changes
+      (and nothing else) in the last commit of the series. Otherwise, include
+      the documentation changes within the single commit.
 
-      where XXXX is the year of first contribution (if different to YYYY) and
-      YYYY is the year of most recent contribution. <OWNER> is your name or
-      your company name.
-   -  If you are submitting new files that you intend to be the technical
-      sub-maintainer for (for example, a new platform port), then also update
-      the :ref:`maintainers` file.
-   -  For topics with multiple commits, you should make all documentation
-      changes (and nothing else) in the last commit of the series. Otherwise,
-      include the documentation changes within the single commit.
+-  Ensure that each changed file has the correct copyright and license
+   information. Files that entirely consist of contributions to this project
+   should have a copyright notice and BSD-3-Clause SPDX license identifier of
+   the form as shown in :ref:`license`. Files that contain changes to imported
+   Third Party IP files should retain their original copyright and license
+   notices.
+
+   For significant contributions you may add your own copyright notice in the
+   following format:
+
+   ::
+
+       Portions copyright (c) [XXXX-]YYYY, <OWNER>. All rights reserved.
+
+   where XXXX is the year of first contribution (if different to YYYY) and YYYY
+   is the year of most recent contribution. <OWNER> is your name or your company
+   name.
 
 -  Please test your changes. As a minimum, ensure that Linux boots on the
    Foundation FVP. See :ref:`Arm Fixed Virtual Platforms (FVP)` for more
@@ -91,8 +103,10 @@ Submitting Changes
    targeting the ``integration`` branch.
 
    -  The changes will then undergo further review and testing by the
-      :ref:`maintainers`. Any review comments will be made directly on your
-      patch. This may require you to do some rework.
+      :ref:`code owners` and :ref:`maintainers`. Any review comments will be
+      made directly on your patch. This may require you to do some rework. For
+      controversial changes, the discussion might be moved to the `TF-A mailing
+      list`_ to involve more of the community.
 
    Refer to the `Gerrit Uploading Changes documentation`_ for more details.
 
@@ -102,12 +116,12 @@ Submitting Changes
       ``integration`` branch.
    -  If the changes are not based on a sufficiently-recent commit, or if they
       cannot be automatically rebased, then the :ref:`maintainers` may rebase it
-      on the ``master`` branch or ask you to do so.
+      on the ``integration`` branch or ask you to do so.
    -  After final integration testing, the changes will make their way into the
-      ``master`` branch. If a problem is found during integration, the merge
-      commit will be removed from the ``integration`` branch and the
-      :ref:`maintainers` will ask you to create a new patch set to resolve the
-      problem.
+      ``master`` branch. If a problem is found during integration, the
+      :ref:`maintainers` will request your help to solve the issue. They may
+      revert your patches and ask you to resubmit a reworked version of them or
+      they may ask you to provide a fix-up patch.
 
 Binary Components
 -----------------
@@ -131,12 +145,14 @@ Binary Components
 *Copyright (c) 2013-2020, Arm Limited and Contributors. All rights reserved.*
 
 .. _developer.trustedfirmware.org: https://developer.trustedfirmware.org
+.. _review.trustedfirmware.org: https://review.trustedfirmware.org
 .. _issue: https://developer.trustedfirmware.org/project/board/1/
 .. _Trusted Firmware-A: https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git
 .. _Git guidelines: http://git-scm.com/book/ch5-2.html
 .. _Gerrit Uploading Changes documentation: https://review.trustedfirmware.org/Documentation/user-upload.html
 .. _Gerrit Signed-off-by Lines guidelines: https://review.trustedfirmware.org/Documentation/user-signedoffby.html
 .. _Gerrit Change-Ids documentation: https://review.trustedfirmware.org/Documentation/user-changeid.html
-.. _TF-A Tests: https://git.trustedfirmware.org/TF-A/tf-a-tests.git/about/
+.. _TF-A Tests: https://trustedfirmware-a-tests.readthedocs.io
 .. _Trusted Firmware binary repository: https://review.trustedfirmware.org/admin/repos/tf-binaries
 .. _tf-binaries-readme: https://git.trustedfirmware.org/tf-binaries.git/tree/readme.rst
+.. _TF-A mailing list: https://lists.trustedfirmware.org/mailman/listinfo/tf-a

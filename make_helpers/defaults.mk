@@ -223,7 +223,13 @@ USE_COHERENT_MEM		:= 1
 USE_DEBUGFS			:= 0
 
 # Build option to fconf based io
-ARM_IO_IN_DTB		:= 0
+ARM_IO_IN_DTB			:= 0
+
+# Build option to support SDEI through fconf
+SDEI_IN_FCONF			:= 0
+
+# Build option to support Secure Interrupt descriptors through fconf
+SEC_INT_DESC_IN_FCONF		:= 0
 
 # Build option to choose whether Trusted Firmware uses library at ROM
 USE_ROMLIB			:= 0
@@ -293,3 +299,18 @@ CTX_INCLUDE_EL2_REGS		:= 0
 # than Armv8.5-A
 # By default it is set to "no"
 SUPPORT_STACK_MEMTAG		:= no
+
+# Select workaround for AT speculative behaviour.
+ERRATA_SPECULATIVE_AT           := 0
+
+# Trap RAS error record access from lower EL
+RAS_TRAP_LOWER_EL_ERR_ACCESS	:= 0
+
+# Build option to create cot descriptors using fconf
+COT_DESC_IN_DTB			:= 0
+
+# Build option to provide openssl directory path
+OPENSSL_DIR			:= /usr
+
+# Build option to use the SP804 timer instead of the generic one
+USE_SP804_TIMER			:= 0

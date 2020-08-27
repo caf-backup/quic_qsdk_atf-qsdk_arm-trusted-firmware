@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 #include <stddef.h>
-#include <stdint.h>
 
 #include <lib/mmio.h>
+
+#include <qti_rng.h>
 #include <qti_rng_io.h>
 
 int qti_rng_get_data(uint8_t *out, uint32_t out_len)
@@ -27,8 +28,9 @@ int qti_rng_get_data(uint8_t *out, uint32_t out_len)
 	do {
 		/* There is no data to read */
 		if ((mmio_read_32(SEC_PRNG_STATUS) &
-		     SEC_PRNG_STATUS_DATA_AVAIL_BMSK) == 0)
+		     SEC_PRNG_STATUS_DATA_AVAIL_BMSK) == 0) {
 			continue;
+		}
 
 		while ((tmp_rndm = mmio_read_32(SEC_PRNG_DATA_OUT)) == 0) {
 			;

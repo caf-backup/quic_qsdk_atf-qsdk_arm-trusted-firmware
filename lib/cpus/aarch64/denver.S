@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015-2018, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2020, NVIDIA Corporation. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -26,12 +27,16 @@
 	 * table.
 	 * -------------------------------------------------
 	 */
-	.globl	workaround_bpflush_runtime_exceptions
-
 vector_base workaround_bpflush_runtime_exceptions
 
 	.macro	apply_workaround
 	stp	x0, x1, [sp, #CTX_GPREGS_OFFSET + CTX_GPREG_X0]
+
+	/* Disable cycle counter when event counting is prohibited */
+	mrs	x1, pmcr_el0
+	orr	x0, x1, #PMCR_EL0_DP_BIT
+	msr	pmcr_el0, x0
+	isb
 
 	/* -------------------------------------------------
 	 * A new write-only system register where a write of
@@ -377,6 +382,34 @@ declare_cpu_ops_wa denver, DENVER_MIDR_PN3, \
 	denver_cluster_pwr_dwn
 
 declare_cpu_ops_wa denver, DENVER_MIDR_PN4, \
+	denver_reset_func, \
+	check_errata_cve_2017_5715, \
+	CPU_NO_EXTRA2_FUNC, \
+	denver_core_pwr_dwn, \
+	denver_cluster_pwr_dwn
+
+declare_cpu_ops_wa denver, DENVER_MIDR_PN5, \
+	denver_reset_func, \
+	check_errata_cve_2017_5715, \
+	CPU_NO_EXTRA2_FUNC, \
+	denver_core_pwr_dwn, \
+	denver_cluster_pwr_dwn
+
+declare_cpu_ops_wa denver, DENVER_MIDR_PN6, \
+	denver_reset_func, \
+	check_errata_cve_2017_5715, \
+	CPU_NO_EXTRA2_FUNC, \
+	denver_core_pwr_dwn, \
+	denver_cluster_pwr_dwn
+
+declare_cpu_ops_wa denver, DENVER_MIDR_PN7, \
+	denver_reset_func, \
+	check_errata_cve_2017_5715, \
+	CPU_NO_EXTRA2_FUNC, \
+	denver_core_pwr_dwn, \
+	denver_cluster_pwr_dwn
+
+declare_cpu_ops_wa denver, DENVER_MIDR_PN8, \
 	denver_reset_func, \
 	check_errata_cve_2017_5715, \
 	CPU_NO_EXTRA2_FUNC, \

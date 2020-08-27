@@ -165,6 +165,15 @@ void plat_early_platform_setup(void)
 	const plat_params_from_bl2_t *plat_params = bl31_get_plat_params();
 	uint64_t val;
 
+	/* Verify chip id is t210 */
+	assert(tegra_chipid_is_t210());
+
+	/*
+	 * Do initial security configuration to allow DRAM/device access.
+	 */
+	tegra_memctrl_tzdram_setup(plat_params->tzdram_base,
+			(uint32_t)plat_params->tzdram_size);
+
 	/* platform parameter passed by the previous bootloader */
 	if (plat_params->l2_ecc_parity_prot_dis != 1) {
 		/* Enable ECC Parity Protection for Cortex-A57 CPUs */
@@ -179,6 +188,8 @@ void plat_early_platform_setup(void)
 
 /* Secure IRQs for Tegra186 */
 static const interrupt_prop_t tegra210_interrupt_props[] = {
+	INTR_PROP_DESC(TEGRA_SDEI_SGI_PRIVATE, PLAT_SDEI_CRITICAL_PRI,
+			GICV2_INTR_GROUP0, GIC_INTR_CFG_EDGE),
 	INTR_PROP_DESC(TEGRA210_TIMER1_IRQ, PLAT_TEGRA_WDT_PRIO,
 			GICV2_INTR_GROUP0, GIC_INTR_CFG_EDGE),
 	INTR_PROP_DESC(TEGRA210_WDT_CPU_LEGACY_FIQ, PLAT_TEGRA_WDT_PRIO,
