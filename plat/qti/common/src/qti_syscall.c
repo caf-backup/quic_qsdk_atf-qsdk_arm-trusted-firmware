@@ -67,6 +67,9 @@
 #define QTI_SIP_SVC_PIL_AUTH_RESET_ID       U(0x02000205)
 #define QTI_SIP_SVC_PIL_UNLOCK_XPU_ID       U(0x02000206)
 #define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID U(0x02000214)
+#define QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_ID   U(0x02000216)
+#define QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID   U(0x02000217)
+#define QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_ID  U(0x02000218)
 
 /*
  * TFTF Syscall's
@@ -90,6 +93,9 @@
 #define QTI_SIP_SVC_PIL_AUTH_RESET_PARAM_ID       U(0x1)
 #define QTI_SIP_SVC_PIL_UNLOCK_XPU_PARAM_ID       U(0x1)
 #define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_PARAM_ID U(0x1)
+#define QTI_SIP_SVC_PIL_USERPD1_BRINGUP_PARAM_ID   U(0x1)
+#define QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_PARAM_ID  U(0x1)
+#define QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_PARAM_ID   U(0x204)
 
 #define	FUNCID_OEN_NUM_MASK  ((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
 				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT) )
@@ -288,6 +294,34 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		{
 		if(QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_PARAM_ID == x1){
 			SMC_RET2(handle, SMC_OK, pil_wcss_break_start(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+
+	case QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID:
+		{
+		if(QTI_SIP_SVC_PIL_USERPD1_BRINGUP_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_userpd1_bringup(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+
+	case QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_ID:
+		{
+		if(QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_userpd1_teardown(x2));
+			}
+		else
+			SMC_RET1(handle, SMC_UNK);
+		}
+
+	case QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_ID:
+		{
+		if(QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_PARAM_ID == x1){
+			u_register_t x5 = read_ctx_reg(get_gpregs_ctx(handle), CTX_GPREG_X5);
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_multipd_auth_ns(x2, x3, x4, x5));
 			}
 		else
 			SMC_RET1(handle, SMC_UNK);
