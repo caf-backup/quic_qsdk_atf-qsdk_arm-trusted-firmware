@@ -68,6 +68,13 @@
 #define QTI_SIP_SVC_PIL_UNLOCK_XPU_ID       U(0x02000206)
 #define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID U(0x02000214)
 
+/*
+ * TFTF Syscall's
+ */
+#define QTI_TEST_XPU_ERR_COUNT_ID               U(0x0200FE90)
+#define QTI_TEST_XPU_ERR_COUNT_CLEAR_ID         U(0x0200FE91)
+#define QTI_TEST_STACK_PROTECTION_ID            U(0x0200FD09)
+
 #define QTI_SIP_SVC_AUTH_CHECK_PARAM_ID         U(0x12)
 #define	QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID		U(0x1)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
@@ -286,6 +293,20 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			SMC_RET1(handle, SMC_UNK);
 		}
 #endif
+
+	case QTI_TEST_XPU_ERR_COUNT_ID:
+		{
+			SMC_RET1(handle, qtiseclib_test_get_xpu_err_count());
+		}
+	case QTI_TEST_XPU_ERR_COUNT_CLEAR_ID:
+		{
+			qtiseclib_test_clear_xpu_err_count();
+			SMC_RET1(handle, SMC_OK);
+		}
+	case QTI_TEST_STACK_PROTECTION_ID:
+		{
+			SMC_RET1(handle, qti_test_stack_protection());
+		}
 
 	case QTI_SIP_SVC_CALL_COUNT_ID:
 		{

@@ -94,4 +94,7 @@ int pil_wcss_break_start(bool dbg);
 int qtiseclib_qfprom_fuse_secdat(uint32_t *);
 int qtiseclib_secure_boot_check(char * secure_boot_val, uint32_t input_len);
 #endif
+uint32_t qtiseclib_test_get_xpu_err_count(void);
+void qtiseclib_test_clear_xpu_err_count(void);
+int qti_test_stack_protection(void);
 #endif /* __QTISECLIB_INTERFACE_H__ */
