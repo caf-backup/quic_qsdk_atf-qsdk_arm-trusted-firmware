@@ -92,5 +92,6 @@ int qtiseclib_pil_auth_reset_ns(uint32_t proc);
 int qtiseclib_pil_unlock_xpu(uint32_t proc);
 int pil_wcss_break_start(bool dbg);
 int qtiseclib_qfprom_fuse_secdat(uint32_t *);
+int qtiseclib_secure_boot_check(char * secure_boot_val, uint32_t input_len);
 #endif
 #endif /* __QTISECLIB_INTERFACE_H__ */

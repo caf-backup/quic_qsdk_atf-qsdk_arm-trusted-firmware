@@ -68,6 +68,7 @@
 #define QTI_SIP_SVC_PIL_UNLOCK_XPU_ID       U(0x02000206)
 #define QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID U(0x02000214)
 
+#define QTI_SIP_SVC_AUTH_CHECK_PARAM_ID         U(0x12)
 #define	QTI_SIP_SVC_SECURE_IO_READ_PARAM_ID		U(0x1)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_PARAM_ID	U(0x2)
 #define	QTI_SIP_SVC_RESET_DEBUG_PARAM_ID	U(0x2)
@@ -329,11 +330,19 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
                 {
                         SMC_RET2(handle, SMC_OK, SMC_ARMV8);
                 }
-        case QTI_SIP_SVC_AUTH_CHECK_ID:
-                {
-			 *((volatile uint32_t *)x2) = 0;
-			 SMC_RET1(handle, SMC_OK);
-                }
+	case QTI_SIP_SVC_AUTH_CHECK_ID:
+		{
+			if (QTI_SIP_SVC_AUTH_CHECK_PARAM_ID == x1){
+		#if QTI_5018_PLATFORM
+				SMC_RET2(handle, SMC_OK, qtiseclib_secure_boot_check((char *)x2, x3));
+		#endif
+		#if QTI_6018_PLATFORM
+				*((volatile uint32_t *)x2) = 0;
+				SMC_RET2(handle, SMC_OK, SMC_OK);
+		#endif
+				}
+			SMC_RET1(handle, SMC_UNK);
+		}
 	case QTI_INFO_GET_DIAG_ID:
 		{
 			ret = qtiseclib_get_diag((char *)x2, x3);
