@@ -172,7 +172,7 @@ int32_t plat_get_soc_version(void)
  */
 int32_t plat_get_soc_revision(void)
 {
-	return 0;
+	return mmio_read_32(QTI_SOC_REVISION_REG) & QTI_SOC_REVISION_MASK;
 }
 
 /*****************************************************************************

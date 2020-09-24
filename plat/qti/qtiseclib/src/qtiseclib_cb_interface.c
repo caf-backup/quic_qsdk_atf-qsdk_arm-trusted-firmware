@@ -31,17 +31,17 @@ void *qtiseclib_cb_memcpy(void *dst, const void *src, size_t len)
 
 int qtiseclib_cb_strcmp(const char *s1, const char *s2)
 {
-	return strcmp(s1,s2);
+	return strcmp(s1, s2);
 }
 
 void *qtiseclib_cb_memset(void *s, int c, size_t n)
 {
-	return memset(s,c,n);
+	return memset(s, c, n);
 }
 
 void *qtiseclib_cb_memmove(void *dest, const void *src, size_t n)
 {
-	return memmove(dest,src,n);
+	return memmove(dest, src, n);
 }
 
 /* Printing logs below or equal LOG_LEVEL from QTISECLIB. */

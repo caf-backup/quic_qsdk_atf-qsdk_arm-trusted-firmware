@@ -106,9 +106,9 @@ bool qti_mem_assign_validate_param(memprot_info_t *mem_info,
 		return false;
 	}
 	for (i = 0; i < u_num_mappings; i++) {
-		if ((mem_info[i].mem_addr & (SIZE4K - 1))
+		if ((mem_info[i].mem_addr & (SIZE4K - 1)) || (mem_info[i].mem_size != 0)
 		    || (mem_info[i].mem_size & (SIZE4K - 1))) {
-			ERROR("mem_info passed buffer 0x%x or size 0x%xis not 4k alligned\n",
+			ERROR("mem_info passed buffer 0x%x or size 0x%xis not 4k aligned\n",
 			     (unsigned int)mem_info[i].mem_addr,
 			     (unsigned int)mem_info[i].mem_size);
 			return false;
@@ -121,10 +121,8 @@ bool qti_mem_assign_validate_param(memprot_info_t *mem_info,
 			      (unsigned int)mem_info[i].mem_size);
 			return false;
 		}
-		coreboot_memory_t mem_type_start = coreboot_get_memory_type(mem_info[i].mem_addr);
-		coreboot_memory_t mem_type_end = coreboot_get_memory_type(mem_info[i].mem_addr + mem_info[i].mem_size);
-		if((mem_type_start != mem_type_end ) ||
-		   (mem_type_end != CB_MEM_RAM && mem_type_end != CB_MEM_RESERVED)) {
+		coreboot_memory_t mem_type = coreboot_get_memory_type_of_range(mem_info[i].mem_addr, mem_info[i].mem_size);
+		if((mem_type != CB_MEM_RAM && mem_type != CB_MEM_RESERVED)) {
 			ERROR("memory region not in CB MEM RAM or RESERVED area: region start 0x%x size 0x%x\n",
 			     (unsigned int)mem_info[i].mem_addr,
                              (unsigned int)mem_info[i].mem_size);
@@ -133,14 +131,14 @@ bool qti_mem_assign_validate_param(memprot_info_t *mem_info,
 	}
 	for (i = 0; i < src_vm_list_cnt; i++) {
 		if (source_vm_list[i] >= QTI_VM_LAST) {
-			ERROR("source_vm_list[i] 0x%x is more then QTI_VM_LAST",
+			ERROR("source_vm_list[%d] 0x%x is more then QTI_VM_LAST\n", i,
 			      (unsigned int)source_vm_list[i]);
 			return false;
 		}
 	}
 	for (i = 0; i < dst_vm_list_cnt; i++) {
 		if (dest_vm_list[i].dst_vm >= QTI_VM_LAST) {
-			ERROR("dest_vm_list[i] 0x%x is more then QTI_VM_LAST",
+			ERROR("dest_vm_list[%d] 0x%x is more then QTI_VM_LAST\n", i,
 			      (unsigned int)dest_vm_list[i].dst_vm);
 			return false;
 		}
@@ -164,7 +162,7 @@ static uintptr_t qti_sip_mem_assign(void *handle, uint32_t smc_cc,
 	}
 	/* Validate input arg count & retrieve arg3-6 from NS Buffer. */
 	if ((x1 != QTI_SIP_SVC_MEM_ASSIGN_PARAM_ID) || (x5 == 0x0)) {
-		ERROR("invalid mem_assign param id or no mapping info");
+		ERROR("invalid mem_assign param id or no mapping info\n");
 		goto unmap_return;
 	}
 
