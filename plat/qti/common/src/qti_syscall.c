@@ -36,7 +36,7 @@
 #define	QTI_SIP_SVC_SECURE_IO_READ_ID		U(0x02000501)
 #define	QTI_SIP_SVC_SECURE_IO_WRITE_ID		U(0x02000502)
 
-#define QTI_SIP_IS_ARMV8                        U(0x02000601)
+#define QTI_SIP_IS_SMC_AVAILABLE_ID			U(0x02000601)
 #define QTI_INFO_GET_DIAG_ID			U(0x02000602)
 #define QTI_SIP_SVC_AUTH_CHECK_ID               U(0x02000807)
 #define QTI_DUMP_SET_CPU_CTX_BUF_ID             U(0x02000302)
@@ -54,11 +54,6 @@
  */
 #define	QTI_SIP_SVC_MEM_ASSIGN_ID			U(0x02000C16)
 #define	QTI_SIP_SVC_RESET_DEBUG_ID				U(0x02000109)
-
-/*
- * Syscall to copy BT Fuse Region to BTRAM
- */
-#define QTI_SIP_SVC_BT_FUSE_COPY_ID				U(0x02000215)
 
 /*
  * Syscall for PIL
@@ -105,6 +100,49 @@ DEFINE_SVC_UUID2(qti_sip_svc_uid,
 		0x43864748, 0x217f, 0x41ad, 0xaa, 0x5a,
 		0xba, 0xe7, 0x0f, 0xa5, 0x52, 0xaf);
 
+static bool qti_is_smc_available(uint32_t smc_id)
+{
+/**
+SMC Masks :
+     Bit 31      - IRQ / Atomic / Fast SMC
+     Bit 30      - ARCH
+     Bit (29-24) - Owner ID
+     Bit (23-16) - Reserved
+     Bit (15-0)  - Func ID
+**/
+/*Skipping IRQ and ARCH*/
+smc_id &= 0x3FFFFFFF;
+	switch(smc_id)
+	{
+		case QTI_SIP_SVC_SECURE_IO_READ_ID:
+		case QTI_SIP_SVC_SECURE_IO_WRITE_ID:
+		case QTI_SIP_IS_SMC_AVAILABLE_ID:
+		case QTI_INFO_GET_DIAG_ID:
+		case QTI_SIP_SVC_AUTH_CHECK_ID:
+		case QTI_DUMP_SET_CPU_CTX_BUF_ID:
+		case QTI_SIP_DO_HLOS_MODE_SWITCH:
+		case QTI_SIP_PROTECT_MEM_SUBSYS_ID:
+		case QTI_SIP_CLEAR_MEM_SUBSYS_ID:
+		case QTI_SIP_SVC_MEM_ASSIGN_ID:
+		case QTI_SIP_SVC_RESET_DEBUG_ID:
+		case QTI_TEST_XPU_ERR_COUNT_ID:
+		case QTI_TEST_XPU_ERR_COUNT_CLEAR_ID:
+		case QTI_TEST_STACK_PROTECTION_ID:
+#ifdef QTI_5018_PLATFORM
+		case QTI_SIP_BLOW_FUSE_SEC_DAT_ID:
+		case QTI_SIP_SVC_PIL_INIT_ID:
+		case QTI_SIP_SVC_PIL_AUTH_RESET_ID:
+		case QTI_SIP_SVC_PIL_UNLOCK_XPU_ID:
+		case QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID:
+		case QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_ID:
+		case QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID:
+		case QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_ID:
+#endif
+			return true;
+		default:
+			return false;
+	}
+}
 
 static bool qti_is_secure_io_access_allowed(u_register_t addr)
 {
@@ -258,11 +296,6 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 	switch (l_smc_fid) {
 
 #if QTI_5018_PLATFORM
-	case QTI_SIP_SVC_BT_FUSE_COPY_ID:
-		{
-			SMC_RET2(handle, SMC_OK, qtiseclib_bt_fuse_copy());
-		}
-
 	case QTI_SIP_SVC_PIL_INIT_ID:
 		{
 		if(QTI_SIP_SVC_PIL_INIT_PARAM_ID == x1){
@@ -381,9 +414,9 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			return qti_sip_mem_assign(handle, GET_SMC_CC(smc_fid),
 									  x1, x2, x3, x4);
 		}
-        case QTI_SIP_IS_ARMV8:
+        case QTI_SIP_IS_SMC_AVAILABLE_ID:
                 {
-                        SMC_RET2(handle, SMC_OK, SMC_ARMV8);
+                        SMC_RET2(handle, SMC_OK, qti_is_smc_available(x2));
                 }
 	case QTI_SIP_SVC_AUTH_CHECK_ID:
 		{
