@@ -96,6 +96,7 @@ int qtiseclib_secure_boot_check(char * secure_boot_val, uint32_t input_len);
 int qtiseclib_pil_userpd1_bringup(uint32_t proc);
 int qtiseclib_pil_userpd1_teardown(uint32_t proc);
 int qtiseclib_pil_multipd_auth_ns(uint32_t proc, uint32_t prog_num, uint64_t dma_addr, uint32_t dma_size);
+int qtiseclib_pil_multipd_auth_ns_v2(uint32_t proc, uint32_t prog_num, uint64_t dma_addr, uint32_t arr_len);
 #endif
 uint32_t qtiseclib_test_get_xpu_err_count(void);
 void qtiseclib_test_clear_xpu_err_count(void);
