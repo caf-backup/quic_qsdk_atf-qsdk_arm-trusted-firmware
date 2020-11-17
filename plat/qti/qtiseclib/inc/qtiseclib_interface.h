@@ -93,6 +93,9 @@ int qtiseclib_pil_unlock_xpu(uint32_t proc);
 int pil_wcss_break_start(bool dbg);
 int qtiseclib_qfprom_fuse_secdat(uint32_t *);
 int qtiseclib_secure_boot_check(char * secure_boot_val, uint32_t input_len);
+int qtiseclib_pil_userpd1_bringup(uint32_t proc);
+int qtiseclib_pil_userpd1_teardown(uint32_t proc);
+int qtiseclib_pil_multipd_auth_ns(uint32_t proc, uint32_t prog_num, uint64_t dma_addr, uint32_t dma_size);
 #endif
 uint32_t qtiseclib_test_get_xpu_err_count(void);
 void qtiseclib_test_clear_xpu_err_count(void);

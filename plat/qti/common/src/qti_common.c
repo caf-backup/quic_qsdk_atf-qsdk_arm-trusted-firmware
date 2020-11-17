@@ -85,7 +85,7 @@ void qti_setup_page_tables(uintptr_t total_base,
 	 */
 	total_ddr_size = qtiseclib_get_ddr_size();
         mmap_add_region(QTI_DDR_BASE, QTI_DDR_BASE,
-                        (total_ddr_size), MT_MEMORY | MT_RW | MT_NS);
+                        (total_ddr_size), MT_MEMORY | MT_RW | MT_SECURE);
 
 	VERBOSE("Trusted SRAM seen by this BL image: %p - %p\n",
 		(void *)total_base, (void *)(total_base + total_size));
