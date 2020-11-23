@@ -311,7 +311,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 	case QTI_SIP_SVC_PIL_UNLOCK_XPU_ID:
 	  {
 		if(QTI_SIP_SVC_PIL_UNLOCK_XPU_PARAM_ID == x1){
-			SMC_RET2(handle, SMC_OK, qtiseclib_pil_unlock_xpu(x2));
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_unlock_area(x2));
 			}
 		else
 			SMC_RET1(handle, SMC_UNK);
