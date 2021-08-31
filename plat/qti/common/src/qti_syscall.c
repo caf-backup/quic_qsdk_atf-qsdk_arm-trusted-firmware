@@ -66,6 +66,8 @@
 #define QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID   U(0x02000217)
 #define QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_ID  U(0x02000218)
 #define QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_V2_ID   U(0x02000219)
+#define QTI_SIP_SVC_PIL_CFG_ID                 U(0x02000220)
+#define QTI_SIP_SVC_BT_PIL_ECO_CFG_ID          U(0x02000221)
 
 /*
  * TFTF Syscall's
@@ -93,6 +95,8 @@
 #define QTI_SIP_SVC_PIL_USERPD1_TEARDOWN_PARAM_ID  U(0x1)
 #define QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_PARAM_ID   U(0x204)
 #define QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_V2_PARAM_ID   U(0x204)
+#define QTI_SIP_SVC_PIL_CFG_PARAM_ID                 U(0x2)
+#define QTI_SIP_SVC_BT_PIL_ECO_CFG_PARAM_ID          U(0x2)
 
 #define	FUNCID_OEN_NUM_MASK  ((FUNCID_OEN_MASK << FUNCID_OEN_SHIFT)\
 				|(FUNCID_NUM_MASK << FUNCID_NUM_SHIFT) )
@@ -369,6 +373,22 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 			SMC_RET2(handle, SMC_OK, qtiseclib_pil_multipd_auth_ns_v2(x2, x3, x4, x5));
 		}
         else
+			SMC_RET1(handle, SMC_UNK);
+		}
+	case QTI_SIP_SVC_PIL_CFG_ID:
+		{
+		if(QTI_SIP_SVC_PIL_CFG_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_pil_cfg(x2,x3));
+		}
+	else
+			SMC_RET1(handle, SMC_UNK);
+		}
+	case QTI_SIP_SVC_BT_PIL_ECO_CFG_ID:
+		{
+		if(QTI_SIP_SVC_BT_PIL_ECO_CFG_PARAM_ID == x1){
+			SMC_RET2(handle, SMC_OK, qtiseclib_btss_pil_eco_config(x2,x3));
+		}
+	else
 			SMC_RET1(handle, SMC_UNK);
 		}
 #endif
