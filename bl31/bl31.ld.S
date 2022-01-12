@@ -334,7 +334,7 @@ SECTIONS
     } >RAM
 #endif
 
-#if QTI_5018_PLATFORM
+#if QTI_5018_PLATFORM || QTI_9574_PLATFORM
     pil . : {
      __PIL_REGION_START__ = .;
       . = . + QTI_PIL_RG_SIZE;

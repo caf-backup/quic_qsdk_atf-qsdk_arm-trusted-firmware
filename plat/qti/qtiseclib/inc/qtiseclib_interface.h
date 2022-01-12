@@ -85,12 +85,14 @@ int qtiseclib_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, u
 int qtiseclib_clear_protect_mem_subsystem(uint32_t subsystem_id, uintptr_t phy_base, uint32_t size, uint32_t auth_key);
 int qtiseclib_get_diag(char* buf, size_t buf_size);
 uint64_t qtiseclib_get_ddr_size();
-#if QTI_5018_PLATFORM
-int qtiseclib_bt_fuse_copy(void);
+#if QTI_5018_PLATFORM || QTI_9574_PLATFORM
 int qtiseclib_pil_init_image_ns(uint32_t proc, void * elf_hdr);
 int qtiseclib_pil_auth_reset_ns(uint32_t proc);
 int qtiseclib_pil_unlock_area(uint32_t proc);
 int pil_wcss_break_start(bool dbg);
+#endif
+#if QTI_5018_PLATFORM
+int qtiseclib_bt_fuse_copy(void);
 int qtiseclib_qfprom_fuse_secdat(uint32_t *);
 int qtiseclib_secure_boot_check(char * secure_boot_val, uint32_t input_len);
 int qtiseclib_pil_userpd1_bringup(uint32_t proc);
