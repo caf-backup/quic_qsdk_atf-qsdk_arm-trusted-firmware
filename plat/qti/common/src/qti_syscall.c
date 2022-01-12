@@ -134,12 +134,14 @@ smc_id &= 0x3FFFFFFF;
 		case QTI_TEST_XPU_ERR_COUNT_ID:
 		case QTI_TEST_XPU_ERR_COUNT_CLEAR_ID:
 		case QTI_TEST_STACK_PROTECTION_ID:
-#ifdef QTI_5018_PLATFORM
-		case QTI_SIP_BLOW_FUSE_SEC_DAT_ID:
+#if QTI_5018_PLATFORM || QTI_9574_PLATFORM
 		case QTI_SIP_SVC_PIL_INIT_ID:
 		case QTI_SIP_SVC_PIL_AUTH_RESET_ID:
 		case QTI_SIP_SVC_PIL_UNLOCK_XPU_ID:
-		case QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID:
+                case QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID:
+#endif
+#ifdef QTI_5018_PLATFORM
+		case QTI_SIP_BLOW_FUSE_SEC_DAT_ID:
 		case QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_ID:
 		case QTI_SIP_SVC_PIL_MULTIPD_MEMCPY_V2_ID:
 		case QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID:
@@ -302,7 +304,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 
 	switch (l_smc_fid) {
 
-#if QTI_5018_PLATFORM
+#if QTI_5018_PLATFORM || QTI_9574_PLATFORM
 	case QTI_SIP_SVC_PIL_INIT_ID:
 		{
 		if(QTI_SIP_SVC_PIL_INIT_PARAM_ID == x1){
@@ -311,7 +313,14 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		else
 			SMC_RET1(handle, SMC_UNK);
 		}
-
+	case QTI_SIP_SVC_PIL_AUTH_RESET_ID:
+                {
+                if(QTI_SIP_SVC_PIL_AUTH_RESET_PARAM_ID == x1){
+                        SMC_RET2(handle, SMC_OK, qtiseclib_pil_auth_reset_ns(x2));
+                        }
+                else
+                        SMC_RET1(handle, SMC_UNK);
+                }
 	case QTI_SIP_SVC_PIL_UNLOCK_XPU_ID:
 	  {
 		if(QTI_SIP_SVC_PIL_UNLOCK_XPU_PARAM_ID == x1){
@@ -320,16 +329,6 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		else
 			SMC_RET1(handle, SMC_UNK);
 	  }
-
-	case QTI_SIP_SVC_PIL_AUTH_RESET_ID:
-		{
-		if(QTI_SIP_SVC_PIL_AUTH_RESET_PARAM_ID == x1){
-			SMC_RET2(handle, SMC_OK, qtiseclib_pil_auth_reset_ns(x2));
-			}
-		else
-			SMC_RET1(handle, SMC_UNK);
-		}
-
 	case QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_ID:
 		{
 		if(QTI_SIP_SVC_PIL_WCSS_BREAK_DEBUG_PARAM_ID == x1){
@@ -338,7 +337,9 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		else
 			SMC_RET1(handle, SMC_UNK);
 		}
+#endif
 
+#if QTI_5018_PLATFORM
 	case QTI_SIP_SVC_PIL_USERPD1_BRINGUP_ID:
 		{
 		if(QTI_SIP_SVC_PIL_USERPD1_BRINGUP_PARAM_ID == x1){
@@ -456,7 +457,7 @@ static uintptr_t qti_sip_handler(uint32_t smc_fid,
 		#if QTI_5018_PLATFORM
 				SMC_RET2(handle, SMC_OK, qtiseclib_secure_boot_check((char *)x2, x3));
 		#endif
-		#if QTI_6018_PLATFORM
+		#if QTI_6018_PLATFORM || QTI_9574_PLATFORM
 				*((volatile uint32_t *)x2) = 0;
 				SMC_RET2(handle, SMC_OK, SMC_OK);
 		#endif

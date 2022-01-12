@@ -148,6 +148,7 @@
 #define BL31_LIMIT						(BL31_BASE + BL31_SIZE - QTI_TRUSTED_MAILBOX_SIZE)
 
 #define QTI_DIAG_RG_SIZE                       0x3000
+#define QTI_PIL_RG_SIZE                                0x1000
 /*----------------------------------------------------------------------------*/
 /* Mailbox base address */
 /*----------------------------------------------------------------------------*/
